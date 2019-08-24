@@ -1,6 +1,7 @@
-package com.uncc.inclass01.ui.main;
+package com.uncc.inclass01.ui.chatroom;
 
 import android.content.Context;
+import android.view.View;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -8,28 +9,36 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
 
+import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.R;
+import com.uncc.inclass01.ui.chatroom.Chat;
+import com.uncc.inclass01.ui.chatroom.ChatUsers;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class SectionsPagerAdapter extends FragmentPagerAdapter {
+public class ChatroomPagerAdapter extends FragmentPagerAdapter {
 
-    @StringRes
-    private static final int[] TAB_TITLES = new int[]{R.string.tab_text_1, R.string.tab_text_2};
     private final Context mContext;
+    @StringRes
+    private static final int[] TAB_TITLES = new int[]{R.string.tab_chatroom, R.string.tab_chat_users};
 
-    public SectionsPagerAdapter(Context context, FragmentManager fm) {
+    public ChatroomPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
     }
 
     @Override
     public Fragment getItem(int position) {
-        // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
-        return PlaceholderFragment.newInstance(position + 1);
+        switch (position) {
+            case 0: return Chat.newInstance(AppConstant.CHAT);
+                case 1: return ChatUsers.newInstance(AppConstant.CHAT_USERS);
+        }
+        return null;
     }
 
     @Nullable
@@ -41,6 +50,6 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public int getCount() {
         // Show 2 total pages.
-        return 2;
+        return TAB_TITLES.length;
     }
 }
