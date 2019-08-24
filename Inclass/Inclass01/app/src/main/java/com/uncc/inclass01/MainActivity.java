@@ -3,24 +3,30 @@ package com.uncc.inclass01;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.uncc.inclass01.utilities.Auth;
+
 public class MainActivity extends AppCompatActivity {
+
+    private void redirectOnAuth(boolean authStatus){
+        if(authStatus){
+            this.startActivity(new Intent(MainActivity.this, AfterLoginPage.class));
+        }else{
+            this.startActivity(new Intent(MainActivity.this, Login.class));
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setTheme(R.style.AppTheme_Launcher);
         setContentView(R.layout.activity_main);
-
-        startActivity(AppConstant.LOGIN_CODE, Login.class);
+        Auth auth = new Auth();
+        redirectOnAuth(auth.getAuthStatus());
     }
 
     private void startActivity(int code, Class<?> cls) {
