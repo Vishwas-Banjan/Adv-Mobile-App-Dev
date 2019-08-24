@@ -19,13 +19,13 @@ import java.util.List;
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
  * one of the sections/tabs/pages.
  */
-public class ChatroomPagerAdapter extends FragmentPagerAdapter {
+public class DashboardPagerAdapter extends FragmentPagerAdapter {
 
     private final Context mContext;
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_chatrooms, R.string.tab_myprofile, R.string.tab_users};
 
-    public ChatroomPagerAdapter(Context context, FragmentManager fm) {
+    public DashboardPagerAdapter(Context context, FragmentManager fm) {
         super(fm);
         mContext = context;
     }

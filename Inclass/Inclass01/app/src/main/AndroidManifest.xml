@@ -10,10 +10,10 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity
-            android:name=".Dashboard"
+            android:name=".ui.dashboard.Dashboard"
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar"></activity>
-        <activity android:name=".Chatroom" />
+        <activity android:name=".ui.chatroom.Chatroom" />
         <activity android:name=".CreateAccount2" />
         <activity android:name=".CreateAccount" />
         <activity

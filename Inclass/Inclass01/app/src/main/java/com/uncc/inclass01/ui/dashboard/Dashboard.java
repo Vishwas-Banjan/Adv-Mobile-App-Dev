@@ -1,11 +1,11 @@
-package com.uncc.inclass01;
+package com.uncc.inclass01.ui.dashboard;
 
 import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.tabs.TabLayout;
-import com.uncc.inclass01.ui.dashboard.ChatroomPagerAdapter;
+import com.uncc.inclass01.R;
 
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,7 +14,7 @@ import android.view.View;
 
 public class Dashboard extends AppCompatActivity {
 
-    ChatroomPagerAdapter sectionsPagerAdapter;
+    DashboardPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
 
     @Override
@@ -22,7 +22,7 @@ public class Dashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_dashboard);
 
-        sectionsPagerAdapter = new ChatroomPagerAdapter(this, getSupportFragmentManager());
+        sectionsPagerAdapter = new DashboardPagerAdapter(this, getSupportFragmentManager());
         viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
 
