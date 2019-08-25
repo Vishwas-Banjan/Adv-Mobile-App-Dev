@@ -1,1 +1,1 @@
-[Wiki page](wiki/Simple-Chat-Application)
+[Wiki page](../wiki/Simple-Chat-Application)
