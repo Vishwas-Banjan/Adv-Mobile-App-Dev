@@ -6,6 +6,9 @@ import android.os.Bundle;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.R;
 
 import androidx.viewpager.widget.ViewPager;
@@ -21,6 +24,7 @@ public class Dashboard extends AppCompatActivity {
 
     DashboardPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
+    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.CHATROOM_DB_KEY);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,11 +103,9 @@ public class Dashboard extends AppCompatActivity {
     }
 
     private void addChatroom(String name) {
-//        Task task = new Task();
-//        task.setName(name);
-//        task.setDeadline(deadline);
-//        task.setStatus(AppConstant.STATUS_TODO);
-//        mRootRef.push().setValue(task);
+        Chatroom chatroom = new Chatroom();
+        chatroom.setName(name);
+        mRootRef.push().setValue(chatroom);
     }
 
 }
