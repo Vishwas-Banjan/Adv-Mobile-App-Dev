@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.uncc.inclass01.R;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
@@ -16,11 +15,11 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListAdapter.ViewHolder> {
 
-    List<String> chatroomList;
+    List<Chatroom> chatroomList;
     ChatroomAsyncTask asyncTask;
 
 
-    public ChatroomListAdapter(List<String> chatroomList, ChatroomAsyncTask asyncTask) {
+    public ChatroomListAdapter(List<Chatroom> chatroomList, ChatroomAsyncTask asyncTask) {
         this.chatroomList = chatroomList;
         this.asyncTask = asyncTask;
     }
@@ -34,7 +33,7 @@ public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListAdapte
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String name = chatroomList.get(position);
+        String name = chatroomList.get(position).getName();
         holder.nameTV.setText(name);
     }
 
@@ -54,14 +53,15 @@ public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListAdapte
 
             mView = itemView;
 
-            nameTV = mView.findViewById(R.id.chatRoomText);
+            nameTV = mView.findViewById(R.id.userName);
             joinTV = mView.findViewById(R.id.joinChat);
 
             joinTV.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     int p = getLayoutPosition();
-                    asyncTask.goToChatroom(p);
+                    Chatroom chatroom = chatroomList.get(p);
+                    asyncTask.goToChatroom(chatroom);
 
 
                 }

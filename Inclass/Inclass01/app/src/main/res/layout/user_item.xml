@@ -21,16 +21,6 @@
                 android:layout_height="wrap_content"
                 android:layout_alignParentTop="true"
                 android:text="TextView" />
-
-            <TextView
-                android:id="@+id/joinChat"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_alignParentRight="true"
-                android:layout_marginRight="11dp"
-                android:text="@string/label_join"
-                android:textColor="@color/design_default_color_primary_dark" />
         </RelativeLayout>
 
     </androidx.cardview.widget.CardView>

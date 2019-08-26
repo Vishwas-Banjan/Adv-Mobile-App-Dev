@@ -33,9 +33,9 @@ public class DashboardPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0: return ChatroomList.newInstance(AppConstant.CHATROOM_LIST);
+            case 0: return ChatroomList.newInstance();
             case 1: return MyProfile.newInstance(AppConstant.MY_PROFILE);
-            case 2: return ViewUsers.newInstance(AppConstant.VIEW_USERS);
+            case 2: return ViewUsers.newInstance();
 
         }
         return null;
