@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id="@+id/create_account_2"
     android:gravity="center_vertical"
     tools:context=".CreateAccount2">
 
@@ -12,17 +13,17 @@
         android:layout_height="wrap_content">
 
 
-        <ImageButton
-            android:id="@+id/imageButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+        <ImageView
+            android:id="@+id/upload_profile_pic"
+            android:layout_width="65dp"
+            android:layout_height="65dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@tools:sample/avatars" />
+            tools:srcCompat="@drawable/ic_icons8_user_female_skin_type_4" />
 
         <EditText
-            android:id="@+id/editText4"
+            android:id="@+id/signup_first_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
@@ -34,7 +35,7 @@
             app:layout_constraintTop_toBottomOf="@+id/textView9" />
 
         <EditText
-            android:id="@+id/editText7"
+            android:id="@+id/signup_last_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -43,7 +44,7 @@
             android:inputType="textPersonName"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText4" />
+            app:layout_constraintTop_toBottomOf="@+id/signup_first_name" />
 
         <TextView
             android:id="@+id/textView8"
@@ -51,21 +52,21 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
             android:text="@string/female"
-            app:layout_constraintEnd_toStartOf="@+id/switch1"
+            app:layout_constraintEnd_toStartOf="@+id/signup_gender"
             app:layout_constraintHorizontal_bias="0.8"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText7" />
+            app:layout_constraintTop_toBottomOf="@+id/signup_last_name" />
 
         <Switch
-            android:id="@+id/switch1"
+            android:id="@+id/signup_gender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
-            android:textOff="@string/male"
-            android:textOn="@string/female"
+            android:textOn="@string/male"
+            android:textOff="@string/female"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText7" />
+            app:layout_constraintTop_toBottomOf="@+id/signup_last_name" />
 
         <TextView
             android:id="@+id/textView4"
@@ -75,11 +76,11 @@
             android:text="@string/male"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.13"
-            app:layout_constraintStart_toEndOf="@+id/switch1"
-            app:layout_constraintTop_toBottomOf="@+id/editText7" />
+            app:layout_constraintStart_toEndOf="@+id/signup_gender"
+            app:layout_constraintTop_toBottomOf="@+id/signup_last_name" />
 
         <EditText
-            android:id="@+id/editText6"
+            android:id="@+id/signup_city"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -89,7 +90,7 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.494"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/switch1" />
+            app:layout_constraintTop_toBottomOf="@+id/signup_gender" />
 
         <TextView
             android:id="@+id/textView9"
@@ -100,17 +101,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.507"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageButton" />
+            app:layout_constraintTop_toBottomOf="@+id/upload_profile_pic" />
 
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/signup_create_account_2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="@string/create_account_2_submit"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/editText6" />
+            app:layout_constraintTop_toBottomOf="@+id/signup_city" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 

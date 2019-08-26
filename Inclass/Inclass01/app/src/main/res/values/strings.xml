@@ -9,7 +9,8 @@
     <string name="password">Password</string>
     <string name="verify_password">Verify Password</string>
     <string name="login">Login</string>
-    <string name="create_account">Create Account</string>
+    <string name="create_account">Next</string>
+    <string name="create_account_heading">Create Account</string>
     <string name="forgot_password">Forgot Password</string>
     <string name="create_account_text">Not Registered yet ? Create Account</string>
     <string name="login_text">Already have a Account ? Login</string>
@@ -19,7 +20,14 @@
     <string name="female">Female</string>
     <string name="male">Male</string>
     <string name="city">City</string>
-    <string name="create_account_2_submit">Complete Account Information</string>
+    <string name="create_account_2_submit">Create Account</string>
     <string name="upload_profile_pic">Upload profile pic</string>
+    <string name="title_activity_dashboard">Dashboard</string>
+    <string name="tab_chatrooms">Active Chatrooms</string>
+    <string name="tab_myprofile">My Profile</string>
+    <string name="tab_users">View Users</string>
+    <string name="tab_chatroom">Chatroom</string>
+    <string name="tab_chat_users">Active Users</string>
+    <string name="invalid_login">Please Input valid Password and Login Information</string>
 
 </resources>

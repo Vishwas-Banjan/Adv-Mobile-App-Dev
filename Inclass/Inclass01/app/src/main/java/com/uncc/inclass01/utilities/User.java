@@ -1,15 +1,14 @@
 package com.uncc.inclass01.utilities;
 
 public class User {
-    private String firstName, lastName, email, gender, city, photo, password;
+    private String firstName, lastName, email, gender, city;
 
-    public User(String firstName, String lastName, String email, String gender, String city, String photo) {
+    public User(String firstName, String lastName, String email, String gender, String city) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;
         this.gender = gender;
         this.city = city;
-        this.photo = photo;
     }
 
     public String getFirstName() {
@@ -52,19 +51,4 @@ public class User {
         this.city = city;
     }
 
-    public String getPhoto() {
-        return photo;
-    }
-
-    public void setPhoto(String photo) {
-        this.photo = photo;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
 }

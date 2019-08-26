@@ -8,13 +8,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.uncc.inclass01.ui.dashboard.Dashboard;
 import com.uncc.inclass01.utilities.Auth;
 
 public class MainActivity extends AppCompatActivity {
 
     private void redirectOnAuth(boolean authStatus){
         if(authStatus){
-            this.startActivity(new Intent(MainActivity.this, AfterLoginPage.class));
+            this.startActivity(new Intent(MainActivity.this, Dashboard.class));
         }else{
             this.startActivity(new Intent(MainActivity.this, Login.class));
         }
