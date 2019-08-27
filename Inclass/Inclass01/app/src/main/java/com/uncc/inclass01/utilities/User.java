@@ -1,7 +1,13 @@
 package com.uncc.inclass01.utilities;
 
+import android.util.Log;
+
 public class User {
     private String firstName, lastName, email, gender, city;
+
+    public User(){
+
+    }
 
     public User(String firstName, String lastName, String email, String gender, String city) {
         this.firstName = firstName;
@@ -9,6 +15,10 @@ public class User {
         this.email = email;
         this.gender = gender;
         this.city = city;
+    }
+
+    public void printData(){
+        Log.d("UserClass",firstName+", "+lastName+", email: "+email);
     }
 
     public String getFirstName() {

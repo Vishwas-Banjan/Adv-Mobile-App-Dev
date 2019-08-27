@@ -7,6 +7,7 @@ import androidx.core.content.ContextCompat;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
@@ -24,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
+import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -134,14 +136,14 @@ public class CreateAccount2 extends AppCompatActivity {
                                         // upload the image
                                         new UploadProfilePic().execute(profileImage);
                                         startActivity(new Intent(CreateAccount2.this, Dashboard.class));
+                                    }else{
+                                        createAccountExceptionHandling(task);
                                     }
                                 }
                             });
 
                         } else {
-                            Snackbar.make(view, task.getException()+"", Snackbar.LENGTH_SHORT).show();
-                            Log.d(LOG_Account, "failed user creation : "+task.getException());
-                            startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
+                            createAccountExceptionHandling(task);
                         }
                     }
                 });
@@ -151,9 +153,15 @@ public class CreateAccount2 extends AppCompatActivity {
 
     }
 
+    private void createAccountExceptionHandling(Task task){
+        Toast.makeText(getApplicationContext(),  task.getException()+"", Toast.LENGTH_SHORT).show();
+        Log.d(LOG_Account, "failed user creation : "+task.getException());
+        startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
+    }
+
 
     private class UploadProfilePic extends AsyncTask<Bitmap, String, String>{
-        private String msg = "Unable to upload photo please check your internet connection";
+        private String msg;
         private boolean flag = false;
 
 
@@ -169,7 +177,9 @@ public class CreateAccount2 extends AppCompatActivity {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
                     // Handle unsuccessful uploads
-                    msg = "Unable to upload photo please check your internet connection";
+//                    msg = "Unable to upload photo please check your internet connection. ";
+                    msg = exception.getMessage();
+                    // also save it to local computer
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override
@@ -177,6 +187,7 @@ public class CreateAccount2 extends AppCompatActivity {
                     msg = "Your Profile photo uploaded successfully";
                 }
             });
+
             flag = true;
             return msg;
         }

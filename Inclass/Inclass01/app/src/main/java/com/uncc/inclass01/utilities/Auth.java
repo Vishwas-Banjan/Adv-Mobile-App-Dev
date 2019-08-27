@@ -29,4 +29,19 @@ public class Auth {
     public String getCurrentUserID(){
         return  currentUser.getUid();
     }
+
+    public String getCurrentUserEmail(){
+        return  currentUser.getEmail();
+    }
+
+
+
+    public boolean signOutUser(){
+        try{
+            mAuth.signOut();
+            return true;
+        }catch (Exception e){
+            return false;
+        }
+    }
 }

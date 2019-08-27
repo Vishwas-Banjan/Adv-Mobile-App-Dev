@@ -17,9 +17,10 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.storage.OnProgressListener;
 import com.uncc.inclass01.ui.dashboard.Dashboard;
 
-public class Login extends AppCompatActivity implements View.OnClickListener {
+public class Login extends AppCompatActivity {
 
     private Button loginButton;
     private EditText emailText, passwordText;
@@ -62,11 +63,13 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     // notify user about that
                     Snackbar.make(view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
                 }else{
-                    // if successful login
+                    // logging in
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
+                            Log.d(TAG, "login successful: "+task.getException());
                             if(task.isSuccessful()){
+//                                Log.d(TAG, "login successful: "+task.getException());
                                 Login.this.startActivity(new Intent(Login.this, Dashboard.class));
                             }else{
                                 Snackbar.make( view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
@@ -77,29 +80,43 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
             }
         });
     }
-
-    @Override
-    public void onClick(View view) {
-        Log.e(TAG, view.getId()+": is the id of clicked unit");
-        switch (view.getId()){
-            case R.id.login_button:{
-                email = emailText.getText().toString();
-                password = passwordText.getText().toString();
-                // check if email and passwords are filled
-                // password is atleast 6 char long
-                if (email.isEmpty()||password.isEmpty()||!email.matches("")||password.length()<6){
-                    // notify user about that
-                    Snackbar.make(view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
-                }
-                // login user -> create error use cases
-                break;
-            }
-            case R.id.go_to_create_account:{
-                // go to create account
-                this.startActivity(new Intent(Login.this, CreateAccount.class));
-                break;
-            }
-        }
-
-    }
+//
+//    @Override
+//    public void onClick(final View view) {
+//        Log.e(TAG, view.getId()+": is the id of clicked unit");
+//        switch (view.getId()){
+//            case R.id.login_button:{
+//                email = emailText.getText().toString();
+//                password = passwordText.getText().toString();
+//                // check if email and passwords are filled
+//                // password is atleast 6 char long
+//                if (email.isEmpty()||password.isEmpty()||!email.matches("")||password.length()<6){
+//                    // notify user about that
+//                    Snackbar.make(view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
+//                }else{
+//                    // logging in
+//                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+//                        @Override
+//                        public void onComplete(@NonNull Task<AuthResult> task) {
+//                            Log.d(TAG, "login successful: "+task.getException());
+//                            if(task.isSuccessful()){
+////                                Log.d(TAG, "login successful: "+task.getException());
+//                                Login.this.startActivity(new Intent(Login.this, Dashboard.class));
+//                            }else{
+//                                Snackbar.make(view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
+//                            }
+//                        }
+//                    });
+//                }
+//                // login user -> create error use cases
+//                break;
+//            }
+//            case R.id.go_to_create_account:{
+//                // go to create account
+//                startActivity(new Intent(Login.this, CreateAccount.class));
+//                break;
+//            }
+//        }
+//
+//    }
 }
