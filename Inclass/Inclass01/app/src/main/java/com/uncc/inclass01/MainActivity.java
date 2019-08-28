@@ -5,8 +5,6 @@ import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.view.Menu;
-import android.view.MenuItem;
 
 import com.uncc.inclass01.ui.dashboard.Dashboard;
 import com.uncc.inclass01.utilities.Auth;
@@ -14,11 +12,14 @@ import com.uncc.inclass01.utilities.Auth;
 public class MainActivity extends AppCompatActivity {
 
     private void redirectOnAuth(boolean authStatus){
+        Intent i;
         if(authStatus){
-            this.startActivity(new Intent(MainActivity.this, Dashboard.class));
+            i = new Intent(MainActivity.this, Dashboard.class);
         }else{
-            this.startActivity(new Intent(MainActivity.this, Login.class));
+            i = new Intent(MainActivity.this, Login.class);
         }
+        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        this.startActivity(i);
     }
 
     @Override
