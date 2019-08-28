@@ -67,6 +67,8 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
         password = goToCreateAccount2.getStringExtra("password");
         profilePicBtn = findViewById(R.id.upload_profile_pic);
         createAccount = findViewById(R.id.signup_create_account_2);
+        profilePicBtn.setOnClickListener(this);
+        createAccount.setOnClickListener(this);
 
         signupFirstName = findViewById(R.id.signup_first_name);
         signupLastName = findViewById(R.id.signup_last_name);
@@ -81,22 +83,19 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
 
         // storage ref
         mStorageRef = FirebaseStorage.getInstance().getReference();
-
-        profilePicBtn.setOnClickListener(this);
-
-        createAccount.setOnClickListener(this);
-
-
     }
 
     @Override
     public void onClick(View view) {
+        Log.d(LOG_Account, "something is clicked");
+        Log.d(LOG_Account, "createAccountClicked?= "+view.getId()+":id,  createAccount: "+R.id.create_account_2+", imagebtnID:  "+R.id.profile_pic);
         switch (view.getId()){
-            case R.id.profile_pic: {
+            case R.id.upload_profile_pic: {
                 clickPicForProfilePic();
                 break;
             }
-            case R.id.create_account_2: {
+            case R.id.signup_create_account_2: {
+                Log.d(LOG_Account, "btn is clicked");
                 createUserAccount();
                 break;
             }
@@ -122,10 +121,12 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
     }
 
     void createUserAccount(){
+        Log.d(LOG_Account, "running create user");
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
+                    Log.d(LOG_Account, "task is successful");
                     // get Content
                     firstName = signupFirstName.getText().toString();
                     lastName = signupLastName.getText().toString();
@@ -150,6 +151,7 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
                     });
 
                 } else {
+                    Log.d(LOG_Account, "unsuccessful task");
                     createAccountExceptionHandling(task);
                 }
             }

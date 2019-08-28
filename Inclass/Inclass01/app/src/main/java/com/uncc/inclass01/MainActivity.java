@@ -18,7 +18,7 @@ public class MainActivity extends AppCompatActivity {
         }else{
             i = new Intent(MainActivity.this, Login.class);
         }
-        i.addFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
         this.startActivity(i);
     }
 

@@ -2,6 +2,7 @@ package com.uncc.inclass01.ui.dashboard;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
@@ -15,6 +16,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.uncc.inclass01.AppConstant;
+import com.uncc.inclass01.Login;
 import com.uncc.inclass01.R;
 import com.uncc.inclass01.utilities.Auth;
 import com.uncc.inclass01.utilities.Chatroom;
@@ -49,6 +51,7 @@ public class Dashboard extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 new Auth().signOutUser();
+                startActivity(new Intent(Dashboard.this, Login.class));
                 finish();
             }
         });
