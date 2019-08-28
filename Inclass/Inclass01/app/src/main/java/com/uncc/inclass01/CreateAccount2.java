@@ -6,15 +6,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
 import android.Manifest;
-import android.app.Activity;
-import android.app.Application;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Camera;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -22,7 +17,6 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.Toast;
@@ -45,7 +39,7 @@ import com.uncc.inclass01.utilities.User;
 
 import java.io.ByteArrayOutputStream;
 
-public class CreateAccount2 extends AppCompatActivity {
+public class CreateAccount2 extends AppCompatActivity implements View.OnClickListener{
 
     FirebaseAuth mAuth;
     private EditText signupFirstName, signupLastName, signupCity;
@@ -71,14 +65,6 @@ public class CreateAccount2 extends AppCompatActivity {
         Intent goToCreateAccount2 = getIntent();
         email = goToCreateAccount2.getStringExtra("email");
         password = goToCreateAccount2.getStringExtra("password");
-        // default image
-        profileImage = BitmapFactory.decodeResource(this.getResources(), R.drawable.ic_icons8_user_female_skin_type_4); // set the default image
-        Log.d(LOG_Account, "password: "+password+", email: "+email);
-        if (email == null ||password == null){
-            Log.d(LOG_Account, "password is null");
-            startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
-        }
-
         profilePicBtn = findViewById(R.id.upload_profile_pic);
         createAccount = findViewById(R.id.signup_create_account_2);
 
@@ -87,71 +73,89 @@ public class CreateAccount2 extends AppCompatActivity {
         signupGender = findViewById(R.id.signup_gender);
         signupCity = findViewById(R.id.signup_city);
 
+        Log.d(LOG_Account, "password: "+password+", email: "+email);
+        if (email == null ||password == null){
+            Log.d(LOG_Account, "password is null");
+            startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
+        }
+
         // storage ref
         mStorageRef = FirebaseStorage.getInstance().getReference();
 
-        profilePicBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // intent to capture image
-                if (Build.VERSION.SDK_INT>=23){
-                    // if permission already granted
-                    if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
-                        String[] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE",
-                                "android.permission.CAMERA",
-                                "android.permission.READ_EXTERNAL_STORAGE"};
-                        requestPermissions(permissions, CAMERA_PERMISSION_CODE);
-                    }
-                    else {
-                        // go to camera
-                        Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                        startActivityForResult(cameraIntent, CAMERA_CODE);
-                    }
-                }
-            }
-        });
+        profilePicBtn.setOnClickListener(this);
 
-        createAccount.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(final View view) {
-                Log.d(LOG_Account, "entered into click");
-                mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if(task.isSuccessful()){
-                            // get Content
-                            firstName = signupFirstName.getText().toString();
-                            lastName = signupLastName.getText().toString();
-                            gender = signupGender.isChecked()? "male": "female";
-                            city = signupCity.getText().toString();
-                            // save the content
-                            User user = new User(firstName, lastName, email, gender, city);
-                            // Write a message to the database
-                            FirebaseDatabase database = FirebaseDatabase.getInstance();
-                            DatabaseReference userDbRef = database.getReference("userProfiles").child(new Auth().getCurrentUserID());
-                            userDbRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Void> task) {
-                                    if (task.isSuccessful()){
-                                        // upload the image
-                                        new UploadProfilePic().execute(profileImage);
-                                        startActivity(new Intent(CreateAccount2.this, Dashboard.class));
-                                    }else{
-                                        createAccountExceptionHandling(task);
-                                    }
-                                }
-                            });
-
-                        } else {
-                            createAccountExceptionHandling(task);
-                        }
-                    }
-                });
-            }
-        });
+        createAccount.setOnClickListener(this);
 
 
     }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.profile_pic: {
+                clickPicForProfilePic();
+                break;
+            }
+            case R.id.create_account_2: {
+                createUserAccount();
+                break;
+            }
+        }
+    }
+
+    void clickPicForProfilePic(){
+        // intent to capture image
+        if (Build.VERSION.SDK_INT>=23){
+            // if permission already granted
+            if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                String[] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE",
+                        "android.permission.CAMERA",
+                        "android.permission.READ_EXTERNAL_STORAGE"};
+                requestPermissions(permissions, CAMERA_PERMISSION_CODE);
+            }
+            else {
+                // go to camera
+                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                startActivityForResult(cameraIntent, CAMERA_CODE);
+            }
+        }
+    }
+
+    void createUserAccount(){
+        mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
+            @Override
+            public void onComplete(@NonNull Task<AuthResult> task) {
+                if(task.isSuccessful()){
+                    // get Content
+                    firstName = signupFirstName.getText().toString();
+                    lastName = signupLastName.getText().toString();
+                    gender = signupGender.isChecked()? "male": "female";
+                    city = signupCity.getText().toString();
+                    // save the content
+                    User user = new User(firstName, lastName, email, gender, city);
+                    // Write a message to the database
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference userDbRef = database.getReference("userProfiles").child(new Auth().getCurrentUserID());
+                    userDbRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Void> task) {
+                            if (task.isSuccessful()){
+                                // upload the image
+                                new UploadProfilePic().execute();
+                                startActivity(new Intent(CreateAccount2.this, Dashboard.class));
+                            }else{
+                                createAccountExceptionHandling(task);
+                            }
+                        }
+                    });
+
+                } else {
+                    createAccountExceptionHandling(task);
+                }
+            }
+        });
+    }
+
 
     private void createAccountExceptionHandling(Task task){
         Toast.makeText(getApplicationContext(),  task.getException()+"", Toast.LENGTH_SHORT).show();
@@ -160,26 +164,27 @@ public class CreateAccount2 extends AppCompatActivity {
     }
 
 
-    private class UploadProfilePic extends AsyncTask<Bitmap, String, String>{
+    private class UploadProfilePic extends AsyncTask<String, String, String>{
         private String msg;
         private boolean flag = false;
 
 
         @Override
-        protected String doInBackground(Bitmap... bitmaps) {
+        protected String doInBackground(String... strings) {
             StorageReference mountainsRef = mStorageRef.child(email.replace('.', '_')+".jpeg");
             // Get the data from an ImageView as bytes
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            if (profileImage==null){
+                // default image
+                profileImage = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ic_icons8_user_female_skin_type_4); // set the default image
+            }
             profileImage.compress(Bitmap.CompressFormat.JPEG, 60, baos);
             byte[] data = baos.toByteArray();
             UploadTask uploadTask = mountainsRef.putBytes(data);
             uploadTask.addOnFailureListener(new OnFailureListener() {
                 @Override
                 public void onFailure(@NonNull Exception exception) {
-                    // Handle unsuccessful uploads
-//                    msg = "Unable to upload photo please check your internet connection. ";
                     msg = exception.getMessage();
-                    // also save it to local computer
                 }
             }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
                 @Override

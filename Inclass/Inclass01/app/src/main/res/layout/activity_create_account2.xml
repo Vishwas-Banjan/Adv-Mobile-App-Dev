@@ -20,7 +20,8 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/ic_icons8_user_female_skin_type_4" />
+            android:src="@drawable/ic_icons8_user_female_skin_type_4"
+            tools:src="@drawable/ic_icons8_user_female_skin_type_4" />
 
         <EditText
             android:id="@+id/signup_first_name"
