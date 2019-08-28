@@ -1,15 +1,9 @@
 package com.uncc.inclass01;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.content.ContextCompat;
-
 import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -38,6 +32,11 @@ import com.uncc.inclass01.utilities.Auth;
 import com.uncc.inclass01.utilities.User;
 
 import java.io.ByteArrayOutputStream;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 
 public class CreateAccount2 extends AppCompatActivity implements View.OnClickListener{
 

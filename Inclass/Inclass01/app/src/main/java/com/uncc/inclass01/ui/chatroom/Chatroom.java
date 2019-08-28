@@ -1,22 +1,26 @@
 package com.uncc.inclass01.ui.chatroom;
 
 import android.os.Bundle;
+import android.view.MenuItem;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.R;
+import com.uncc.inclass01.utilities.Auth;
 
 import androidx.annotation.NonNull;
-import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.view.MenuItem;
+import androidx.viewpager.widget.ViewPager;
 
 public class Chatroom extends AppCompatActivity {
 
     ChatroomPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
     String chatroomId;
+    DatabaseReference mRootRef;
+    String key;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +29,14 @@ public class Chatroom extends AppCompatActivity {
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        sectionsPagerAdapter = new ChatroomPagerAdapter(this, getSupportFragmentManager());
+        Bundle b = getIntent().getExtras();
+        if(b != null) {
+            chatroomId = b.getString(AppConstant.CHATROOM_ID);
+            setTitle(b.getString(AppConstant.CHATROOM_NAME));
+            mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.CHATROOM_DB_KEY).child(chatroomId).child(AppConstant.CURR_USERS);
+        }
+
+        sectionsPagerAdapter = new ChatroomPagerAdapter(this, getSupportFragmentManager(), chatroomId);
         viewPager = findViewById(R.id.view_pager);
         viewPager.setAdapter(sectionsPagerAdapter);
 
@@ -35,17 +46,23 @@ public class Chatroom extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
-        Bundle b = getIntent().getExtras();
-        if(b != null) {
-            chatroomId = b.getString(AppConstant.CHATROOM_ID);
-            setTitle(b.getString(AppConstant.CHATROOM_NAME));
-        }
+        addToChatroom();
+    }
+
+    private void addToChatroom() {
+        key = mRootRef.push().getKey();
+        mRootRef.child(key).setValue(new Auth().getCurrentUserID());
+    }
+
+    private void removeFromChatroom() {
+        mRootRef.child(key).removeValue();
     }
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
+                removeFromChatroom();
                 finish();
                 return true;
         }

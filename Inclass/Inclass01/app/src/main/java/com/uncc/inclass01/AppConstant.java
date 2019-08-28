@@ -12,4 +12,5 @@ public class AppConstant {
     public static final String USER_DB_KEY = "userProfiles";
     public static final String CHATROOM_ID = "id";
     public static final String CHATROOM_NAME = "name";
+    public static final String CURR_USERS = "people";
 }

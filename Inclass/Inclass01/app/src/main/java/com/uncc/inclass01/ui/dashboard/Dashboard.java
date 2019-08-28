@@ -1,17 +1,10 @@
 package com.uncc.inclass01.ui.dashboard;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -19,7 +12,6 @@ import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.Login;
 import com.uncc.inclass01.R;
 import com.uncc.inclass01.utilities.Auth;
-import com.uncc.inclass01.utilities.Chatroom;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.viewpager.widget.ViewPager;

@@ -3,11 +3,10 @@ package com.uncc.inclass01;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.appcompat.app.AppCompatActivity;
-
-
 import com.uncc.inclass01.ui.dashboard.Dashboard;
 import com.uncc.inclass01.utilities.Auth;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
