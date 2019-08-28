@@ -172,7 +172,9 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                     @Override
                     public void onFailure(@NonNull Exception exception) {
                         // Handle failed download
-                        Toast.makeText(getActivity(), "Error: "+exception.getMessage(), Toast.LENGTH_LONG).show();
+                        profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_icons8_user_female_skin_type_4);
+                        profilePicImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_icons8_user_female_skin_type_4));
+//                        Toast.makeText(getActivity(), "Error: "+exception.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 });
 

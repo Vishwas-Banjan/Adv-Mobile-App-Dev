@@ -127,22 +127,21 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
             public void onComplete(@NonNull Task<AuthResult> task) {
                 if(task.isSuccessful()){
                     Log.d(LOG_Account, "task is successful");
-                    // get Content
                     firstName = signupFirstName.getText().toString();
                     lastName = signupLastName.getText().toString();
                     gender = signupGender.isChecked()? "male": "female";
                     city = signupCity.getText().toString();
-                    // save the content
                     User user = new User(firstName, lastName, email, gender, city);
-                    // Write a message to the database
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference userDbRef = database.getReference("userProfiles").child(new Auth().getCurrentUserID());
                     userDbRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
-                                // upload the image
-                                new UploadProfilePic().execute();
+                                if (profileImage!=null){
+                                    // upload the image
+                                    new UploadProfilePic().execute();
+                                }
                                 startActivity(new Intent(CreateAccount2.this, Dashboard.class));
                             }else{
                                 createAccountExceptionHandling(task);
@@ -162,7 +161,7 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
     private void createAccountExceptionHandling(Task task){
         Toast.makeText(getApplicationContext(),  task.getException()+"", Toast.LENGTH_SHORT).show();
         Log.d(LOG_Account, "failed user creation : "+task.getException());
-        startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
+//        startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
     }
 
 
@@ -174,12 +173,7 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
         @Override
         protected String doInBackground(String... strings) {
             StorageReference mountainsRef = mStorageRef.child(email.replace('.', '_')+".jpeg");
-            // Get the data from an ImageView as bytes
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
-            if (profileImage==null){
-                // default image
-                profileImage = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.ic_icons8_user_female_skin_type_4); // set the default image
-            }
             profileImage.compress(Bitmap.CompressFormat.JPEG, 60, baos);
             byte[] data = baos.toByteArray();
             UploadTask uploadTask = mountainsRef.putBytes(data);
