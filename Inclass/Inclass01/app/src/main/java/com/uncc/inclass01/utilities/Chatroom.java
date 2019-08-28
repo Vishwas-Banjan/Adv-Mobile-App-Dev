@@ -1,4 +1,4 @@
-package com.uncc.inclass01.ui.dashboard;
+package com.uncc.inclass01.utilities;
 
 public class Chatroom {
 
