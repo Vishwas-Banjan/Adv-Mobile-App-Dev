@@ -5,9 +5,65 @@
     android:layout_height="match_parent"
     tools:context=".ui.dashboard.MyProfile">
 
-    <TextView
-        android:id="@+id/textView12"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/tab_myprofile" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="160dp"
+            android:background="@color/colorPrimary">
+
+
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:id="@+id/profile_pic">
+            </ImageView>
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/updatePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update Password" />
+
+        <Button
+            android:id="@+id/updateFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update First Name" />
+
+        <Button
+            android:id="@+id/updateLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update Last Name" />
+
+        <Button
+            android:id="@+id/updateGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update Gender" />
+
+        <Button
+            android:id="@+id/updateCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="update City" />
+
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:background="@color/colorPrimary"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </FrameLayout>
