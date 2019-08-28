@@ -1,21 +1,15 @@
 package com.uncc.inclass01.ui.chatroom;
 
 import android.content.Context;
-import android.view.View;
+
+import com.uncc.inclass01.AppConstant;
+import com.uncc.inclass01.R;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
-
-import com.uncc.inclass01.AppConstant;
-import com.uncc.inclass01.R;
-import com.uncc.inclass01.ui.chatroom.Chat;
-import com.uncc.inclass01.ui.chatroom.ChatUsers;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * A [FragmentPagerAdapter] that returns a fragment corresponding to
@@ -26,17 +20,19 @@ public class ChatroomPagerAdapter extends FragmentPagerAdapter {
     private final Context mContext;
     @StringRes
     private static final int[] TAB_TITLES = new int[]{R.string.tab_chatroom, R.string.tab_chat_users};
+    String chatroomId;
 
-    public ChatroomPagerAdapter(Context context, FragmentManager fm) {
+    public ChatroomPagerAdapter(Context context, FragmentManager fm, String chatroomId) {
         super(fm);
         mContext = context;
+        this.chatroomId = chatroomId;
     }
 
     @Override
     public Fragment getItem(int position) {
         switch (position) {
             case 0: return Chat.newInstance(AppConstant.CHAT);
-                case 1: return ChatUsers.newInstance(AppConstant.CHAT_USERS);
+            case 1: return ChatUsers.newInstance(chatroomId);
         }
         return null;
     }
