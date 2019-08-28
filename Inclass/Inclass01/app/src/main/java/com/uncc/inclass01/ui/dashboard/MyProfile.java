@@ -242,7 +242,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         this.userProfile = userProfileData;
         updateFirstName.setText("First Name: "+userProfileData.getFirstName());
         updateLastName.setText("Last Name: "+userProfileData.getLastName());
-        updateGender.setText("Gander: "+userProfileData.getGender());
+        updateGender.setText("Gender: "+userProfileData.getGender());
         updateCity.setText("City: "+userProfileData.getCity());
     }
 

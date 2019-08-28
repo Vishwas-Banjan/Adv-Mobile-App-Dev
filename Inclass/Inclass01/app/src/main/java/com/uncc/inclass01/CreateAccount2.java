@@ -143,6 +143,7 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
                                     new UploadProfilePic().execute();
                                 }
                                 startActivity(new Intent(CreateAccount2.this, Dashboard.class));
+                                finish();
                             }else{
                                 createAccountExceptionHandling(task);
                             }

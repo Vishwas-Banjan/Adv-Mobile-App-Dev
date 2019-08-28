@@ -46,6 +46,7 @@ public class CreateAccount extends AppCompatActivity {
                     goToCreateAccount2.putExtra("password", password);
 
                     startActivity(goToCreateAccount2);
+                    finish();
                 }
             }
         });
