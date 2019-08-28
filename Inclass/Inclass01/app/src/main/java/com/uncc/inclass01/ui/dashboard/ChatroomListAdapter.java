@@ -6,7 +6,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.uncc.inclass01.R;
-
+import com.uncc.inclass01.utilities.Chatroom;
 
 import java.util.List;
 
@@ -54,7 +54,7 @@ public class ChatroomListAdapter extends RecyclerView.Adapter<ChatroomListAdapte
             mView = itemView;
 
             nameTV = mView.findViewById(R.id.userName);
-            joinTV = mView.findViewById(R.id.joinChat);
+            joinTV = mView.findViewById(R.id.viewProfile);
 
             joinTV.setOnClickListener(new View.OnClickListener() {
                 @Override

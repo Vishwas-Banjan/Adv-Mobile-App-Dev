@@ -3,6 +3,12 @@ package com.uncc.inclass01.ui.dashboard;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.TextUtils;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.tabs.TabLayout;
@@ -10,15 +16,11 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.R;
+import com.uncc.inclass01.utilities.Auth;
+import com.uncc.inclass01.utilities.Chatroom;
 
-import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.app.AppCompatActivity;
-
-import android.text.TextUtils;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
+import androidx.viewpager.widget.ViewPager;
 
 public class Dashboard extends AppCompatActivity {
 
@@ -41,71 +43,15 @@ public class Dashboard extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
-        FloatingActionButton fab = findViewById(R.id.fab);
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        ImageView logout = findViewById(R.id.logout);
+        logout.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                LayoutInflater li = LayoutInflater.from(Dashboard.this);
-                View promptsView = li.inflate(R.layout.create_new, null);
-
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(Dashboard.this);
-                alertDialogBuilder.setMessage("Add new chatroom");
-                alertDialogBuilder.setPositiveButton("ADD", null);
-                alertDialogBuilder.setNegativeButton("CANCEL", null);
-                alertDialogBuilder.setView(promptsView);
-
-                final EditText chatrommName = promptsView.findViewById(R.id.chatroomName);
-
-                final AlertDialog alertDialog = alertDialogBuilder.create();
-
-                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
-                    @Override
-                    public void onShow(final DialogInterface dialog) {
-                        Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
-                        positiveButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                if (!validateForm(chatrommName)) {
-                                    return;
-                                }
-                                addChatroom(chatrommName.getText().toString());
-                                dialog.dismiss();
-                            }
-                        });
-
-                        Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
-                        negativeButton.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                dialog.dismiss();
-                            }
-                        });
-                    }
-                });
-
-                alertDialog.show();
+            public void onClick(View v) {
+                new Auth().signOutUser();
+                finish();
             }
         });
-    }
-
-    private boolean validateForm(EditText chatroomNameET) {
-        boolean valid = true;
-        String chatroomName = chatroomNameET.getText().toString();
-
-        if (TextUtils.isEmpty(chatroomName)) {
-            chatroomNameET.setError("Required.");
-            valid = false;
-        } else {
-            chatroomNameET.setError(null);
-        }
-        return valid;
-    }
-
-    private void addChatroom(String name) {
-        Chatroom chatroom = new Chatroom();
-        chatroom.setName(name);
-        mRootRef.push().setValue(chatroom);
     }
 
 }

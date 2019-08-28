@@ -1,18 +1,17 @@
 package com.uncc.inclass01.ui.dashboard;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,8 +19,15 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.R;
+import com.uncc.inclass01.utilities.Chatroom;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 
 /**
@@ -78,6 +84,71 @@ public class ChatroomList extends Fragment implements ChatroomAsyncTask {
         recyclerView.setAdapter(chatroomListAdapter);
 
         initChatroomList();
+
+        FloatingActionButton fab = getView().findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                LayoutInflater li = LayoutInflater.from(getActivity());
+                View promptsView = li.inflate(R.layout.create_new, null);
+
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+                alertDialogBuilder.setMessage("Add new chatroom");
+                alertDialogBuilder.setPositiveButton("ADD", null);
+                alertDialogBuilder.setNegativeButton("CANCEL", null);
+                alertDialogBuilder.setView(promptsView);
+
+                final EditText chatrommName = promptsView.findViewById(R.id.chatroomName);
+
+                final AlertDialog alertDialog = alertDialogBuilder.create();
+
+                alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                    @Override
+                    public void onShow(final DialogInterface dialog) {
+                        Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                        positiveButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                if (!validateForm(chatrommName)) {
+                                    return;
+                                }
+                                addChatroom(chatrommName.getText().toString());
+                                dialog.dismiss();
+                            }
+                        });
+
+                        Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                        negativeButton.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                dialog.dismiss();
+                            }
+                        });
+                    }
+                });
+
+                alertDialog.show();
+            }
+        });
+    }
+
+    private boolean validateForm(EditText chatroomNameET) {
+        boolean valid = true;
+        String chatroomName = chatroomNameET.getText().toString();
+
+        if (TextUtils.isEmpty(chatroomName)) {
+            chatroomNameET.setError("Required.");
+            valid = false;
+        } else {
+            chatroomNameET.setError(null);
+        }
+        return valid;
+    }
+
+    private void addChatroom(String name) {
+        Chatroom chatroom = new Chatroom();
+        chatroom.setName(name);
+        mRootRef.push().setValue(chatroom);
     }
 
     private void initChatroomList() {

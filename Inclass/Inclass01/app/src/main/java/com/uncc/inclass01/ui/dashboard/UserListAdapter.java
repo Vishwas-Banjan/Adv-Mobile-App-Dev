@@ -3,10 +3,11 @@ package com.uncc.inclass01.ui.dashboard;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.uncc.inclass01.R;
-
+import com.uncc.inclass01.utilities.User;
 
 import java.util.List;
 
@@ -15,11 +16,13 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
 
-    List<String> userList;
+    List<User> userList;
+    UserAsyncTask asyncTask;
 
 
-    public UserListAdapter(List<String> userList) {
+    public UserListAdapter(List<User> userList, UserAsyncTask asyncTask) {
         this.userList = userList;
+        this.asyncTask = asyncTask;
     }
 
     @NonNull
@@ -31,8 +34,11 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String name = userList.get(position);
+        User profile = userList.get(position);
+        String name = profile.getFirstName() + " " + profile.getLastName();
         holder.nameTV.setText(name);
+
+        asyncTask.renderPhoto(profile.getPhoto(), holder.photo);
     }
 
     @Override
@@ -44,6 +50,8 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
         View mView;
         TextView nameTV;
+        TextView viewTV;
+        ImageView photo;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -51,6 +59,21 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
             mView = itemView;
 
             nameTV = mView.findViewById(R.id.userName);
+
+            photo = mView.findViewById(R.id.userImage);
+
+            viewTV = mView.findViewById(R.id.viewProfile);
+
+            viewTV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int p = getLayoutPosition();
+                    User userProfile = userList.get(p);
+                    asyncTask.viewDetails(userProfile);
+
+
+                }
+            });
         }
     }
 

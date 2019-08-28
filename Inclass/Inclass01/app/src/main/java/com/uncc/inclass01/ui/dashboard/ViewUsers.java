@@ -1,20 +1,38 @@
 package com.uncc.inclass01.ui.dashboard;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.uncc.inclass01.AppConstant;
+import com.uncc.inclass01.GlideApp;
+import com.uncc.inclass01.R;
+import com.uncc.inclass01.utilities.User;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-
-import com.uncc.inclass01.R;
-
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
@@ -22,11 +40,12 @@ import java.util.List;
  * Use the {@link ViewUsers#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ViewUsers extends Fragment {
+public class ViewUsers extends Fragment implements UserAsyncTask {
 
     RecyclerView recyclerView;
-    List<String> userList;
+    List<User> userList;
     UserListAdapter userListAdapter;
+    DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
 
     public ViewUsers() {
         // Required empty public constructor
@@ -61,7 +80,7 @@ public class ViewUsers extends Fragment {
         super.onActivityCreated(savedInstanceState);
 
         userList = new ArrayList<>();
-        userListAdapter = new UserListAdapter(userList);
+        userListAdapter = new UserListAdapter(userList, this);
 
         RecyclerView recyclerView = getView().findViewById(R.id.userRV);
         recyclerView.setHasFixedSize(true);
@@ -73,6 +92,96 @@ public class ViewUsers extends Fragment {
 
     private void initUserList() {
 
-       userList.add("Khoi");
+        mRootRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    displayUserList(dataSnapshot);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void displayUserList(DataSnapshot dataSnapshot) {
+        userList.clear();
+        for (DataSnapshot child : dataSnapshot.getChildren()) {
+            User userProfile = child.getValue(User.class);
+            userList.add(userProfile);
+        }
+        userListAdapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public void viewDetails(User userProfile) {
+        LayoutInflater li = LayoutInflater.from(this.getActivity());
+        View promptsView = li.inflate(R.layout.user_profile, null);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
+        alertDialogBuilder.setMessage("User Profile");
+        alertDialogBuilder.setNegativeButton("CLOSE", null);
+        alertDialogBuilder.setView(promptsView);
+
+        TextView firstName = promptsView.findViewById(R.id.firstNameTV);
+        firstName.setText(userProfile.getFirstName());
+        TextView lastName = promptsView.findViewById(R.id.lastNameTV);
+        lastName.setText(userProfile.getLastName());
+        TextView email = promptsView.findViewById(R.id.emailTV);
+        email.setText(userProfile.getEmail());
+        TextView gender = promptsView.findViewById(R.id.genderTV);
+        gender.setText(userProfile.getGender());
+        TextView city = promptsView.findViewById(R.id.cityTV);
+        city.setText(userProfile.getCity());
+
+
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+
+                Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    @Override
+    public void renderPhoto(String link, final ImageView iv) {
+
+        StorageReference storageRef = FirebaseStorage.getInstance().getReference();
+        StorageReference dateRef = storageRef.child(link);
+        dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
+            @Override
+            public void onSuccess(Uri downloadUrl)
+            {
+                GlideApp.with(getActivity())
+                        .load(downloadUrl)
+                        .into(iv);
+            }
+
+
+
+
+        }).addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                GlideApp.with(getActivity())
+                        .load("https://www.freeiconspng.com/uploads/no-image-icon-11.PNG")
+                        .into(iv);
+            }
+        });
     }
 }
