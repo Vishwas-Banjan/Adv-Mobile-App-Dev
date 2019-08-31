@@ -29,7 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.uncc.inclass01.ui.dashboard.Dashboard;
 import com.uncc.inclass01.utilities.Auth;
-import com.uncc.inclass01.utilities.User;
+import com.uncc.inclass01.utilities.UserProfile;
 
 import java.io.ByteArrayOutputStream;
 
@@ -130,10 +130,10 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
                     lastName = signupLastName.getText().toString();
                     gender = signupGender.isChecked()? "male": "female";
                     city = signupCity.getText().toString();
-                    User user = new User(firstName, lastName, email, gender, city);
+                    UserProfile userProfile = new UserProfile(firstName, lastName, email, gender, city);
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
                     DatabaseReference userDbRef = database.getReference("userProfiles").child(new Auth().getCurrentUserID());
-                    userDbRef.setValue(user).addOnCompleteListener(new OnCompleteListener<Void>() {
+                    userDbRef.setValue(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){

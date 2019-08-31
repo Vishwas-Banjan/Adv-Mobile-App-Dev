@@ -10,7 +10,6 @@ import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.R;
 import com.uncc.inclass01.utilities.Auth;
 import com.uncc.inclass01.utilities.Message;
-import com.uncc.inclass01.utilities.User;
 
 import org.ocpsoft.prettytime.PrettyTime;
 
@@ -18,6 +17,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -55,7 +55,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         asyncTask.renderDetails(message.getUserId(), holder.nameTV, holder.imageView);
     }
 
-    private String getNumLikes(List<String> list) {
+    private String getNumLikes(Map<String, String> list) {
         return (list != null && list.size() > 0) ? new Integer(list.size()).toString() : "";
     }
 
@@ -89,6 +89,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         TextView numLikesTV;
         ImageView imageView;
         ImageView trashCan;
+        ImageView likesIV;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -100,6 +101,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             postedTimeTV = mView.findViewById(R.id.postedTime);
             numLikesTV = mView.findViewById(R.id.numLikes);
             imageView = mView.findViewById(R.id.userImage);
+            likesIV = mView.findViewById(R.id.likes);
             trashCan = mView.findViewById(R.id.trash);
 
             trashCan.setOnClickListener(new View.OnClickListener() {
@@ -107,6 +109,34 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 public void onClick(View v) {
                     int p = getLayoutPosition();
                     asyncTask.deleteMessage(p, messageList.get(p).getId());
+                }
+            });
+
+            likesIV.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int p = getLayoutPosition();
+                    Message mesg = messageList.get(p);
+                    String key = null;
+                    if ((key = hasLiked(userId, mesg)) != null) {
+                        asyncTask.unlikeMessage(p, mesg.getId(), key);
+                    } else {
+                        asyncTask.likeMessage(mesg.getId(), userId);
+                    }
+                }
+
+                private String hasLiked(String userId, Message mesg) {
+                    if (mesg.getUserLiking() == null || mesg.getUserLiking().size() == 0) {
+                        return null;
+                    } else {
+                        Map<String, String> map = mesg.getUserLiking();
+                        for (String key : mesg.getUserLiking().keySet()) {
+                            if (map.get(key).equals(userId)) {
+                                return key;
+                            }
+                        }
+                        return null;
+                    }
                 }
             });
         }

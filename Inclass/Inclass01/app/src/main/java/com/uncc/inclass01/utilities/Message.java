@@ -1,7 +1,7 @@
 package com.uncc.inclass01.utilities;
 
-import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class Message {
 
@@ -9,7 +9,7 @@ public class Message {
     String postedAt;
     String id;
     String userId;
-    List<String> userLiking;
+    Map<String, String> userLiking;
 
     public Message() {
     }
@@ -46,11 +46,11 @@ public class Message {
         this.userId = userId;
     }
 
-    public List<String> getUserLiking() {
+    public Map<String, String> getUserLiking() {
         return userLiking;
     }
 
-    public void setUserLiking(List<String> userLiking) {
+    public void setUserLiking(Map<String, String> userLiking) {
         this.userLiking = userLiking;
     }
 }

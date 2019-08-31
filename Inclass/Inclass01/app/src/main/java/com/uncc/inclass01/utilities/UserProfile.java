@@ -2,14 +2,14 @@ package com.uncc.inclass01.utilities;
 
 import android.util.Log;
 
-public class User {
+public class UserProfile {
     private String firstName, lastName, email, gender, city;
 
-    public User(){
+    public UserProfile(){
 
     }
 
-    public User(String firstName, String lastName, String email, String gender, String city) {
+    public UserProfile(String firstName, String lastName, String email, String gender, String city) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

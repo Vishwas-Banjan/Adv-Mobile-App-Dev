@@ -22,11 +22,9 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.GlideApp;
 import com.uncc.inclass01.R;
-import com.uncc.inclass01.ui.dashboard.ChatroomListAdapter;
 import com.uncc.inclass01.utilities.Auth;
-import com.uncc.inclass01.utilities.Chatroom;
 import com.uncc.inclass01.utilities.Message;
-import com.uncc.inclass01.utilities.User;
+import com.uncc.inclass01.utilities.UserProfile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -165,15 +163,24 @@ public class Chat extends Fragment implements MessageAsyncTask {
     }
 
     @Override
-    public void deleteMessage(int idx, String messageId) {
-        mRootRef.child(messageId).removeValue();
-        messageList.remove(idx);
-        messageListAdapter.notifyDataSetChanged();
+    public void deleteMessage(final int idx, String messageId) {
+        mRootRef.child(messageId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                messageList.remove(idx);
+                messageListAdapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override
-    public void likeMessage(String id, String userId) {
+    public void likeMessage(String messageId, String userId) {
+        mRootRef.child(messageId).child(AppConstant.USER_LIKING).push().setValue(userId);
+    }
 
+    @Override
+    public void unlikeMessage(int idx, String messageId, String key) {
+        mRootRef.child(messageId).child(AppConstant.USER_LIKING).child(key).removeValue();
     }
 
     @Override
@@ -195,15 +202,15 @@ public class Chat extends Fragment implements MessageAsyncTask {
     }
 
     private void setUserInfo(DataSnapshot dataSnapshot, String userId, TextView nameTV, ImageView photo) {
-        User user = new User();
+        UserProfile userProfile = new UserProfile();
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             if (child.getKey().equals(userId)) {
-                user = child.getValue(User.class);
+                userProfile = child.getValue(UserProfile.class);
                 break;
             }
         }
-        nameTV.setText(user.getFirstName() + " " + user.getLastName());
-        renderPhoto(user.getPhoto(), photo);
+        nameTV.setText(userProfile.getFirstName() + " " + userProfile.getLastName());
+        renderPhoto(userProfile.getPhoto(), photo);
     }
 
     public void renderPhoto(String link, final ImageView iv) {

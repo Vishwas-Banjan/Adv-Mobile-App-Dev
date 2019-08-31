@@ -46,7 +46,7 @@ public class Chatroom extends AppCompatActivity {
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
-        // addToChatroom();
+        addToChatroom();
     }
 
     private void addToChatroom() {
@@ -62,7 +62,7 @@ public class Chatroom extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                // removeFromChatroom();
+                removeFromChatroom();
                 finish();
                 return true;
         }

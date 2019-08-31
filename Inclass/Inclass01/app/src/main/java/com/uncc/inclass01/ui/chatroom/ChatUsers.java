@@ -20,7 +20,7 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.GlideApp;
 import com.uncc.inclass01.R;
-import com.uncc.inclass01.utilities.User;
+import com.uncc.inclass01.utilities.UserProfile;
 
 import java.util.ArrayList;
 
@@ -141,15 +141,15 @@ public class ChatUsers extends Fragment implements ChatUserAsyncTask {
     }
 
     private void setUserInfo(DataSnapshot dataSnapshot, String userId, TextView nameTV, ImageView photo) {
-        User user = new User();
+        UserProfile userProfile = new UserProfile();
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             if (child.getKey().equals(userId)) {
-                user = child.getValue(User.class);
+                userProfile = child.getValue(UserProfile.class);
                 break;
             }
         }
-        nameTV.setText(user.getFirstName() + " " + user.getLastName());
-        renderPhoto(user.getPhoto(), photo);
+        nameTV.setText(userProfile.getFirstName() + " " + userProfile.getLastName());
+        renderPhoto(userProfile.getPhoto(), photo);
     }
 
     public void renderPhoto(String link, final ImageView iv) {
