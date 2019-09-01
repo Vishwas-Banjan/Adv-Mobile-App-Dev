@@ -7,7 +7,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.uncc.inclass01.R;
-import com.uncc.inclass01.utilities.User;
+import com.uncc.inclass01.utilities.UserProfile;
 
 import java.util.List;
 
@@ -16,12 +16,12 @@ import androidx.recyclerview.widget.RecyclerView;
 
 public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHolder> {
 
-    List<User> userList;
+    List<UserProfile> userProfileList;
     UserAsyncTask asyncTask;
 
 
-    public UserListAdapter(List<User> userList, UserAsyncTask asyncTask) {
-        this.userList = userList;
+    public UserListAdapter(List<UserProfile> userProfileList, UserAsyncTask asyncTask) {
+        this.userProfileList = userProfileList;
         this.asyncTask = asyncTask;
     }
 
@@ -34,7 +34,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        User profile = userList.get(position);
+        UserProfile profile = userProfileList.get(position);
         String name = profile.getFirstName() + " " + profile.getLastName();
         holder.nameTV.setText(name);
 
@@ -43,7 +43,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
 
     @Override
     public int getItemCount() {
-        return userList.size();
+        return userProfileList.size();
     }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
@@ -68,7 +68,7 @@ public class UserListAdapter extends RecyclerView.Adapter<UserListAdapter.ViewHo
                 @Override
                 public void onClick(View v) {
                     int p = getLayoutPosition();
-                    User userProfile = userList.get(p);
+                    UserProfile userProfile = userProfileList.get(p);
                     asyncTask.viewDetails(userProfile);
 
 

@@ -44,7 +44,7 @@ import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 import com.uncc.inclass01.R;
 import com.uncc.inclass01.utilities.Auth;
-import com.uncc.inclass01.utilities.User;
+import com.uncc.inclass01.utilities.UserProfile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -74,7 +74,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
     private Button updateGender;
     private Button updateCity;
     private ProgressBar progressBar;
-    private User userProfile;
+    private UserProfile userProfile;
     private FirebaseDatabase database;
     private DatabaseReference myRef;
     private final int CAMERA_PERMISSION_CODE = 1, CAMERA_CODE = 20;
@@ -183,12 +183,12 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                         // This method is called once with the initial value and again
                         // whenever data at this location is updated.
-                        User userProfileData = dataSnapshot.getValue(User.class);
+                        UserProfile userProfileProfileData = dataSnapshot.getValue(UserProfile.class);
 
                         Log.w(TAG, dataSnapshot.getValue().toString());
-                        if (userProfileData.getEmail() != null) {
-//                            Log.d(TAG, "Value is: " + userProfileData);
-                            handleMyUI(userProfileData);
+                        if (userProfileProfileData.getEmail() != null) {
+//                            Log.d(TAG, "Value is: " + userProfileProfileData);
+                            handleMyUI(userProfileProfileData);
                         }else{
                             errorFlag = true;
                             Log.w(TAG, "Failed to read value.");
@@ -234,14 +234,14 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         Toast.makeText(getContext(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
     }
 
-    private void handleMyUI(User userProfileData){
+    private void handleMyUI(UserProfile userProfileProfileData){
         // hide progressbar
         progressBar.setVisibility(ProgressBar.INVISIBLE);
-        this.userProfile = userProfileData;
-        updateFirstName.setText("First Name: "+userProfileData.getFirstName());
-        updateLastName.setText("Last Name: "+userProfileData.getLastName());
-        updateGender.setText("Gender: "+userProfileData.getGender());
-        updateCity.setText("City: "+userProfileData.getCity());
+        this.userProfile = userProfileProfileData;
+        updateFirstName.setText("First Name: "+ userProfileProfileData.getFirstName());
+        updateLastName.setText("Last Name: "+ userProfileProfileData.getLastName());
+        updateGender.setText("Gender: "+ userProfileProfileData.getGender());
+        updateCity.setText("City: "+ userProfileProfileData.getCity());
     }
 
     private void handleMyImage(Bitmap profileImage){

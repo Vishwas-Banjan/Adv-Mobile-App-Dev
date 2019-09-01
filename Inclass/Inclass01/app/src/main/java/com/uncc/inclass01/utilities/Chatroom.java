@@ -4,6 +4,15 @@ public class Chatroom {
 
     String id;
     String name;
+    Message messages;
+
+    public Message getMessages() {
+        return messages;
+    }
+
+    public void setMessages(Message messages) {
+        this.messages = messages;
+    }
 
     public String getId() {
         return id;

@@ -31,7 +31,7 @@ public class ChatroomPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         switch (position) {
-            case 0: return Chat.newInstance(AppConstant.CHAT);
+            case 0: return Chat.newInstance(chatroomId);
             case 1: return ChatUsers.newInstance(chatroomId);
         }
         return null;

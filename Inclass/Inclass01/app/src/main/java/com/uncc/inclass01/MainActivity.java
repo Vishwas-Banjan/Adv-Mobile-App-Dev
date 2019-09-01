@@ -29,9 +29,4 @@ public class MainActivity extends AppCompatActivity {
         Auth auth = new Auth();
         redirectOnAuth(auth.getAuthStatus());
     }
-
-    private void startActivity(int code, Class<?> cls) {
-        Intent i = new Intent(MainActivity.this, cls);
-        startActivityForResult(i, code);
-    }
 }

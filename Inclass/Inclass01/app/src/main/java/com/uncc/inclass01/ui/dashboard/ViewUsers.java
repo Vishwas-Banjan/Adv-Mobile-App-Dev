@@ -23,7 +23,7 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.GlideApp;
 import com.uncc.inclass01.R;
-import com.uncc.inclass01.utilities.User;
+import com.uncc.inclass01.utilities.UserProfile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +43,7 @@ import androidx.recyclerview.widget.RecyclerView;
 public class ViewUsers extends Fragment implements UserAsyncTask {
 
     RecyclerView recyclerView;
-    List<User> userList;
+    List<UserProfile> userProfileList;
     UserListAdapter userListAdapter;
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
 
@@ -79,8 +79,8 @@ public class ViewUsers extends Fragment implements UserAsyncTask {
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        userList = new ArrayList<>();
-        userListAdapter = new UserListAdapter(userList, this);
+        userProfileList = new ArrayList<>();
+        userListAdapter = new UserListAdapter(userProfileList, this);
 
         RecyclerView recyclerView = getView().findViewById(R.id.userRV);
         recyclerView.setHasFixedSize(true);
@@ -108,21 +108,21 @@ public class ViewUsers extends Fragment implements UserAsyncTask {
     }
 
     private void displayUserList(DataSnapshot dataSnapshot) {
-        userList.clear();
+        userProfileList.clear();
         for (DataSnapshot child : dataSnapshot.getChildren()) {
-            User userProfile = child.getValue(User.class);
-            userList.add(userProfile);
+            UserProfile userProfile = child.getValue(UserProfile.class);
+            userProfileList.add(userProfile);
         }
         userListAdapter.notifyDataSetChanged();
     }
 
     @Override
-    public void viewDetails(User userProfile) {
+    public void viewDetails(UserProfile userProfile) {
         LayoutInflater li = LayoutInflater.from(this.getActivity());
         View promptsView = li.inflate(R.layout.user_profile, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setMessage("User Profile");
+        alertDialogBuilder.setMessage("UserProfile Profile");
         alertDialogBuilder.setNegativeButton("CLOSE", null);
         alertDialogBuilder.setView(promptsView);
 

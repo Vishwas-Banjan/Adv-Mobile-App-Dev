@@ -32,4 +32,6 @@
     <string name="invalid_login">Please Input valid Password and Login Information</string>
     <string name="label_view">View</string>
     <string name="gender">Gender</string>
+    <string name="send_button">Send</string>
+    <string name="enter_message_hint">Enter message here</string>
 </resources>

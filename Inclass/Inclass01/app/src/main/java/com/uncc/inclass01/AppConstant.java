@@ -13,4 +13,7 @@ public class AppConstant {
     public static final String CHATROOM_ID = "id";
     public static final String CHATROOM_NAME = "name";
     public static final String CURR_USERS = "people";
+    public static final String MESSAGES = "messages";
+    public static final String TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String USER_LIKING = "userLiking";
 }

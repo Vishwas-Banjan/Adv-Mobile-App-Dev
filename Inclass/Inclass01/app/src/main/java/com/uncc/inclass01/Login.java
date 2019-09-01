@@ -69,6 +69,7 @@ public class Login extends AppCompatActivity {
                             if(task.isSuccessful()){
 //                                Log.d(TAG, "login successful: "+task.getException());
                                 Login.this.startActivity(new Intent(Login.this, Dashboard.class));
+                                finish();
                             }else{
                                 Snackbar.make( view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
                             }
