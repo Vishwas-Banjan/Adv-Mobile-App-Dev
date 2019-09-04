@@ -5,11 +5,11 @@ import java.util.Map;
 
 public class Message {
 
-    String text;
-    String postedAt;
-    String id;
-    String userId;
-    Map<String, String> userLiking;
+    private String text;
+    private String postedAt;
+    private String id;
+    private String userId;
+    private Map<String, String> userLiking;
 
     public Message() {
     }

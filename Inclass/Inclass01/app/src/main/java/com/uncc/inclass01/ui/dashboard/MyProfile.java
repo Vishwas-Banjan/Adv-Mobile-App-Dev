@@ -13,6 +13,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.text.InputType;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -48,6 +49,7 @@ import com.uncc.inclass01.utilities.UserProfile;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.util.zip.Inflater;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -79,7 +81,6 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
     private DatabaseReference myRef;
     private final int CAMERA_PERMISSION_CODE = 1, CAMERA_CODE = 20;
     private Bitmap profileImage, oldProfileImage;
-
 
 
     public MyProfile() {
@@ -155,28 +156,26 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         protected Void doInBackground(Void... params) {
             Auth auth = new Auth();
             try{
-                StorageReference mStorageRef = FirebaseStorage.getInstance().getReference(auth.getCurrentUserEmail().replace('.', '_') + ".jpeg");
-                final File localFile = File.createTempFile("profilePic", "jpeg");
+                    StorageReference mStorageRef = FirebaseStorage.getInstance().getReference(auth.getCurrentUserEmail().replace('.', '_') + ".jpeg");
+                    final File localFile = File.createTempFile("profilePic", "jpeg");
 
-                mStorageRef.getFile(localFile)
-                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                // Successfully downloaded data to local file
-                                profileImage = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                profilePicImg.setImageBitmap(profileImage);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle failed download
-                        profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_icons8_user_female_skin_type_4);
-                        profilePicImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_icons8_user_female_skin_type_4));
-//                        Toast.makeText(getActivity(), "Error: "+exception.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
-
-//                Log.d(TAG, "Taking information for: "+auth.getCurrentUserID());
+                    mStorageRef.getFile(localFile)
+                            .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    // Successfully downloaded data to local file
+                                    profileImage = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                    profilePicImg.setImageBitmap(profileImage);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle failed download
+                            profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_icons8_user_female_skin_type_4);
+                            profilePicImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_icons8_user_female_skin_type_4));
+                            // Toast.makeText(getActivity(), "Error: "+exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 // Read from the database
                 myRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -252,87 +251,78 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
     @Override
     public void onClick(final View view) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        final EditText input = new EditText(getContext());
-        input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
+        View inputDataDialog = getLayoutInflater().inflate(R.layout.fragment_ask_for_data, null, false);
+        final EditText input = inputDataDialog.findViewById(R.id.input);
         String title = "First Name";
         switch (view.getId()){
             case R.id.updateFirstName:{
                 title = "First Name";
-                Log.d(TAG, "firstName Btn success is clicked");
+//                Log.d(TAG, "firstName Btn success is clicked");
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
                 input.setHint(userProfile.getFirstName());
-                builder.setView(input);
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        Log.d(TAG, "firstName Btn success is clicked");
+//                        Log.d(TAG, "firstName Btn success is clicked");
                         updateData("firstName",input.getText().toString());
+                        dialog.cancel();
                     }
                 });
                 break;
             }
             case R.id.updateLastName:{
                 title = "Last Name";
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
                 input.setHint(userProfile.getLastName());
-                builder.setView(input);
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         updateData("lastName",input.getText().toString());
+                        dialog.cancel();
                     }
                 });
                 break;
             }
             case R.id.updateGender:{
                 title = "Gender";
-                final Switch genderSwitch = new Switch(getContext());
-                final TextView femaleText = new TextView(getContext());
-                femaleText.setText(R.string.female);
-                final TextView maleText = new TextView(getContext());
-                maleText.setText(R.string.male);
-                final LinearLayout linearLayout = new LinearLayout(getContext());
-                linearLayout.setOrientation(LinearLayout.HORIZONTAL);
-                linearLayout.setPadding(40, 0, 40, 0);
-                linearLayout.addView(femaleText);
-                linearLayout.addView(genderSwitch);
-                linearLayout.addView(maleText);
-                genderSwitch.setTextOn("Male");
-                genderSwitch.setTextOff("Female");
-                builder.setView(linearLayout);
+                inputDataDialog = getLayoutInflater().inflate(R.layout.fragment_input_gender, null, false);
+                final Switch genderInput = inputDataDialog.findViewById(R.id.gender);
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (genderSwitch.isChecked()){
+                        if (genderInput.isChecked()){
                             updateData("gender", "male");
                         }else{
                             updateData("gender", "female");
                         }
+                        dialog.cancel();
                     }
                 });
                 break;
             }
             case R.id.updateCity:{
                 title = "City";
+                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
                 input.setHint(userProfile.getCity());
-                builder.setView(input);
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         updateData("city",input.getText().toString());
+                        dialog.cancel();
                     }
                 });
                 break;
             }
             case R.id.updatePassword:{
                 title = "Set New Password";
-                input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
-                input.setHint("New Password");
-                builder.setView(input);
+                input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                input.setHint("Input New Password");
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         Auth auth = new Auth();
                         FirebaseUser user = auth.getCurrentUser();
-                        if (input.getText().toString().length()>6){
+                        if (input.getText().toString().length()>=6){
                             if (user != null) {
                                 user.updatePassword(input.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
@@ -355,7 +345,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
             case R.id.profile_pic:{
                 // upload new profile pic
                 clickPicForProfilePic();
-                break;
+                return;
             }
         }
 
@@ -366,6 +356,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                 dialog.cancel();
             }
         });
+        builder.setView(inputDataDialog);
 
         builder.show();
     }
@@ -411,6 +402,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
             this.oldProfileImage = this.profileImage;
             profileImage = (Bitmap) data.getExtras().get("data");
             new UpdateProfilePic().execute();
+            handleMyImage(profileImage);
         }
     }
 
@@ -440,6 +432,9 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                 break;
             }
         }
+
+        String msg = "Your "+key+" is updated to "+value;
+        Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
     }
 
     public class UpdateProfilePic extends AsyncTask<String, Context, String> {
