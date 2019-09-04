@@ -89,7 +89,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                 // enter email
                 AlertDialog.Builder forgotPasswordDialog = new AlertDialog.Builder(this);
                 View forgotPassView = getLayoutInflater().inflate(R.layout.fragment_ask_for_data, null, false);
-                EditText input = forgotPassView.findViewById(R.id.input);
+                final EditText input = forgotPassView.findViewById(R.id.input);
                 forgotPasswordDialog.setTitle("Enter Your Email: ");
                 input.setHint("Email");
                 input.setInputType(InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS);
@@ -98,7 +98,7 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // forgotPassword
-                        Task resetPassword = mAuth.sendPasswordResetEmail(email);
+                        Task resetPassword = mAuth.sendPasswordResetEmail(input.getText().toString());
                         if (resetPassword.isSuccessful()){
                             Snackbar.make(view, "We've Sent you a mail to reset your password", Snackbar.LENGTH_LONG).show();
                         }else{
