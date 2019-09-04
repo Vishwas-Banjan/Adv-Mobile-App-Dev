@@ -18,6 +18,7 @@ public class MainActivity extends AppCompatActivity {
             i = new Intent(MainActivity.this, Login.class);
         }
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         this.startActivity(i);
     }
 

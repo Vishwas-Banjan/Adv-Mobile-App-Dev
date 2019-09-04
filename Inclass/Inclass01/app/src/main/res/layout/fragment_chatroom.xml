@@ -11,8 +11,11 @@ tools:context=".ui.dashboard.MyProfile">
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/messageRV"
+        android:paddingRight="8dp"
+        android:paddingLeft="8dp"
+        android:background="@color/backgroundColor"
         android:layout_width="match_parent"
-        android:layout_height="370dp"></androidx.recyclerview.widget.RecyclerView>
+        android:layout_height="370dp"/>
 
     <EditText
         android:id="@+id/messageET"
@@ -36,10 +39,13 @@ tools:context=".ui.dashboard.MyProfile">
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/messageRV"
+        android:background="@drawable/button_background"
         android:layout_marginLeft="7dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="15dp"
         android:layout_toRightOf="@+id/messageET"
-        android:text="@string/send_button" />
+        android:text="@string/send_button"
+        android:layout_marginStart="7dp"
+        android:layout_toEndOf="@+id/messageET" />
 
 
 </RelativeLayout>

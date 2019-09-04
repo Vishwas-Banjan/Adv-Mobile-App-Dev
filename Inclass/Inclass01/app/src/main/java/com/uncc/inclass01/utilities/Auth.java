@@ -2,6 +2,10 @@ package com.uncc.inclass01.utilities;
 
 import android.util.Log;
 
+import androidx.annotation.NonNull;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -32,8 +36,6 @@ public class Auth {
     public String getCurrentUserEmail(){
         return  currentUser.getEmail();
     }
-
-
 
     public boolean signOutUser(){
         try{

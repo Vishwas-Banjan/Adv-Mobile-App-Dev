@@ -1,19 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardMaxElevation="1dp"
-    card_view:cardElevation="1dp">
+    card_view:cardBackgroundColor="@color/backgroundColor"
+    card_view:cardElevation="1dp"
+    card_view:cardMaxElevation="1dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/card_border"
-        android:padding="16dp">
+        android:layout_margin="8dp"
+        android:padding="8dp"
+        android:background="@drawable/card_border">
 
         <ImageView
             android:id="@+id/userImage"
@@ -27,10 +28,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="15dp"
             android:layout_marginLeft="15dp"
-            android:textStyle="bold"
             android:layout_toEndOf="@+id/userImage"
             android:layout_toRightOf="@+id/userImage"
-            android:text="TextView" />
+            android:text="TextView"
+            android:textStyle="bold" />
 
         <TextView
             android:id="@+id/text"
@@ -50,18 +51,19 @@
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:layout_below="@+id/text"
-            android:layout_marginLeft="220dp"
+            android:layout_marginLeft="200dp"
             android:layout_marginTop="15dp"
             android:layout_toEndOf="@+id/postedTime"
             android:layout_toRightOf="@+id/postedTime"
-            card_view:srcCompat="@mipmap/ic_likes" />
+            card_view:srcCompat="@drawable/ic_like_thumb_up"
+            tools:ignore="VectorDrawableCompat" />
 
         <TextView
             android:id="@+id/numLikes"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/text"
-            android:layout_marginLeft="1dp"
+            android:layout_marginLeft="8dp"
             android:layout_marginTop="20dp"
             android:layout_toRightOf="@+id/likes"
             android:text="TextView" />
@@ -70,8 +72,8 @@
             android:id="@+id/trash"
             android:layout_width="30dp"
             android:layout_height="35dp"
-            android:layout_marginTop="-7dp"
             android:layout_alignParentRight="true"
+            android:layout_marginTop="-7dp"
             android:layout_marginRight="10dp"
             card_view:srcCompat="@mipmap/ic_trash" />
 
