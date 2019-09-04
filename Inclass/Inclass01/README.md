@@ -1,1 +1,1 @@
-[Wiki page](https://github.com/kxbui/ITCS5280-FA2019/wiki/Simple-Chat-Application)
+[Wiki page](https://github.com/kxbui/ITCS5280-FA2019/wiki/ChitChat-(Chat-application))
