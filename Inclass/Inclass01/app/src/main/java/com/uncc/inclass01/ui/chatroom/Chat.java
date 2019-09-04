@@ -167,8 +167,8 @@ public class Chat extends Fragment implements MessageAsyncTask {
         mRootRef.child(messageId).removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                messageList.remove(idx);
-                messageListAdapter.notifyDataSetChanged();
+                // messageList.remove(idx);
+                // messageListAdapter.notifyDataSetChanged();
             }
         });
     }
