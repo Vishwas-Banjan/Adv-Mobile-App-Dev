@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.dashboard.MyProfile">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="8dp"
+        android:paddingRight="8dp"
+        android:orientation="vertical">
+
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="180dp"
+            android:background="@color/backgroundColor">
+
+
+            <ImageView
+                android:layout_width="160dp"
+                android:layout_height="150dp"
+                android:layout_gravity="center"
+                android:background="@color/backgroundColor"
+                android:id="@+id/profile_pic"
+                android:contentDescription="@string/profile_image">
+            </ImageView>
+
+        </FrameLayout>
+
+        <Button
+            android:id="@+id/updatePassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/profile_button_bottom_margin"
+            android:background="@drawable/button_background"
+            android:text="@string/update_password" />
+
+        <Button
+            android:id="@+id/updateFirstName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/profile_button_bottom_margin"
+            android:background="@drawable/button_background"
+            android:text="@string/update_first_name" />
+
+        <Button
+            android:id="@+id/updateLastName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/profile_button_bottom_margin"
+            android:background="@drawable/button_background"
+            android:text="@string/update_last_name" />
+
+        <Button
+            android:id="@+id/updateGender"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/profile_button_bottom_margin"
+            android:background="@drawable/button_background"
+            android:text="@string/update_gender" />
+
+        <Button
+            android:id="@+id/updateCity"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/profile_button_bottom_margin"
+            android:background="@drawable/button_background"
+            android:text="@string/update_city" />
+
+
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyle"
+        android:background="@color/backgroundColor"
+        android:visibility="visible"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
