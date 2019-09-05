@@ -63,4 +63,4 @@ A simple chat app for android devices.
 
 <img src="https://github.com/kxbui/ITCS5280-FA2019/blob/finalVersion/Inclass/Inclass01%20Resources/7.%20Chat%20Room%20User%20Screen.png?raw=true" width="200" height="400" />
 
-## For more details please visit [Wiki page](https://github.com/kxbui/ITCS5280-FA2019/wiki/Simple-Chat-Application)
+## For more details please visit [Wiki page](https://github.com/kxbui/ITCS5280-FA2019/wiki/ChitChat-(Chat-application))
