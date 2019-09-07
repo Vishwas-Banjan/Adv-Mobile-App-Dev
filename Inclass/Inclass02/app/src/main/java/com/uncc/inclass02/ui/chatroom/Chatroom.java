@@ -1,17 +1,25 @@
 package com.uncc.inclass02.ui.chatroom;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.ride.RequestRide;
+import com.uncc.inclass02.ui.ride.SelectDriver;
 import com.uncc.inclass02.utilities.Auth;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.MenuItemCompat;
 import androidx.viewpager.widget.ViewPager;
 
 public class Chatroom extends AppCompatActivity {
@@ -21,6 +29,8 @@ public class Chatroom extends AppCompatActivity {
     String chatroomId;
     DatabaseReference mRootRef;
     String key;
+    TextView badge;
+    ImageView notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,13 +69,56 @@ public class Chatroom extends AppCompatActivity {
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_chatroom, menu);
+
+        final MenuItem menuItem = menu.findItem(R.id.action_cart);
+
+        View actionView = menuItem.getActionView();
+
+        actionView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                onOptionsItemSelected(menuItem);
+            }
+        });
+
+        badge = actionView.findViewById(R.id.notif_badge);
+        badge.setVisibility(View.INVISIBLE);
+
+        notification = actionView.findViewById(R.id.notif);
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToSelectDriver();
+            }
+        });
+
+        return true;
+    }
+
+    @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                removeFromChatroom();
                 finish();
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void goToSelectDriver() {
+        startActivity(AppConstant.SELECT_DRIVER_CODE, SelectDriver.class);
+    }
+
+    private void startActivity(int code, Class<?> cls) {
+        Intent i = new Intent(Chatroom.this, cls);
+        startActivityForResult(i, code);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        removeFromChatroom();
     }
 }

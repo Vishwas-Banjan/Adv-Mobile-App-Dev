@@ -2,6 +2,8 @@ package com.uncc.inclass02.utilities;
 
 import android.util.Log;
 
+import com.google.firebase.database.Exclude;
+
 public class UserProfile {
     private String firstName, lastName, email, gender, city;
 
@@ -61,6 +63,7 @@ public class UserProfile {
         this.city = city;
     }
 
+    @Exclude
     public String getPhoto() {
         return this.email.replace('.','_')+".jpeg";
     }

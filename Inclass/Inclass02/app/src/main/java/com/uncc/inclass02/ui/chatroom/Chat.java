@@ -1,5 +1,6 @@
 package com.uncc.inclass02.ui.chatroom;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -22,8 +23,11 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.GlideApp;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.ride.RequestRide;
 import com.uncc.inclass02.utilities.Auth;
+import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
+import com.uncc.inclass02.utilities.Place;
 import com.uncc.inclass02.utilities.UserProfile;
 
 import java.text.SimpleDateFormat;
@@ -51,6 +55,7 @@ public class Chat extends Fragment implements MessageAsyncTask {
     MessageListAdapter messageListAdapter;
     DatabaseReference mRootRef;
     DatabaseReference mUserRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
+    DatabaseReference mRideRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY);
     EditText messageET;
 
     public Chat() {
@@ -114,6 +119,31 @@ public class Chat extends Fragment implements MessageAsyncTask {
                 }
             }
         });
+
+        getView().findViewById(R.id.requestRideBtn).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(AppConstant.REQUEST_RIDE_CODE, RequestRide.class);
+            }
+        });
+
+        getView().findViewById(R.id.addDriver).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DatabaseReference mDriverRef = mRideRef.child(new Auth().getCurrentUserID()).child("-LoCQJkiBM4r1m5PCd_P").child(AppConstant.DRIVER_DB_KEY);
+                Driver driver = new Driver();
+                driver.setFirstName("Driver");
+                driver.setLastName("User");
+                driver.setEmail(new Auth().getCurrentUserEmail());
+                driver.setCurrLoc(new Place(65.97030582, -18.53972591));
+                mDriverRef.child(new Auth().getCurrentUserID()).setValue(driver);
+            }
+        });
+    }
+
+    private void startActivity(int code, Class<?> cls) {
+        Intent i = new Intent(getActivity(), cls);
+        startActivityForResult(i, code);
     }
 
     private void sendMessage(String mesg) {
@@ -121,6 +151,7 @@ public class Chat extends Fragment implements MessageAsyncTask {
         message.setText(mesg);
         message.setUserId(new Auth().getCurrentUserID());
         message.setPostedAt(getCurrTime());
+        message.setType(AppConstant.TEXT_TYPE);
         mRootRef.push().setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
