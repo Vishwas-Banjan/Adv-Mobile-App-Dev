@@ -202,15 +202,17 @@ public class Chat extends Fragment implements MessageAsyncTask {
     }
 
     private void setUserInfo(DataSnapshot dataSnapshot, String userId, TextView nameTV, ImageView photo) {
-        UserProfile userProfile = new UserProfile();
+        UserProfile userProfile = null;
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             if (child.getKey().equals(userId)) {
                 userProfile = child.getValue(UserProfile.class);
                 break;
             }
         }
-        nameTV.setText(userProfile.getFirstName() + " " + userProfile.getLastName());
-        renderPhoto(userProfile.getPhoto(), photo);
+        if (userProfile != null) {
+            nameTV.setText(userProfile.getFirstName() + " " + userProfile.getLastName());
+            renderPhoto(userProfile.getPhoto(), photo);
+        }
     }
 
     public void renderPhoto(String link, final ImageView iv) {
