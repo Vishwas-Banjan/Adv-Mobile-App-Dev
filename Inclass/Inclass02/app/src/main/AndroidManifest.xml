@@ -9,13 +9,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".ui.ride.ViewTrip"></activity>
+        <activity android:name=".ui.ride.TripMap" />
+        <activity android:name=".ui.ride.SelectDriver" />
+        <activity android:name=".ui.ride.SendLocation" />
+        <activity android:name=".ui.ride.RequestRide" />
         <activity
             android:name=".ui.dashboard.Dashboard"
             android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".ui.chatroom.Chatroom" />
-        <activity android:name=".CreateAccount2" android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".CreateAccount" android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CreateAccount2"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".CreateAccount"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".Login"
             android:label="@string/title_activity_login"
@@ -31,8 +40,10 @@
             </intent-filter>
         </activity>
     </application>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>
-    <uses-feature android:name="android.hardware.camera"></uses-feature>
+
+    <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>
