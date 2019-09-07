@@ -6,4 +6,19 @@
     android:layout_height="match_parent"
     tools:context=".ui.ride.SelectDriver">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/driverRV"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/backgroundColor"
+            android:padding="8dp" />
+    </RelativeLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

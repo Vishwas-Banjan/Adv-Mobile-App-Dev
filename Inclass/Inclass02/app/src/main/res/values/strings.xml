@@ -40,4 +40,11 @@
     <string name="update_first_name">Update First Name</string>
     <string name="update_password">Update Password</string>
     <string name="profile_image">profile image</string>
+    <string name="title_activity_request_ride">Request Ride</string>
+    <string name="submit_request">Submit Request</string>
+    <string name="search">Search</string>
+    <string name="Pickup_loc">Pickup Location</string>
+    <string name="dropoff_loc">Dropoff Location</string>
+    <string name="select">Select</string>
+    <string name="badge_new">New</string>
 </resources>

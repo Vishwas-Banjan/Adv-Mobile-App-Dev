@@ -9,8 +9,17 @@ public class Message {
     private String id;
     private String userId;
     private Map<String, String> userLiking;
+    private String type;
 
     public Message() {
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 
     public String getText() {

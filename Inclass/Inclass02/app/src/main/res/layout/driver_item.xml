@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/task_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    card_view:cardElevation="1dp"
+    card_view:cardMaxElevation="1dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/card_border"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/userName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginStart="38dp"
+            android:layout_marginLeft="38dp"
+            android:layout_marginTop="15dp"
+            android:layout_toEndOf="@+id/userImage"
+            android:layout_toRightOf="@+id/userImage"
+            android:text="TextView" />
+
+        <TextView
+            android:id="@+id/selectDriver"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="33dp"
+            android:layout_marginRight="33dp"
+            android:background="@drawable/button_background_no_margin"
+            android:text="@string/select"
+            android:textColor="@color/textColor" />
+
+        <ImageView
+            android:id="@+id/userImage"
+            android:layout_width="75dp"
+            android:layout_height="53dp"
+            tools:srcCompat="@tools:sample/avatars[0]"
+            android:contentDescription="@string/profile_image" />
+    </RelativeLayout>
+
+</androidx.cardview.widget.CardView>
