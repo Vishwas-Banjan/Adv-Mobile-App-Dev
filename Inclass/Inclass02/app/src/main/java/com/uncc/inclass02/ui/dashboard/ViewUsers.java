@@ -122,7 +122,7 @@ public class ViewUsers extends Fragment implements UserAsyncTask {
         View promptsView = li.inflate(R.layout.user_profile, null);
 
         AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-        alertDialogBuilder.setMessage("UserProfile Profile");
+        alertDialogBuilder.setTitle("User Profile");
         alertDialogBuilder.setNegativeButton("CLOSE", null);
         alertDialogBuilder.setView(promptsView);
 

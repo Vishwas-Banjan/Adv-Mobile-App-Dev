@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-android:layout_width="match_parent"
-android:layout_height="match_parent"
-android:paddingLeft="16dp"
-android:paddingRight="16dp" >
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp" >
 
     <TextView
         android:id="@+id/textView6"
@@ -54,7 +54,7 @@ android:paddingRight="16dp" >
         android:layout_height="wrap_content"
         android:layout_below="@+id/lastNameTV"
         android:layout_marginLeft="70dp"
-        android:layout_marginTop="22dp"
+        android:layout_marginTop="20dp"
         android:layout_toRightOf="@+id/textView8"
         android:text="TextView" />
 
@@ -73,7 +73,7 @@ android:paddingRight="16dp" >
         android:layout_height="wrap_content"
         android:layout_below="@+id/emailTV"
         android:layout_marginLeft="58dp"
-        android:layout_marginTop="21dp"
+        android:layout_marginTop="20dp"
         android:layout_toRightOf="@+id/textView9"
         android:text="TextView" />
 
@@ -92,7 +92,7 @@ android:paddingRight="16dp" >
         android:layout_height="wrap_content"
         android:layout_below="@+id/genderTV"
         android:layout_marginLeft="81dp"
-        android:layout_marginTop="17dp"
+        android:layout_marginTop="20dp"
         android:layout_toRightOf="@+id/textView10"
         android:text="TextView" />
 
