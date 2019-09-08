@@ -48,7 +48,7 @@ import java.util.Date;
  * Use the {@link Chat#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Chat extends Fragment implements MessageAsyncTask {
+public class Chat extends Fragment implements MessageAsyncTask, View.OnClickListener {
 
     ViewPager viewPager;
     RecyclerView recyclerView;
@@ -104,22 +104,12 @@ public class Chat extends Fragment implements MessageAsyncTask {
         messageListAdapter = new MessageListAdapter(messageList, this);
 
         recyclerView = getView().findViewById(R.id.messageRV);
-        addMoreBtn = getView().findViewById(R.id.addMore);
+        addMoreBtn = getView().findViewById(R.id.add_more_btn);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(messageListAdapter);
 
         initMessageList();
-
-        addMoreBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // do the bottom sheet
-                AddMoreBottomDialog ambd = new AddMoreBottomDialog();
-                assert getFragmentManager() != null;
-                ambd.show(getFragmentManager(), ambd.getTag());
-            }
-        });
 
         messageET = getView().findViewById(R.id.messageET);
         Button send = getView().findViewById(R.id.sendButton);
@@ -130,13 +120,6 @@ public class Chat extends Fragment implements MessageAsyncTask {
                 if (!mesg.isEmpty()) {
                     sendMessage(mesg);
                 }
-            }
-        });
-
-        getView().findViewById(R.id.requestRideBtn).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(AppConstant.REQUEST_RIDE_CODE, RequestRide.class);
             }
         });
 
@@ -284,5 +267,19 @@ public class Chat extends Fragment implements MessageAsyncTask {
                         .into(iv);
             }
         });
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.add_more_btn:{
+                // do the bottom sheet
+                AddMoreBottomDialog ambd = new AddMoreBottomDialog();
+                assert getFragmentManager() != null;
+                ambd.show(getFragmentManager(), ambd.getTag());
+                break;
+            }
+        }
     }
 }
