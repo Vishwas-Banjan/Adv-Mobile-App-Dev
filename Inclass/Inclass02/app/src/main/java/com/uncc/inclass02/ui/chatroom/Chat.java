@@ -48,7 +48,7 @@ import java.util.Date;
  * Use the {@link Chat#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Chat extends Fragment implements MessageAsyncTask, View.OnClickListener {
+public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, View.OnClickListener {
 
     ViewPager viewPager;
     RecyclerView recyclerView;
@@ -249,7 +249,7 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
         switch (view.getId()){
             case R.id.add_more_btn:{
                 // do the bottom sheet
-                AddMoreBottomDialog ambd = AddMoreBottomDialog.newInstance();
+                AddMoreBottomDialog ambd = AddMoreBottomDialog.newInstance(this);
                 assert getFragmentManager() != null;
                 ambd.show(getFragmentManager(), ambd.getTag());
                 break;
@@ -262,5 +262,10 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
                 break;
             }
         }
+    }
+
+    @Override
+    public void setText(String text) {
+        messageET.setText(text);
     }
 }

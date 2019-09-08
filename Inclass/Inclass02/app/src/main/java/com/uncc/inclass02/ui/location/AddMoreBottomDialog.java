@@ -1,6 +1,7 @@
 package com.uncc.inclass02.ui.location;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Dialog;
 import android.content.Intent;
 import android.os.Bundle;
@@ -14,14 +15,18 @@ import androidx.annotation.Nullable;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.chatroom.PlaceAsyncTask;
 import com.uncc.inclass02.ui.ride.RequestRide;
 
 public class AddMoreBottomDialog extends BottomSheetDialogFragment implements View.OnClickListener{
+    static PlaceAsyncTask asyncTask;
+
     public AddMoreBottomDialog() {
         super();
     }
 
-    public static AddMoreBottomDialog newInstance() {
+    public static AddMoreBottomDialog newInstance(PlaceAsyncTask task) {
+        asyncTask = task;
         return new AddMoreBottomDialog();
     }
 
@@ -45,6 +50,21 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
                 break;
             }
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch(requestCode) {
+            case (AppConstant.REQUEST_RIDE_CODE) : {
+                if (resultCode == Activity.RESULT_OK) {
+                    String returnValue = data.getStringExtra(AppConstant.RIDE_REQ_RESULT);
+                    asyncTask.setText(returnValue);
+                    dismiss();
+                }
+                break;
+            }
+        }
+
     }
 
     public void goToRequestRide(){

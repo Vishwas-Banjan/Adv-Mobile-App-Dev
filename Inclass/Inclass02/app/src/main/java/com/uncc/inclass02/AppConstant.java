@@ -7,6 +7,8 @@ public class AppConstant {
     public static final int CHATROOM_CODE = 400;
     public static final int REQUEST_RIDE_CODE = 500;
     public static final int SELECT_DRIVER_CODE = 600;
+    public static final int PICKUP_AUTOCOMPLETE = 700;
+    public static final int DROPOFF_AUTOCOMPLETE = 800;
     public static final String MY_PROFILE = "MY_PROFILE";
     public static final String CHAT = "CHAT";
     public static final String CHAT_USERS = "CHAT_USERS";
@@ -25,4 +27,5 @@ public class AppConstant {
     public static final String RIDE_REQ_TYPE = "RIDE_REQ";
     public static final String TRIP_COMPLETE = "complete";
     public static final String TRIP_ACTIVE = "active";
+    public static final String RIDE_REQ_RESULT = "RIDE_REQ_RESULT";
 }
