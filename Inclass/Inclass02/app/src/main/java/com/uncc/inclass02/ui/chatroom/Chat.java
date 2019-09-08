@@ -104,7 +104,6 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
         messageListAdapter = new MessageListAdapter(messageList, this);
 
         recyclerView = getView().findViewById(R.id.messageRV);
-        addMoreBtn = getView().findViewById(R.id.add_more_btn);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(messageListAdapter);
@@ -112,16 +111,9 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
         initMessageList();
 
         messageET = getView().findViewById(R.id.messageET);
-        Button send = getView().findViewById(R.id.sendButton);
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mesg = messageET.getText().toString();
-                if (!mesg.isEmpty()) {
-                    sendMessage(mesg);
-                }
-            }
-        });
+
+        getView().findViewById(R.id.add_more_btn).setOnClickListener(this);
+        getView().findViewById(R.id.sendButton).setOnClickListener(this);
 
         getView().findViewById(R.id.addDriver).setOnClickListener(new View.OnClickListener() {
             @Override
@@ -278,6 +270,13 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
                 AddMoreBottomDialog ambd = new AddMoreBottomDialog();
                 assert getFragmentManager() != null;
                 ambd.show(getFragmentManager(), ambd.getTag());
+                break;
+            }
+            case R.id.sendButton:{
+                String mesg = messageET.getText().toString();
+                if (!mesg.isEmpty()) {
+                    sendMessage(mesg);
+                }
                 break;
             }
         }
