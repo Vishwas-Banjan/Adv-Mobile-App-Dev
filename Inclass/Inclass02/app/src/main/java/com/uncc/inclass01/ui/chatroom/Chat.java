@@ -29,7 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.GlideApp;
 import com.uncc.inclass01.R;
-import com.uncc.inclass01.ui.AddMoreBottomDialog;
+import com.uncc.inclass01.ui.location.AddMoreBottomDialog;
 import com.uncc.inclass01.utilities.Auth;
 import com.uncc.inclass01.utilities.Message;
 import com.uncc.inclass01.utilities.UserProfile;

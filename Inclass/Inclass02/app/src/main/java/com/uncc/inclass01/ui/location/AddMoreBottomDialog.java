@@ -1,14 +1,15 @@
-package com.uncc.inclass01.ui;
+package com.uncc.inclass01.ui.location;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.uncc.inclass01.R;
 
-public class AddMoreBottomDialog extends BottomSheetDialogFragment {
+public class AddMoreBottomDialog extends BottomSheetDialogFragment implements View.OnClickListener{
     public AddMoreBottomDialog() {
         super();
     }
@@ -23,6 +24,26 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment {
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
         View addMoreDialogSheet = View.inflate(getContext(), R.layout.fragment_add_more_dialog, null);
+        dialog.findViewById(R.id.shareLocationBtn).setOnClickListener(this);
+        dialog.findViewById(R.id.askForRideBtn).setOnClickListener(this);
+
         dialog.setContentView(addMoreDialogSheet);
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.shareLocationBtn:{
+                break;
+            }
+            case R.id.askForRideBtn:{
+                askForLocationPermission();
+                break;
+            }
+        }
+    }
+
+    public void askForLocationPermission(){
+        // ask for permission
     }
 }
