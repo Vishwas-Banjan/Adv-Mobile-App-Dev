@@ -30,9 +30,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data
-            android:name="com.google.android.geo.AIzaSyBQ5-zwDQ4KuRLghiN_QSO28QyLhZ_L4d8"
-            android:value="AIzaSyBQ5-zwDQ4KuRLghiN_QSO28QyLhZ_L4d8"/>
     </application>
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"></uses-permission>
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"></uses-permission>

@@ -9,6 +9,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -44,7 +45,7 @@ import java.util.Date;
  * Use the {@link Chat#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Chat extends Fragment implements MessageAsyncTask {
+public class Chat extends Fragment implements MessageAsyncTask, View.OnClickListener{
 
     ViewPager viewPager;
     RecyclerView recyclerView;
@@ -97,37 +98,18 @@ public class Chat extends Fragment implements MessageAsyncTask {
 
         messageList = new ArrayList<>();
         messageListAdapter = new MessageListAdapter(messageList, this);
-
         recyclerView = getView().findViewById(R.id.messageRV);
-        addMoreBtn = getView().findViewById(R.id.addMore);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(messageListAdapter);
 
         initMessageList();
-
-        addMoreBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                // do the bottom sheet
-                AddMoreBottomDialog ambd = new AddMoreBottomDialog();
-                assert getFragmentManager() != null;
-                ambd.show(getFragmentManager(), ambd.getTag());
-            }
-        });
-
         messageET = getView().findViewById(R.id.messageET);
-        Button send = getView().findViewById(R.id.sendButton);
-        send.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String mesg = messageET.getText().toString();
-                if (!mesg.isEmpty()) {
-                    sendMessage(mesg);
-                }
-            }
-        });
+        getView().findViewById(R.id.add_more_btn).setOnClickListener(this);
+        getView().findViewById(R.id.sendButton).setOnClickListener(this);
     }
+
+
 
     private void sendMessage(String mesg) {
         Message message = new Message();
@@ -251,5 +233,24 @@ public class Chat extends Fragment implements MessageAsyncTask {
                         .into(iv);
             }
         });
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()){
+            case R.id.add_more_btn:{
+//                Toast.makeText(getContext(), "add more clicked", Toast.LENGTH_LONG).show();
+                AddMoreBottomDialog ambd = new AddMoreBottomDialog();
+                ambd.show(getFragmentManager(), ambd.getTag());
+                break;
+            }
+            case R.id.sendButton:{
+                String mesg = messageET.getText().toString();
+                if (!mesg.isEmpty()) {
+                    sendMessage(mesg);
+                }
+                break;
+            }
+        }
     }
 }
