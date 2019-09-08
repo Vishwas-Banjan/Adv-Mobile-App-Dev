@@ -5,6 +5,8 @@ import android.app.Dialog;
 import android.os.Bundle;
 import android.view.View;
 
+import androidx.annotation.NonNull;
+
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.uncc.inclass02.R;
 
@@ -13,6 +15,7 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
         super();
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return super.onCreateDialog(savedInstanceState);
@@ -23,8 +26,8 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
         View addMoreDialogSheet = View.inflate(getContext(), R.layout.fragment_add_more_dialog, null);
-        dialog.findViewById(R.id.shareLocationBtn).setOnClickListener(this);
-        dialog.findViewById(R.id.askForRideBtn).setOnClickListener(this);
+//        dialog.findViewById(R.id.shareLocationBtn).setOnClickListener(this);
+//        dialog.findViewById(R.id.askForRideBtn).setOnClickListener(this);
 
         dialog.setContentView(addMoreDialogSheet);
     }

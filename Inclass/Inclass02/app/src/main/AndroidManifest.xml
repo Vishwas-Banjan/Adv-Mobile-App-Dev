@@ -48,9 +48,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <meta-data
-            android:name="com.google.android.geo.AIzaSyBQ5-zwDQ4KuRLghiN_QSO28QyLhZ_L4d8"
-            android:value="AIzaSyBQ5-zwDQ4KuRLghiN_QSO28QyLhZ_L4d8"/>
     </application>
 
     <uses-feature android:name="android.hardware.camera" />
