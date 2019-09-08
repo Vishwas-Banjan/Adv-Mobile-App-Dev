@@ -21,6 +21,7 @@ public class Dashboard extends AppCompatActivity {
     DashboardPagerAdapter sectionsPagerAdapter;
     ViewPager viewPager;
     DatabaseReference mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.CHATROOM_DB_KEY);
+    private final int[] TAB_ICONS = new int[]{R.drawable.ic_chat, R.drawable.ic_edit_profile, R.drawable.ic_user};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +34,9 @@ public class Dashboard extends AppCompatActivity {
 
         TabLayout tabs = findViewById(R.id.tabs);
         tabs.setupWithViewPager(viewPager);
-
+        tabs.getTabAt(0).setIcon(TAB_ICONS[0]);
+        tabs.getTabAt(1).setIcon(TAB_ICONS[1]);
+        tabs.getTabAt(2).setIcon(TAB_ICONS[2]);
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 

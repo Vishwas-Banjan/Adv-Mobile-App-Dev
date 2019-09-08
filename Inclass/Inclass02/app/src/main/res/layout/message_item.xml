@@ -1,91 +1,95 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    card_view:cardBackgroundColor="@color/backgroundColor"
-    card_view:cardElevation="1dp"
-    card_view:cardMaxElevation="1dp">
+    android:background="@drawable/button_background"
+    android:layout_margin="4dp"
+    android:orientation="vertical">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:padding="8dp"
-        android:background="@drawable/card_border">
-
+        android:weightSum="4"
+        android:orientation="horizontal">
         <ImageView
             android:id="@+id/userImage"
             android:layout_width="75dp"
-            android:layout_height="53dp"
+            android:layout_height="75dp"
             tools:srcCompat="@tools:sample/avatars[0]" />
 
-        <TextView
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="15dp"
-            android:layout_marginLeft="15dp"
-            android:layout_toEndOf="@+id/userImage"
-            android:layout_toRightOf="@+id/userImage"
-            android:text="TextView"
-            android:textStyle="bold" />
+            android:layout_weight="4"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:orientation="vertical">
+            <TextView
+                android:id="@+id/userName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView"
+                android:textStyle="bold" />
 
-        <TextView
-            android:id="@+id/text"
-            android:layout_width="210dp"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/userName"
-            android:layout_alignParentTop="true"
-            android:layout_marginStart="13dp"
-            android:layout_marginLeft="13dp"
-            android:layout_marginTop="25dp"
-            android:layout_toEndOf="@+id/userImage"
-            android:layout_toRightOf="@+id/userImage"
-            android:text="TextView" />
-
-        <ImageView
-            android:id="@+id/likes"
-            android:layout_width="30dp"
-            android:layout_height="30dp"
-            android:layout_below="@+id/text"
-            android:layout_marginLeft="200dp"
-            android:layout_marginTop="15dp"
-            android:layout_toEndOf="@+id/postedTime"
-            android:layout_toRightOf="@+id/postedTime"
-            card_view:srcCompat="@drawable/ic_like_thumb_up"
-            tools:ignore="VectorDrawableCompat" />
-
-        <TextView
-            android:id="@+id/numLikes"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/text"
-            android:layout_marginLeft="8dp"
-            android:layout_marginTop="20dp"
-            android:layout_toRightOf="@+id/likes"
-            android:text="TextView" />
-
+            <TextView
+                android:id="@+id/text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TextView" />
+        </LinearLayout>
         <ImageView
             android:id="@+id/trash"
             android:layout_width="30dp"
             android:layout_height="35dp"
-            android:layout_alignParentRight="true"
-            android:layout_marginTop="-7dp"
-            android:layout_marginRight="10dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
             card_view:srcCompat="@mipmap/ic_trash" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center|center_horizontal"
+        android:gravity="fill_horizontal"
+        android:orientation="horizontal"
+        android:weightSum="3">
 
         <TextView
             android:id="@+id/postedTime"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="3"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:text="@string/app_name"
+            android:gravity="center_vertical"
+            android:textSize="10sp" />
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/userImage"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="15dp"
-            android:text="TextView"
-            android:textSize="10dp" />
-    </RelativeLayout>
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
-</androidx.cardview.widget.CardView>
+            <TextView
+                android:id="@+id/numLikes"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:text="@string/app_name" />
+
+            <ImageView
+                android:id="@+id/likes"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:contentDescription="Like Message"
+                card_view:srcCompat="@drawable/ic_like_thumb_up"
+                tools:ignore="VectorDrawableCompat" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+</LinearLayout>

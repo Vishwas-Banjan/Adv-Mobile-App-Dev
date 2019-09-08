@@ -52,6 +52,7 @@ public class Chat extends Fragment implements MessageAsyncTask {
     DatabaseReference mRootRef;
     DatabaseReference mUserRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
     EditText messageET;
+    private Button addMoreBtn;
 
     public Chat() {
         // Required empty public constructor
@@ -97,11 +98,22 @@ public class Chat extends Fragment implements MessageAsyncTask {
         messageListAdapter = new MessageListAdapter(messageList, this);
 
         recyclerView = getView().findViewById(R.id.messageRV);
+        addMoreBtn = getView().findViewById(R.id.addMoreBtn);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(messageListAdapter);
 
         initMessageList();
+
+        addMoreBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // do the bottom sheet
+                AddMoreBottomDialog ambd = new AddMoreBottomDialog();
+                assert getFragmentManager() != null;
+                ambd.show(getFragmentManager(), ambd.getTag());
+            }
+        });
 
         messageET = getView().findViewById(R.id.messageET);
         Button send = getView().findViewById(R.id.sendButton);
