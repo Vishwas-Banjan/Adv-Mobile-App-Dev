@@ -6,16 +6,10 @@
     android:layout_height="match_parent"
     app:behavior_hideable="true"
     app:behavior_peekHeight="200dp"
+    android:background="@color/backgroundColor"
     android:padding="16dp"
     android:id="@+id/add_more_bottom_sheet"
     app:layout_behavior="@string/bottom_sheet_behavior">
-
-        <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Close"
-            android:id="@+id/closeBottomDialog"
-            android:background="@drawable/button_background"/>
 
         <Button
             android:layout_width="match_parent"

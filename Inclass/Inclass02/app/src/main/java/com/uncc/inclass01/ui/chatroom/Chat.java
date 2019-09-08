@@ -10,6 +10,13 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -22,6 +29,7 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass01.AppConstant;
 import com.uncc.inclass01.GlideApp;
 import com.uncc.inclass01.R;
+import com.uncc.inclass01.ui.AddMoreBottomDialog;
 import com.uncc.inclass01.utilities.Auth;
 import com.uncc.inclass01.utilities.Message;
 import com.uncc.inclass01.utilities.UserProfile;
@@ -29,13 +37,6 @@ import com.uncc.inclass01.utilities.UserProfile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 
 /**
@@ -98,7 +99,7 @@ public class Chat extends Fragment implements MessageAsyncTask {
         messageListAdapter = new MessageListAdapter(messageList, this);
 
         recyclerView = getView().findViewById(R.id.messageRV);
-        addMoreBtn = getView().findViewById(R.id.addMoreBtn);
+        addMoreBtn = getView().findViewById(R.id.addMore);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.setAdapter(messageListAdapter);
