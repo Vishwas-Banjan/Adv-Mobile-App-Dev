@@ -2,10 +2,14 @@ package com.uncc.inclass02.ui.location;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.uncc.inclass02.AppConstant;
@@ -17,23 +21,17 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
         super();
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
+    public static AddMoreBottomDialog newInstance() {
+        return new AddMoreBottomDialog();
     }
 
-    @SuppressLint("RestrictedApi")
+    @Nullable
     @Override
-    public void setupDialog(Dialog dialog, int style) {
-        super.setupDialog(dialog, style);
-        View addMoreDialogSheet = View.inflate(getContext(), R.layout.fragment_add_more_dialog, null);
-//        dialog.findViewById(R.id.shareLocationBtn).setOnClickListener(this);
-//        dialog.findViewById(R.id.askForRideBtn).setOnClickListener(this);
-
-//        startActivity(AppConstant.REQUEST_RIDE_CODE, RequestRide.class);
-
-        dialog.setContentView(addMoreDialogSheet);
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.fragment_add_more_dialog, container,
+                false);
+        view.findViewById(R.id.askForRideBtn).setOnClickListener(this);
+        return view;
     }
 
     @Override
@@ -43,13 +41,18 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
                 break;
             }
             case R.id.askForRideBtn:{
-                askForLocationPermission();
+                goToRequestRide();
                 break;
             }
         }
     }
 
-    public void askForLocationPermission(){
-        // ask for permission
+    public void goToRequestRide(){
+        startActivity(AppConstant.REQUEST_RIDE_CODE, RequestRide.class);
+    }
+
+    private void startActivity(int code, Class<?> cls) {
+        Intent i = new Intent(getActivity(), cls);
+        startActivityForResult(i, code);
     }
 }

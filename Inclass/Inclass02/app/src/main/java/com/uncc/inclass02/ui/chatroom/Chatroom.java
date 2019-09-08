@@ -60,9 +60,8 @@ public class Chatroom extends AppCompatActivity {
     }
 
     private void addToChatroom() {
-        String uid = new Auth().getCurrentUserID();
-        if (!mRootRef.child(uid).getKey().toString().equals(uid))
-            mRootRef.child(uid).setValue(uid);
+        key = mRootRef.push().getKey();
+        mRootRef.child(key).setValue(new Auth().getCurrentUserID());
     }
 
     private void removeFromChatroom() {
