@@ -119,24 +119,6 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
 
         getView().findViewById(R.id.add_more_btn).setOnClickListener(this);
         getView().findViewById(R.id.sendButton).setOnClickListener(this);
-
-        getView().findViewById(R.id.addDriver).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                DatabaseReference mDriverRef = mRideRef.child(new Auth().getCurrentUserID()).child("-LoCQJkiBM4r1m5PCd_P").child(AppConstant.DRIVER_DB_KEY);
-                Driver driver = new Driver();
-                driver.setFirstName("Driver");
-                driver.setLastName("User");
-                driver.setEmail(new Auth().getCurrentUserEmail());
-                driver.setCurrLoc(new Place(65.97030582, -18.53972591));
-                mDriverRef.child(new Auth().getCurrentUserID()).setValue(driver);
-            }
-        });
-    }
-
-    private void startActivity(int code, Class<?> cls) {
-        Intent i = new Intent(getActivity(), cls);
-        startActivityForResult(i, code);
     }
 
     private void sendMessage(String mesg) {

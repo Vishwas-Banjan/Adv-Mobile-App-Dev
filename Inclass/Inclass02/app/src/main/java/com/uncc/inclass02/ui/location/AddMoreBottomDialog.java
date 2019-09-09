@@ -7,7 +7,9 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -26,13 +28,11 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
         super();
     }
 
-    @NonNull
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-        return super.onCreateDialog(savedInstanceState);
+    public static AddMoreBottomDialog newInstance() {
+        return new AddMoreBottomDialog();
     }
 
-    @SuppressLint("RestrictedApi")
+    @Nullable
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);

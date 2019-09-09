@@ -26,17 +26,19 @@
             android:orientation="horizontal"
             android:weightSum="7">
 
-            <Button
+            <TextView
                 android:id="@+id/add_more_btn"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@drawable/button_background"
+                android:paddingLeft="5dp"
+                android:paddingRight="5dp"
+                android:textSize="50dp"
                 android:text="+" />
 
             <EditText
                 android:id="@+id/messageET"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_weight="7"
                 android:background="@drawable/edit_text_background"
                 android:ems="10"
@@ -46,22 +48,17 @@
                 android:maxLines="6"
                 android:minLines="2"
                 android:padding="5dp"
+                android:layout_marginBottom="20dp"
                 android:scrollbars="vertical" />
 
             <Button
                 android:id="@+id/sendButton"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
+                android:layout_marginBottom="20dp"
                 android:background="@drawable/button_background"
                 android:text="@string/send_button" />
         </LinearLayout>
-
-        <Button
-            android:id="@+id/addDriver"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/requestRideBtn"
-            android:text="Button" />
     </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
