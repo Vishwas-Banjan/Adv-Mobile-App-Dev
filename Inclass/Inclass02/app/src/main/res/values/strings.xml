@@ -47,4 +47,5 @@
     <string name="dropoff_loc">Dropoff Location</string>
     <string name="select">Select</string>
     <string name="badge_new">New</string>
+    <string name="title_activity_ride_route">Ride Route</string>
 </resources>

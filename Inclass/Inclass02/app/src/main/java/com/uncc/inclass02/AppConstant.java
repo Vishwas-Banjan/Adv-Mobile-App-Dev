@@ -25,4 +25,5 @@ public class AppConstant {
     public static final String RIDE_REQ_TYPE = "RIDE_REQ";
     public static final String TRIP_COMPLETE = "complete";
     public static final String TRIP_ACTIVE = "active";
+    public static final String DIRECTION_URL = "https://maps.googleapis.com/maps/api/directions/json?";
 }

@@ -1,7 +1,11 @@
 package com.uncc.inclass02.ui.chatroom;
 
+import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -20,6 +25,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,7 +36,6 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.GlideApp;
 import com.uncc.inclass02.R;
-import com.uncc.inclass02.ui.ride.RequestRide;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
@@ -41,6 +46,7 @@ import com.uncc.inclass02.ui.location.AddMoreBottomDialog;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Objects;
 
 
 /**
@@ -58,7 +64,6 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
     DatabaseReference mUserRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
     DatabaseReference mRideRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY);
     EditText messageET;
-    private Button addMoreBtn;
 
     public Chat() {
         // Required empty public constructor
@@ -249,8 +254,7 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
         switch (view.getId()){
             case R.id.add_more_btn:{
                 // do the bottom sheet
-                AddMoreBottomDialog ambd = AddMoreBottomDialog.newInstance();
-                assert getFragmentManager() != null;
+                AddMoreBottomDialog ambd = new AddMoreBottomDialog();
                 ambd.show(getFragmentManager(), ambd.getTag());
                 break;
             }
