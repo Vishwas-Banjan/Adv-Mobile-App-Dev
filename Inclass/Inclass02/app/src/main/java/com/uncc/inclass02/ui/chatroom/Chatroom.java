@@ -9,13 +9,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.ride.RequestRide;
 import com.uncc.inclass02.ui.ride.SelectDriver;
 import com.uncc.inclass02.utilities.Auth;
+import com.uncc.inclass02.utilities.Driver;
+import com.uncc.inclass02.utilities.Message;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -32,7 +37,8 @@ public class Chatroom extends AppCompatActivity {
     TextView badge;
     ImageView notification;
     String tripId = AppConstant.WRONG_TRIP_ID;
-    DatabaseReference mDriverRef;
+    DatabaseReference mTripRef;
+    ValueEventListener valueListener;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +65,8 @@ public class Chatroom extends AppCompatActivity {
         tabs.addOnTabSelectedListener(new TabLayout.ViewPagerOnTabSelectedListener(viewPager));
 
         addToChatroom();
+
+        mTripRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID());
     }
 
     private void addToChatroom() {
@@ -92,6 +100,7 @@ public class Chatroom extends AppCompatActivity {
         notification.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                badge.setVisibility(View.INVISIBLE);
                 goToSelectDriver();
             }
         });
@@ -111,7 +120,35 @@ public class Chatroom extends AppCompatActivity {
 
     public void setTripId(String id) {
         this.tripId = id;
-        
+        if (id != null) {
+            setDriverListener();
+        } else {
+            mTripRef.removeEventListener(valueListener);
+        }
+    }
+
+    private void setDriverListener() {
+        mTripRef.child(this.tripId).child(AppConstant.DRIVER_DB_KEY);
+        valueListener = mTripRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (DataSnapshot child : dataSnapshot.getChildren()) {
+                        Driver driver = child.getValue(Driver.class);
+                        if (!driver.isSeen()) {
+                            notification.setVisibility(View.VISIBLE);
+                            return;
+                        }
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
     }
 
     private void goToSelectDriver() {

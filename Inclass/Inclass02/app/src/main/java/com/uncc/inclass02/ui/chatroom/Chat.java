@@ -305,8 +305,8 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     }
 
     @Override
-    public void setText(String text) {
-        messageET.setText(text);
+    public void setCurrLocation(String text) {
+        sendMessage(text, AppConstant.LOC_REQ_TYPE, null);
     }
 
     @Override

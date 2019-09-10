@@ -5,6 +5,15 @@ import com.google.firebase.database.Exclude;
 public class Driver extends UserProfile {
     Place currLoc;
     String id;
+    boolean seen;
+
+    public boolean isSeen() {
+        return seen;
+    }
+
+    public void setSeen(boolean seen) {
+        this.seen = seen;
+    }
 
     @Exclude
     public String getId() {
