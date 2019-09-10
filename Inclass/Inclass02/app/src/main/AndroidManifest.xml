@@ -8,7 +8,9 @@
          location permissions for the 'MyLocation' functionality.
     -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -40,7 +42,8 @@
             android:label="@string/title_activity_ride_route"></activity>
         <activity android:name=".ui.ride.ViewTrip" />
         <activity android:name=".ui.ride.TripMap" />
-        <activity android:name=".ui.ride.SelectDriver" />
+        <activity android:name=".ui.ride.SelectDriver"
+            android:label="@string/title_activity_select_driver"/>
         <activity android:name=".ui.ride.SendLocation" />
         <activity
             android:name=".ui.ride.RequestRide"

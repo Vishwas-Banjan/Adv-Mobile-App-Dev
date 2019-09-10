@@ -9,7 +9,9 @@ import androidx.viewpager.widget.ViewPager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -35,6 +37,9 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
     ArrayList<Driver> driverList;
     SelectDriverListAdapter driverListAdapter;
     DatabaseReference mRootRef;
+    String chatroomId;
+    String tripId;
+    TextView message;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +48,13 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child("-LoCQJkiBM4r1m5PCd_P").child(AppConstant.DRIVER_DB_KEY);
+        Bundle b = getIntent().getExtras();
+        if(b != null) {
+            chatroomId = b.getString(AppConstant.CHATROOM_ID);
+            tripId = b.getString(AppConstant.TRIP_ID);
+        }
+
+        mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child(tripId).child(AppConstant.DRIVER_DB_KEY);
 
         driverList = new ArrayList<>();
         driverListAdapter = new SelectDriverListAdapter(driverList, this);
@@ -54,6 +65,8 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         recyclerView.setAdapter(driverListAdapter);
 
         initDriverList();
+
+        message = findViewById(R.id.trip_mesg);
     }
 
     @Override
@@ -88,6 +101,12 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             Driver driver = child.getValue(Driver.class);
             driverList.add(driver);
+        }
+        if (driverList.size() == 0) {
+            String text = getResources().getString(R.string.no_driver);
+            message.setText(text);
+        } else {
+            message.setVisibility(View.GONE);
         }
         driverListAdapter.notifyDataSetChanged();
     }

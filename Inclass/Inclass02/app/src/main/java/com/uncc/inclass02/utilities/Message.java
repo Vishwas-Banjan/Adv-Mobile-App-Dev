@@ -8,10 +8,28 @@ public class Message {
     private String postedAt;
     private String id;
     private String userId;
+    private String recipientId;
     private Map<String, String> userLiking;
     private String type;
+    private String tripId;
 
     public Message() {
+    }
+
+    public String getTripId() {
+        return tripId;
+    }
+
+    public void setTripId(String tripId) {
+        this.tripId = tripId;
+    }
+
+    public String getRecipientId() {
+        return recipientId;
+    }
+
+    public void setRecipientId(String recipientId) {
+        this.recipientId = recipientId;
     }
 
     public String getType() {

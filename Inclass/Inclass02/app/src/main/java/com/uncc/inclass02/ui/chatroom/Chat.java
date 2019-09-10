@@ -54,7 +54,7 @@ import java.util.Objects;
  * Use the {@link Chat#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class Chat extends Fragment implements MessageAsyncTask, View.OnClickListener {
+public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, View.OnClickListener {
 
     ViewPager viewPager;
     RecyclerView recyclerView;
@@ -121,12 +121,13 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
         getView().findViewById(R.id.sendButton).setOnClickListener(this);
     }
 
-    private void sendMessage(String mesg) {
+    private void sendMessage(String mesg, String type, String tripId) {
         Message message = new Message();
         message.setText(mesg);
         message.setUserId(new Auth().getCurrentUserID());
         message.setPostedAt(getCurrTime());
-        message.setType(AppConstant.TEXT_TYPE);
+        message.setType(type);
+        message.setTripId(tripId);
         mRootRef.push().setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -145,9 +146,11 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
         mRootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                messageList.clear();
                 if (dataSnapshot.exists()) {
                     displayMessageList(dataSnapshot);
                 }
+                messageListAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -158,14 +161,12 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
     }
 
     private void displayMessageList(DataSnapshot dataSnapshot) {
-        messageList.clear();
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             Message message = child.getValue(Message.class);
             message.setId(child.getKey());
             messageList.add(message);
         }
         recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-        messageListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -190,8 +191,52 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
     }
 
     @Override
+    public void acceptReq(final String userId, final String driverId, final String tripId) {
+        if (userId.equals(driverId)) {
+            return; // rider cannot be driver
+        }
+        DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY).child(driverId);
+        mUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    UserProfile driver = getUserInfo(dataSnapshot);
+                    addDriver(userId, driverId, driver, tripId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void addDriver(String userId, String driverId, UserProfile driverInfo, String tripId) {
+        DatabaseReference mDriverRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(userId).child(tripId).child(AppConstant.DRIVER_DB_KEY).child(driverId);
+        mDriverRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.add_driver_success, Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.invalid_location, Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mDriverRef.setValue(driverInfo);
+    }
+
+    public UserProfile getUserInfo(DataSnapshot dataSnapshot) {
+        return dataSnapshot.getValue(UserProfile.class);
+    }
+
+    @Override
     public void renderDetails(final String userId, final TextView nameTV, final ImageView photo) {
-        DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
+        DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY).child(userId);
         mUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -208,13 +253,7 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
     }
 
     private void setUserInfo(DataSnapshot dataSnapshot, String userId, TextView nameTV, ImageView photo) {
-        UserProfile userProfile = null;
-        for (DataSnapshot child : dataSnapshot.getChildren()) {
-            if (child.getKey().equals(userId)) {
-                userProfile = child.getValue(UserProfile.class);
-                break;
-            }
-        }
+        UserProfile userProfile = getUserInfo(dataSnapshot);
         if (userProfile != null) {
             nameTV.setText(userProfile.getFirstName() + " " + userProfile.getLastName());
             renderPhoto(userProfile.getPhoto(), photo);
@@ -254,17 +293,33 @@ public class Chat extends Fragment implements MessageAsyncTask, View.OnClickList
         switch (view.getId()){
             case R.id.add_more_btn:{
                 // do the bottom sheet
+<<<<<<< HEAD
                 AddMoreBottomDialog ambd = new AddMoreBottomDialog();
+=======
+                AddMoreBottomDialog ambd = AddMoreBottomDialog.newInstance(this);
+                assert getFragmentManager() != null;
+>>>>>>> master
                 ambd.show(getFragmentManager(), ambd.getTag());
                 break;
             }
             case R.id.sendButton:{
                 String mesg = messageET.getText().toString();
                 if (!mesg.isEmpty()) {
-                    sendMessage(mesg);
+                    sendMessage(mesg, AppConstant.TEXT_TYPE, null);
                 }
                 break;
             }
         }
+    }
+
+    @Override
+    public void setCurrLocation(String text) {
+        sendMessage(text, AppConstant.LOC_REQ_TYPE, null);
+    }
+
+    @Override
+    public void setTrip(String text, String tripId) {
+        sendMessage(text, AppConstant.RIDE_REQ_TYPE, tripId);
+        ((Chatroom)getActivity()).setTripId(tripId);
     }
 }
