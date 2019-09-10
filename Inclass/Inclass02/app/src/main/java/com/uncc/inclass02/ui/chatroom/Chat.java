@@ -116,12 +116,13 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
         getView().findViewById(R.id.sendButton).setOnClickListener(this);
     }
 
-    private void sendMessage(String mesg) {
+    private void sendMessage(String mesg, String type, String tripId) {
         Message message = new Message();
         message.setText(mesg);
         message.setUserId(new Auth().getCurrentUserID());
         message.setPostedAt(getCurrTime());
-        message.setType(AppConstant.TEXT_TYPE);
+        message.setType(type);
+        message.setTripId(tripId);
         mRootRef.push().setValue(message).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -140,9 +141,11 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
         mRootRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                messageList.clear();
                 if (dataSnapshot.exists()) {
                     displayMessageList(dataSnapshot);
                 }
+                messageListAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -153,14 +156,12 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     }
 
     private void displayMessageList(DataSnapshot dataSnapshot) {
-        messageList.clear();
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             Message message = child.getValue(Message.class);
             message.setId(child.getKey());
             messageList.add(message);
         }
         recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
-        messageListAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -257,7 +258,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
             case R.id.sendButton:{
                 String mesg = messageET.getText().toString();
                 if (!mesg.isEmpty()) {
-                    sendMessage(mesg);
+                    sendMessage(mesg, AppConstant.TEXT_TYPE, null);
                 }
                 break;
             }
@@ -267,5 +268,11 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     @Override
     public void setText(String text) {
         messageET.setText(text);
+    }
+
+    @Override
+    public void setTrip(String text, String tripId) {
+        sendMessage(text, AppConstant.RIDE_REQ_TYPE, tripId);
+        ((Chatroom)getActivity()).setTripId(tripId);
     }
 }

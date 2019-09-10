@@ -58,7 +58,8 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
             case (AppConstant.REQUEST_RIDE_CODE) : {
                 if (resultCode == Activity.RESULT_OK) {
                     String returnValue = data.getStringExtra(AppConstant.RIDE_REQ_RESULT);
-                    asyncTask.setText(returnValue);
+                    String tripId = data.getStringExtra(AppConstant.TRIP_ID_RESULT);
+                    asyncTask.setTrip(returnValue, tripId);
                     dismiss();
                 }
                 break;

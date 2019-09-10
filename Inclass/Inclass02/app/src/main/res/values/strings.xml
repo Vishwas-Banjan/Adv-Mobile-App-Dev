@@ -47,4 +47,10 @@
     <string name="dropoff_loc">Dropoff Location</string>
     <string name="select">Select</string>
     <string name="badge_new">New</string>
+    <string name="title_activity_select_driver">Ride Request</string>
+    <string name="no_ride_request">No ride request</string>
+    <string name="no_driver">No one accepted your request</string>
+    <string name="invalid_location">Pickup/Dropoff location is invalid. Try again</string>
+    <string name="accept_request">Accept Request</string>
+    <string name="view_map">View Map</string>
 </resources>

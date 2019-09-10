@@ -19,7 +19,8 @@
         android:theme="@style/AppTheme">
         <activity android:name=".ui.ride.ViewTrip"></activity>
         <activity android:name=".ui.ride.TripMap" />
-        <activity android:name=".ui.ride.SelectDriver" />
+        <activity android:name=".ui.ride.SelectDriver"
+            android:label="@string/title_activity_select_driver"/>
         <activity android:name=".ui.ride.SendLocation" />
         <activity android:name=".ui.ride.RequestRide"
             android:label="@string/title_activity_request_ride" />

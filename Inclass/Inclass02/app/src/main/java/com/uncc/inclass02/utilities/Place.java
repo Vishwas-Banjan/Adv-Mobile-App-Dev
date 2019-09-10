@@ -5,15 +5,16 @@ import java.io.Serializable;
 public class Place implements Serializable {
 
     String name;
-    double latLoc;
-    double longLoc;
+    Double latLoc;
+    Double longLoc;
 
     public Place() {
     }
 
-    public Place(double latLoc, double longLoc) {
+    public Place(double latLoc, double longLoc, String name) {
         this.latLoc = latLoc;
         this.longLoc = longLoc;
+        this.name = name;
     }
 
     public String getName() {
@@ -24,15 +25,15 @@ public class Place implements Serializable {
         this.name = name;
     }
 
-    public double getLatLoc() {
+    public Double getLatLoc() {
         return latLoc;
     }
 
-    public void setLatLoc(double latLoc) {
+    public void setLatLoc(Double latLoc) {
         this.latLoc = latLoc;
     }
 
-    public double getLongLoc() {
+    public Double getLongLoc() {
         return longLoc;
     }
 

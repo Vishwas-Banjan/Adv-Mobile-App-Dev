@@ -31,6 +31,7 @@ public class Chatroom extends AppCompatActivity {
     String key;
     TextView badge;
     ImageView notification;
+    String tripId = AppConstant.WRONG_TRIP_ID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -107,12 +108,20 @@ public class Chatroom extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private void goToSelectDriver() {
-        startActivity(AppConstant.SELECT_DRIVER_CODE, SelectDriver.class);
+    public void setTripId(String id) {
+        this.tripId = id;
     }
 
-    private void startActivity(int code, Class<?> cls) {
+    private void goToSelectDriver() {
+        Bundle b = new Bundle();
+        b.putString(AppConstant.CHATROOM_ID, chatroomId);
+        b.putString(AppConstant.TRIP_ID, tripId);
+        startActivity(AppConstant.SELECT_DRIVER_CODE, SelectDriver.class, b);
+    }
+
+    private void startActivity(int code, Class<?> cls, Bundle b) {
         Intent i = new Intent(Chatroom.this, cls);
+        i.putExtras(b); //Put your id to your next Intent
         startActivityForResult(i, code);
     }
 
