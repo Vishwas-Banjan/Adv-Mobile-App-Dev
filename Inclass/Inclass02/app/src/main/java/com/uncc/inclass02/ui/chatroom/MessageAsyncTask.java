@@ -8,4 +8,5 @@ public interface MessageAsyncTask {
     public void likeMessage(String messageId, String userId);
     public void renderDetails(String userId, TextView tv, ImageView iv);
     public void unlikeMessage(int idx, String messageId, String userId);
+    public void acceptReq(String userId, String driverId, String tripId);
 }
