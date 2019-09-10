@@ -20,6 +20,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -186,8 +187,52 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     }
 
     @Override
+    public void acceptReq(final String userId, final String driverId, final String tripId) {
+        if (userId.equals(driverId)) {
+            return; // rider cannot be driver
+        }
+        DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY).child(driverId);
+        mUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    UserProfile driver = getUserInfo(dataSnapshot);
+                    addDriver(userId, driverId, driver, tripId);
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void addDriver(String userId, String driverId, UserProfile driverInfo, String tripId) {
+        DatabaseReference mDriverRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(userId).child(tripId).child(AppConstant.DRIVER_DB_KEY).child(driverId);
+        mDriverRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.add_driver_success, Snackbar.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.invalid_location, Snackbar.LENGTH_LONG).show();
+            }
+        });
+        mDriverRef.setValue(driverInfo);
+    }
+
+    public UserProfile getUserInfo(DataSnapshot dataSnapshot) {
+        return dataSnapshot.getValue(UserProfile.class);
+    }
+
+    @Override
     public void renderDetails(final String userId, final TextView nameTV, final ImageView photo) {
-        DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
+        DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY).child(userId);
         mUserRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -204,13 +249,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     }
 
     private void setUserInfo(DataSnapshot dataSnapshot, String userId, TextView nameTV, ImageView photo) {
-        UserProfile userProfile = null;
-        for (DataSnapshot child : dataSnapshot.getChildren()) {
-            if (child.getKey().equals(userId)) {
-                userProfile = child.getValue(UserProfile.class);
-                break;
-            }
-        }
+        UserProfile userProfile = getUserInfo(dataSnapshot);
         if (userProfile != null) {
             nameTV.setText(userProfile.getFirstName() + " " + userProfile.getLastName());
             renderPhoto(userProfile.getPhoto(), photo);

@@ -53,4 +53,5 @@
     <string name="invalid_location">Pickup/Dropoff location is invalid. Try again</string>
     <string name="accept_request">Accept Request</string>
     <string name="view_map">View Map</string>
+    <string name="add_driver_success">Thank you for accepting request</string>
 </resources>

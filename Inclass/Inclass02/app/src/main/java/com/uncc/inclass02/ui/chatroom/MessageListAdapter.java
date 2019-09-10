@@ -45,7 +45,6 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Message message = messageList.get(position);
         setTextMessage(message, holder.textTV);
-        toggleButtonHandle(message.getType(), holder);
         holder.postedTimeTV.setText(getPostedTimeValue(message.getPostedAt()));
         holder.numLikesTV.setText(getNumLikes(message.getUserLiking()));
         if (userId != null && userId.equals(message.getUserId())) {
@@ -53,12 +52,12 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         } else {
             holder.trashCan.setVisibility(View.GONE);
         }
-        toggleButtonHandle(message.getType(), holder);
+        toggleButtonHandle(message, holder);
         asyncTask.renderDetails(message.getUserId(), holder.nameTV, holder.imageView);
     }
 
-    private void toggleButtonHandle(String type, ViewHolder holder) {
-        switch(type) {
+    private void toggleButtonHandle(Message mesg, ViewHolder holder) {
+        switch(mesg.getType()) {
             case AppConstant.TEXT_TYPE:
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.GONE);
@@ -66,6 +65,9 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             case AppConstant.LOC_REQ_TYPE:
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.VISIBLE);
+                break;
+            case AppConstant.RIDE_REQ_TYPE:
+                holder.trashCan.setVisibility(View.GONE);
                 break;
         }
 
@@ -139,6 +141,15 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 public void onClick(View v) {
                     int p = getLayoutPosition();
                     asyncTask.deleteMessage(p, messageList.get(p).getId());
+                }
+            });
+
+            acceptReq.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int p = getLayoutPosition();
+                    Message mesg = messageList.get(p);
+                    asyncTask.acceptReq(mesg.getUserId(), userId, mesg.getTripId());
                 }
             });
 

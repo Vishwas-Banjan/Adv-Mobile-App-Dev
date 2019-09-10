@@ -32,6 +32,7 @@ public class Chatroom extends AppCompatActivity {
     TextView badge;
     ImageView notification;
     String tripId = AppConstant.WRONG_TRIP_ID;
+    DatabaseReference mDriverRef;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -110,6 +111,7 @@ public class Chatroom extends AppCompatActivity {
 
     public void setTripId(String id) {
         this.tripId = id;
+        
     }
 
     private void goToSelectDriver() {
