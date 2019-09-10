@@ -6,10 +6,7 @@ import android.app.Dialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
-import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
@@ -23,6 +20,7 @@ import java.util.Objects;
 
 public class AddMoreBottomDialog extends BottomSheetDialogFragment implements View.OnClickListener{
     final private int locationPermissionCode = 2;
+    private boolean askForRideBool = false;
 
     public AddMoreBottomDialog() {
         super();
@@ -32,15 +30,13 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
         return new AddMoreBottomDialog();
     }
 
-    @Nullable
+    @SuppressLint("RestrictedApi")
     @Override
     public void setupDialog(Dialog dialog, int style) {
         super.setupDialog(dialog, style);
         View addMoreDialogSheet = View.inflate(getContext(), R.layout.fragment_add_more_dialog, null);
         addMoreDialogSheet.findViewById(R.id.shareLocationBtn).setOnClickListener(this);
         addMoreDialogSheet.findViewById(R.id.askForRideBtn).setOnClickListener(this);
-
-//        startActivity(new Intent(getActivity(), RequestRide.class));
 
         dialog.setContentView(addMoreDialogSheet);
     }
@@ -49,12 +45,13 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
     public void onClick(View view) {
         switch (view.getId()){
             case R.id.shareLocationBtn:{
+                askForRideBool = false;
                 break;
             }
             case R.id.askForRideBtn:{
+                askForRideBool = true;
                 askForLocationPermission();
-                startActivity(new Intent(getActivity(), RideRouteActivity.class));
-                break;
+
             }
         }
     }
@@ -86,5 +83,10 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
 
     private void getLocation(){
         // get the current location coordinates
+        if (askForRideBool){
+            startActivity(new Intent(getActivity(), RequestRide.class));
+        }else{
+            // share the location
+        }
     }
 }
