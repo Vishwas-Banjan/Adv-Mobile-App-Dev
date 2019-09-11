@@ -37,6 +37,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.Marker;
@@ -216,51 +217,39 @@ public class RideRouteActivity extends FragmentActivity{
             mMap = googleMap;
             // in both the cases show the origin and destination markers
             // making marker options for the route
+
+            LatLngBounds.Builder builder = new LatLngBounds.Builder();
+
             Place originPlace = currentTrip.getPickUpLoc();
             Place destinationPlace = currentTrip.getDropoffLoc();
-            Log.d(rideRouteTAG, destinationPlace.getLatLoc() + " : Lat, long: " + destinationPlace.getLongLoc());
-            originLatLng = new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc());
-            origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
-            destinationLatLng = new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc());
-            final MarkerOptions destination = new MarkerOptions().position(destinationLatLng).title("Destination");
-//            mMap.clear();
-            mMap.addMarker(origin).setVisible(true);
-            mMap.addMarker(destination).setVisible(true);
-            driverMarkerOpt = new MarkerOptions().position(originLatLng).title("Driver's Position");
-            driverMarker = mMap.addMarker(destination);
-            driverMarker.setVisible(true);
-            if (mapToShowRider) {
-                driverID = currentTrip.getDrivers().entrySet().iterator().next().getValue().getId();
-                Log.d(rideRouteTAG, driverID + " is the driver id");
-            } else {
-                driverID = mAuth.getCurrentUserID();
-                Log.d(rideRouteTAG, driverID + " is the driver id");
-            }
+            Place driver = currentTrip.getDrivers().get(driverID).getCurrLoc();
 
-            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLngBounds(originLatLng, destinationLatLng).getCenter(), 10));
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()))
+                    .title("Pickup Location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+            builder.include(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()));
 
-            // means this map is for rider, so show driver's activity
-            rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION)
-                    .addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        // update Location
-                        LatLng driverLatLng = new LatLng(Double.parseDouble(dataSnapshot.child(AppConstant.DRIVER_CURRENT_LatLoc).getValue() + ""), Double.parseDouble(dataSnapshot.child(AppConstant.DRIVER_CURRENT_LonLoc).getValue() + ""));
-                        driverMarker.setPosition(driverLatLng);
-                        if (driverLatLng == originLatLng) {
-                            handleError("Ride Over");
-                        }
-                    } else {
-                        handleError("Ride Over");
-                    }
-                }
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
+                    .title("Pickup Location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    handleError(databaseError.getMessage());
-                }
-            });
+            mMap.addMarker(new MarkerOptions()
+                    .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
+                    .title("Pickup Location")
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+
+            LatLngBounds bounds = builder.build();
+
+            int width = getResources().getDisplayMetrics().widthPixels;
+            int height = getResources().getDisplayMetrics().heightPixels;
+            int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
+
+            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+            mMap.animateCamera(cu);
         }
     };
 
