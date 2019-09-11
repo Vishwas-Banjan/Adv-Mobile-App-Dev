@@ -88,6 +88,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
         if (getArguments() != null) {
             String chatroomId = getArguments().getString(AppConstant.CHATROOM_ID);
             mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.CHATROOM_DB_KEY).child(chatroomId).child(AppConstant.MESSAGES);
+
         }
     }
 
@@ -101,6 +102,8 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+
 
         messageList = new ArrayList<>();
         messageListAdapter = new MessageListAdapter(messageList, this);
@@ -221,6 +224,8 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
             }
         });
     }
+
+
 
     @Override
     public void viewMap(String text) {

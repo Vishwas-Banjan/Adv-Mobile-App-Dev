@@ -9,6 +9,7 @@ import androidx.viewpager.widget.ViewPager;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -42,8 +43,9 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
     ArrayList<Driver> driverList;
     SelectDriverListAdapter driverListAdapter;
     DatabaseReference mRootRef;
-    String chatroomId;
+    String chatroomId, selectDriverTAG = "SelectDriver";
     String tripId;
+    FirebaseDatabase firebaseDatabase;
     TextView message;
 
     @Override
@@ -52,16 +54,18 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         setContentView(R.layout.select_driver);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         Bundle b = getIntent().getExtras();
         if(b != null) {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
-            tripId = b.getString(AppConstant.TRIP_ID);
-            // tripId = b.getString(AppConstant.TRIP_ID);
+//            tripId = "-LoVgtPBUbzS7xJnye1W";
+             tripId = b.getString(AppConstant.TRIP_ID);
+            Log.d(selectDriverTAG, tripId);
         }
 
         String id = new Auth().getCurrentUserID();
-        mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child(tripId).child(AppConstant.DRIVER_DB_KEY);
+        mRootRef = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child(tripId).child(AppConstant.DRIVER_DB_KEY);
 
         driverList = new ArrayList<>();
         driverListAdapter = new SelectDriverListAdapter(driverList, this);

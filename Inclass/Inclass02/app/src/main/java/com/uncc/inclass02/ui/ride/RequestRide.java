@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -144,6 +145,7 @@ public class RequestRide extends AppCompatActivity {
                     public void onSuccess(Void aVoid) {
                         Intent resultIntent = new Intent();
                         resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
+                        // todo: setting it to shared preferrence
                         resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
                         setResult(Activity.RESULT_OK, resultIntent);
                         finish();

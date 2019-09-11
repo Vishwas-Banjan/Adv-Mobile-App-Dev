@@ -9,21 +9,21 @@ import android.widget.TextView;
 
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.ride.RideHistoryFragment.OnListFragmentInteractionListener;
-import com.uncc.inclass02.ui.ride.dummy.DummyContent.DummyItem;
+import com.uncc.inclass02.utilities.Trip;
 
 import java.util.List;
 
 /**
- * {@link RecyclerView.Adapter} that can display a {@link DummyItem} and makes a call to the
+ * {@link RecyclerView.Adapter} that can display a {@link Trip} and makes a call to the
  * specified {@link OnListFragmentInteractionListener}.
  * TODO: Replace the implementation with code for your data type.
  */
 public class MyRideHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyRideHistoryRecyclerViewAdapter.ViewHolder> {
 
-    private final List<DummyItem> mValues;
+    private final List<Trip> mValues;
     private final OnListFragmentInteractionListener mListener;
 
-    public MyRideHistoryRecyclerViewAdapter(List<DummyItem> items, OnListFragmentInteractionListener listener) {
+    public MyRideHistoryRecyclerViewAdapter(List<Trip> items, OnListFragmentInteractionListener listener) {
         mValues = items;
         mListener = listener;
     }
@@ -38,9 +38,10 @@ public class MyRideHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyRid
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
-        holder.mIdView.setText(mValues.get(position).id);
-        holder.mContentView.setText(mValues.get(position).content);
-
+        holder.mtripid.setText(mValues.get(position).getId());
+        holder.mtriporigin.setText(mValues.get(position).getPickUpLoc().getLatLoc()+", "+mValues.get(position).getPickUpLoc().getLongLoc());
+        holder.mtripdestination.setText(mValues.get(position).getDropoffLoc().getLatLoc()+", "+mValues.get(position).getDropoffLoc().getLongLoc());
+        holder.mtripstatus.setText(mValues.get(position).getStatus());
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -60,20 +61,21 @@ public class MyRideHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyRid
 
     public class ViewHolder extends RecyclerView.ViewHolder {
         public final View mView;
-        public final TextView mIdView;
-        public final TextView mContentView;
-        public DummyItem mItem;
+        public final TextView mtripid, mtriporigin, mtripdestination, mtripstatus;
+        public Trip mItem;
 
         public ViewHolder(View view) {
             super(view);
             mView = view;
-            mIdView = (TextView) view.findViewById(R.id.item_number);
-            mContentView = (TextView) view.findViewById(R.id.content);
+            mtripid = (TextView) view.findViewById(R.id.trip_id);
+            mtriporigin = (TextView) view.findViewById(R.id.trip_origin);
+            mtripdestination = (TextView) view.findViewById(R.id.trip_destination);
+            mtripstatus = (TextView) view.findViewById(R.id.trip_status);
         }
 
         @Override
         public String toString() {
-            return super.toString() + " '" + mContentView.getText() + "'";
+            return super.toString() + " '" + mtripstatus.getText() + "'";
         }
     }
 }

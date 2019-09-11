@@ -6,8 +6,7 @@
     android:name="com.uncc.inclass02.ui.ride.RideHistoryFragment"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginLeft="16dp"
-    android:layout_marginRight="16dp"
+    android:layout_gravity="center"
     app:layoutManager="LinearLayoutManager"
     tools:context=".ui.ride.RideHistoryFragment"
     tools:listitem="@layout/fragment_ridehistory" />
