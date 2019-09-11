@@ -148,9 +148,11 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 public void onClick(View view) {
                     Log.d("MessageListAdapter", "start ride called");
                     int p = getLayoutPosition();
+                    Message mesg = messageList.get(p);
                     Intent goToStartRide = new Intent(mView.getContext(), RideRouteActivity.class);
-                    goToStartRide.putExtra(AppConstant.MAP_TO_SHOW_RIDER, false);
-                    goToStartRide.putExtra(AppConstant.TRIP_ID, messageList.get(p).getTripId());
+                    goToStartRide.putExtra(AppConstant.RIDER_ID, mesg.getUserId());
+                    goToStartRide.putExtra(AppConstant.TRIP_ID, mesg.getTripId());
+                    goToStartRide.putExtra(AppConstant.DRIVER_ID, mesg.getRecipientId());
                     mView.getContext().startActivity(goToStartRide);
                 }
             });
