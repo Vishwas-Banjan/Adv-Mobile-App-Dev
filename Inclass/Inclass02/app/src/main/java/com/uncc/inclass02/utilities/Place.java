@@ -5,8 +5,8 @@ import java.io.Serializable;
 public class Place implements Serializable {
 
     String name;
-    Double latLoc;
-    Double longLoc;
+    Double latLoc = 0.00;
+    Double longLoc = 0.00;
 
     public Place() {
     }

@@ -44,7 +44,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Message message = messageList.get(position);
-        setTextMessage(message, holder.textTV);
+        holder.textTV.setText(message.getText());
         holder.postedTimeTV.setText(getPostedTimeValue(message.getPostedAt()));
         holder.numLikesTV.setText(getNumLikes(message.getUserLiking()));
         if (userId != null && userId.equals(message.getUserId())) {
@@ -61,26 +61,28 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             case AppConstant.TEXT_TYPE:
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.GONE);
+                holder.startRide.setVisibility(View.GONE);
                 break;
             case AppConstant.LOC_REQ_TYPE:
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.VISIBLE);
+                holder.startRide.setVisibility(View.GONE);
                 break;
             case AppConstant.RIDE_REQ_TYPE:
+                holder.startRide.setVisibility(View.GONE);
+                holder.trashCan.setVisibility(View.GONE);
+                break;
+            case AppConstant.CONFIRM_DRIVER_TYPE:
+                holder.imageView.setVisibility(View.GONE);
+                holder.nameTV.setVisibility(View.GONE);
+                holder.numLikesTV.setVisibility(View.GONE);
+                holder.likesIV.setVisibility(View.GONE);
+                holder.acceptReq.setVisibility(View.GONE);
+                holder.viewMap.setVisibility(View.GONE);
                 holder.trashCan.setVisibility(View.GONE);
                 break;
         }
 
-    }
-
-    private void setTextMessage(Message message, TextView textTV) {
-        if (message.getRecipientId() != null) {
-            if (message.getRecipientId().equals(userId)) {
-                textTV.setText(message.getText());
-            }
-        } else {
-            textTV.setText(message.getText());
-        }
     }
 
     private String getNumLikes(Map<String, String> list) {
@@ -120,6 +122,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
         ImageView likesIV;
         TextView acceptReq;
         TextView viewMap;
+        TextView startRide;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -135,6 +138,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             trashCan = mView.findViewById(R.id.trash);
             acceptReq = mView.findViewById(R.id.accept_request);
             viewMap = mView.findViewById(R.id.view_map);
+            startRide = mView.findViewById(R.id.start_ride);
 
             trashCan.setOnClickListener(new View.OnClickListener() {
                 @Override
