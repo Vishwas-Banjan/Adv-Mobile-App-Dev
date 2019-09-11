@@ -49,4 +49,8 @@ public class Trip implements Serializable {
     public void setDrivers(Map<String, Driver> drivers) {
         this.drivers = drivers;
     }
+
+    public String toString(){
+        return "id="+id+"";
+    }
 }

@@ -92,8 +92,8 @@ public class ChatroomList extends Fragment implements ChatroomAsyncTask {
                 LayoutInflater li = LayoutInflater.from(getActivity());
                 View promptsView = li.inflate(R.layout.create_new, null);
 
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity());
-                alertDialogBuilder.setMessage("Add new chatroom");
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getActivity(), R.style.AppTheme_AppBarOverlay);
+                alertDialogBuilder.setTitle("Add new chatroom");
                 alertDialogBuilder.setPositiveButton("ADD", null);
                 alertDialogBuilder.setNegativeButton("CANCEL", null);
                 alertDialogBuilder.setView(promptsView);

@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -129,7 +130,7 @@ public class RequestRide extends AppCompatActivity {
             Snackbar.make(findViewById(android.R.id.content), R.string.invalid_location, Snackbar.LENGTH_LONG).show();
             return;
         }
-        Trip trip = new Trip();
+        final Trip trip = new Trip();
         mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID());
         final String key = mRootRef.push().getKey();
         trip.setId(getCurrTime());
@@ -139,11 +140,17 @@ public class RequestRide extends AppCompatActivity {
         mRootRef.child(key).setValue(trip).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Intent resultIntent = new Intent();
-                resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
-                resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
-                setResult(Activity.RESULT_OK, resultIntent);
-                finish();
+                FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(key).setValue(new Auth().getCurrentUserID()).addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Intent resultIntent = new Intent();
+                        resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
+                        // todo: setting it to shared preferrence
+                        resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
+                        setResult(Activity.RESULT_OK, resultIntent);
+                        finish();
+                    }
+                });
             }
         });
     }

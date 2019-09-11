@@ -23,9 +23,9 @@
     <string name="create_account_2_submit">Create Account</string>
     <string name="upload_profile_pic">Upload profile pic</string>
     <string name="title_activity_dashboard">Dashboard</string>
-    <string name="tab_chatrooms">Active Chatrooms</string>
-    <string name="tab_myprofile">My Profile</string>
-    <string name="tab_users">View Users</string>
+    <string name="tab_chatrooms">Chat</string>
+    <string name="tab_myprofile">Profile</string>
+    <string name="tab_users">Users</string>
     <string name="tab_chatroom">Chatroom</string>
     <string name="tab_chat_users">Active Users</string>
     <string name="label_join">JOIN</string>
@@ -56,4 +56,5 @@
     <string name="view_map">View Map</string>
     <string name="add_driver_success">Thank you for accepting request</string>
     <string name="google_maps_key">AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q</string>
+    <string name="trip_history">Trips</string>
 </resources>

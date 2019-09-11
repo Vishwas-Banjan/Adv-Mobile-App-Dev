@@ -2,6 +2,7 @@ package com.uncc.inclass02.ui.chatroom;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -16,7 +17,6 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
-import com.uncc.inclass02.ui.ride.RequestRide;
 import com.uncc.inclass02.ui.ride.SelectDriver;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
@@ -38,7 +38,7 @@ public class Chatroom extends AppCompatActivity {
     DatabaseReference mRootRef;
     TextView badge;
     ImageView notification;
-    String tripId = AppConstant.WRONG_TRIP_ID;
+    String tripId, chatRoomTAG = "Chatroom";
     DatabaseReference mTripRef;
     ValueEventListener valueListener;
 
@@ -54,6 +54,12 @@ public class Chatroom extends AppCompatActivity {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
             setTitle(b.getString(AppConstant.CHATROOM_NAME));
             mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.CHATROOM_DB_KEY).child(chatroomId).child(AppConstant.CURR_USERS);
+            Log.d(chatRoomTAG, b.containsKey(AppConstant.TRIP_ID_RESULT)+" ");
+            if (b.containsKey(AppConstant.TRIP_ID_RESULT)){
+                tripId = b.getString(AppConstant.TRIP_ID_RESULT);
+            }else{
+                tripId = AppConstant.WRONG_TRIP_ID;
+            }
         }
 
         sectionsPagerAdapter = new ChatroomPagerAdapter(this, getSupportFragmentManager(), chatroomId);
@@ -141,7 +147,8 @@ public class Chatroom extends AppCompatActivity {
                         drivers.add(driver);
                     }
                     if (drivers.size() > 0) {
-                        badge.setText(drivers.size());
+                        Log.d(chatRoomTAG, drivers.size()+"");
+                        badge.setText(drivers.size()+"");
                         badge.setVisibility(View.VISIBLE);
                     }
                 }
@@ -170,7 +177,7 @@ public class Chatroom extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        tripId = AppConstant.WRONG_TRIP_ID;
+//        tripId = AppConstant.WRONG_TRIP_ID;
         removeFromChatroom();
     }
 }

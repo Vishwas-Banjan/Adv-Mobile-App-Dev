@@ -6,8 +6,10 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
@@ -25,6 +27,7 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.GlideApp;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
@@ -40,8 +43,9 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
     ArrayList<Driver> driverList;
     SelectDriverListAdapter driverListAdapter;
     DatabaseReference mRootRef;
-    String chatroomId;
+    String chatroomId, selectDriverTAG = "SelectDriver";
     String tripId;
+    FirebaseDatabase firebaseDatabase;
     TextView message;
 
     @Override
@@ -50,16 +54,18 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         setContentView(R.layout.select_driver);
 
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        firebaseDatabase = FirebaseDatabase.getInstance();
 
         Bundle b = getIntent().getExtras();
         if(b != null) {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
-            tripId = "-LoSXpeV1SI_RM0GORRq";
-            // tripId = b.getString(AppConstant.TRIP_ID);
+             tripId = "-LoXGAAczudVTKP8KqTY";
+             // tripId = b.getString(AppConstant.TRIP_ID);
+            Log.d(selectDriverTAG, tripId);
         }
 
         String id = new Auth().getCurrentUserID();
-        mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child(tripId).child(AppConstant.DRIVER_DB_KEY);
+        mRootRef = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child(tripId).child(AppConstant.DRIVER_DB_KEY);
 
         driverList = new ArrayList<>();
         driverListAdapter = new SelectDriverListAdapter(driverList, this);
@@ -159,6 +165,11 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
             public void onSuccess(Void aVoid) {
                 mRootRef.child(driverId).setValue(driver);
                 mMesgRef.push().setValue(message);
+                Intent goToRidePage = new Intent(getApplicationContext(), RideRouteActivity.class);
+                goToRidePage.putExtra(AppConstant.RIDER_ID, message.getUserId());
+                goToRidePage.putExtra(AppConstant.TRIP_ID, message.getTripId());
+                goToRidePage.putExtra(AppConstant.DRIVER_ID, message.getRecipientId());
+                startActivity(goToRidePage);
             }
         });
     }
