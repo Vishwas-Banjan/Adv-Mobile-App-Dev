@@ -39,7 +39,7 @@
 
         <activity
             android:name=".ui.location.RideRouteActivity"
-            android:label="@string/title_activity_ride_route"></activity>
+            android:label="@string/title_activity_request_ride"></activity>
         <activity android:name=".ui.ride.ViewTrip" />
         <activity android:name=".ui.ride.TripMap" />
         <activity android:name=".ui.ride.SelectDriver"

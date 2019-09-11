@@ -3,6 +3,7 @@ package com.uncc.inclass02.ui.ride;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -131,8 +132,7 @@ public class RequestRide extends AppCompatActivity {
         Trip trip = new Trip();
         mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID());
         final String key = mRootRef.push().getKey();
-        trip.setId(key);
-        trip.setCreatedDate(getCurrTime());
+        trip.setId(getCurrTime());
         trip.setPickUpLoc(pickupLoc);
         trip.setDropoffLoc(dropoffLoc);
         trip.setStatus(AppConstant.TRIP_ACTIVE);

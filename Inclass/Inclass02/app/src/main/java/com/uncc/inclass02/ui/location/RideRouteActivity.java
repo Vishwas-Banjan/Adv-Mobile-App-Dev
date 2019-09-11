@@ -9,6 +9,7 @@ import android.location.Location;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
+import android.view.View;
 import android.view.Window;
 import android.widget.Toast;
 
@@ -32,6 +33,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -39,47 +41,94 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.dashboard.Dashboard;
 import com.uncc.inclass02.utilities.Auth;
+import com.uncc.inclass02.utilities.Place;
 import com.uncc.inclass02.utilities.Trip;
 
-public class RideRouteActivity extends FragmentActivity implements OnMapReadyCallback, Response.Listener, Response.ErrorListener{
+public class RideRouteActivity extends FragmentActivity implements OnMapReadyCallback{
 
     private GoogleMap mMap;
     private Toolbar ride_route_toolbar;
-    private String directionURL = AppConstant.DIRECTION_URL, rideRouteTAG = "RideRouteTAG";
+    private String rideRouteTAG = "RideRouteTAG", tripID, driverID = null;
+    private boolean mapToShowRider;
+    private  LatLng originLatLng;
     MarkerOptions origin, destination, driverMarkerOpt;
     Marker driverMarker;
-    LatLng originLatLng, destinationLatLng;
     Auth mAuth;
-    Polyline directions;
-    Trip trip;
-    String driverID;
-//    FirebaseDatabase firebaseDatabase;
-//    DatabaseReference databaseReference;
-    FusedLocationProviderClient fusedLocationDriver;
-    LocationRequest driverLocationReq;
-    LocationCallback driverLocationCallback;
+    Trip currentTrip;
+    DatabaseReference rideReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_ride_route);
+
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-//        databaseReference = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY);
-
-        Intent fromRequestRide = getIntent();
-        this.trip = (Trip) fromRequestRide.getSerializableExtra("trip");
-        this.driverID = fromRequestRide.getStringExtra("driverID");
+        // databaseReference = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY);
+        Bundle fromRequestRide = getIntent().getExtras();
+        mAuth = new Auth();
+        // toolbar config
         ride_route_toolbar = findViewById(R.id.ride_route_toolbar);
         ride_route_toolbar.setNavigationIcon(R.drawable.quantum_ic_arrow_back_grey600_24);
+        ride_route_toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBackPressed();
+            }
+        });
         ride_route_toolbar.setTitle("Your ride:");
-        mAuth = new Auth();
 
-        assert mapFragment != null;
-        mapFragment.getMapAsync(this);
+        // this.trip = (Trip) fromRequestRide.getSerializableExtra("trip");
+        // this.driverID = fromRequestRide.getStringExtra("driverID");
+
+       try{
+
+           if (fromRequestRide!=null){
+               // getting trip id and ride id and pickup location
+               mapToShowRider = fromRequestRide.containsKey(AppConstant.MAP_TO_SHOW_RIDER) && fromRequestRide.getBoolean(AppConstant.MAP_TO_SHOW_RIDER);
+               tripID = fromRequestRide.getString(AppConstant.TRIP_ID_RESULT);
+               if (fromRequestRide.containsKey(AppConstant.DRIVER_ID)){
+                   driverID = fromRequestRide.getString(AppConstant.DRIVER_ID);
+               }
+               getFirebaseData();
+           }else{
+               handleError("sorry ride not possible");
+           }
+           assert mapFragment != null;
+           mapFragment.getMapAsync(this);
+       }catch (Exception e){
+           handleError(e.getMessage());
+       }
+    }
+
+    private void getFirebaseData(){
+        // firebase database instance
+        rideReference = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(tripID);
+        rideReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                // get all the data
+                if (dataSnapshot.exists()){
+                    currentTrip = dataSnapshot.getValue(Trip.class);
+                }else {
+                    handleError("Ride not exists anymore");
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                handleError(databaseError.getMessage());
+            }
+        });
+    }
+
+    private void handleError(String msg){
+        Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
+        startActivity(new Intent(this, Dashboard.class));
     }
 
 
@@ -96,58 +145,86 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
     @Override
     public void onMapReady(final GoogleMap googleMap) {
         mMap = googleMap;
-        // getting location attributes
-        originLatLng = new LatLng(trip.getPickUpLoc().getLatLoc(), trip.getPickUpLoc().getLongLoc());
-        destinationLatLng = new LatLng(trip.getDropoffLoc().getLatLoc(), trip.getDropoffLoc().getLongLoc());
+        // in both the cases show the origin and destination markers
         // making marker options for the route
+        Place originPlace = currentTrip.getPickUpLoc();
+        Place destinationPlace = currentTrip.getDropoffLoc();
+        originLatLng = new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc());
         origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
-        destination = new MarkerOptions().position(destinationLatLng).title("Destination of the Route");
-        driverMarkerOpt = new MarkerOptions().title("Driver");
-        // adding destination and origin of trips to map
-        mMap.clear();
-        Marker originMarker = mMap.addMarker(origin);
-        Marker destinationMarker = mMap.addMarker(destination);
+        destination = new MarkerOptions().position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc())).title("Destination of the Route");
 
-        // checking if current user is driver or not
-        if (driverID.equals(mAuth.getCurrentUserID())){
-            // getting current location
-            fusedLocationDriver.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+        mMap.clear();
+        mMap.addMarker(origin).setVisible(true);
+        mMap.addMarker(destination).setVisible(true);
+        if (mapToShowRider){
+            driverMarkerOpt = new MarkerOptions().position(originLatLng).title("Driver Position");
+            driverMarker = mMap.addMarker(destination);
+            driverMarker.setVisible(true);
+            // means this map is for rider, so show driver's activity
+            rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION).addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onSuccess(Location location) {
-                    if (location!=null){
-                        // setting up driver's current location
-                        driverMarkerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()));
-                        driverMarker = mMap.addMarker(driverMarkerOpt);
-                        driverMarker.setVisible(true);
-                        // getting driver's current updates location
-                        fusedLocationDriver = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-                        driverLocationReq = LocationRequest.create();
-                        driverLocationReq.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-                        driverLocationReq.setInterval(1000);
-                        // location service callback
-                        driverLocationCallback = new LocationCallback(){
-                            @Override
-                            public void onLocationResult(LocationResult locationResult) {
-                                super.onLocationResult(locationResult);
-                                if (locationResult==null){
-                                    return;
-                                }
-                                for (Location driverLoc: locationResult.getLocations()){
-                                    refreshDriverLocation(driverLoc);
-                                }
-                            }
-                        };
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()){
+                        // update Location
+                        LatLng driverLatLng = new LatLng((double)dataSnapshot.child(AppConstant.DRIVER_CURRENT_LatLoc).getValue(), (double)dataSnapshot.child(AppConstant.DRIVER_CURRENT_LonLoc).getValue());
+                        driverMarker.setPosition(driverLatLng);
+                        if (driverLatLng==originLatLng){
+                            handleError("Ride Over");
+                        }
                     }else{
-                        // location settings turned off
-                        // todo: popup says turn on location settings
-                        Toast.makeText(getApplicationContext(), "Please turn on the gps location and request a new ride", Toast.LENGTH_LONG).show();
+                        handleError("Ride Over");
                     }
                 }
-            });
-        }
 
-        originMarker.setVisible(true);
-        destinationMarker.setVisible(true);
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    handleError(databaseError.getMessage());
+                }
+            });
+
+        }
+//        // checking if current user is driver or not
+//        if (driverID.equals(mAuth.getCurrentUserID())){
+//            // getting current location
+//            fusedLocationDriver.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+//                @Override
+//                public void onSuccess(Location location) {
+//                    if (location!=null){
+//                        // setting up driver's current location
+//                        driverMarkerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()));
+//                        driverMarker = mMap.addMarker(driverMarkerOpt);
+//                        driverMarker.setVisible(true);
+//                        // getting driver's current updates location
+//                        fusedLocationDriver = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+//                        driverLocationReq = LocationRequest.create();
+//                        driverLocationReq.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//                        driverLocationReq.setInterval(1000);
+//                        // location service callback
+//                        driverLocationCallback = new LocationCallback(){
+//                            @Override
+//                            public void onLocationResult(LocationResult locationResult) {
+//                                super.onLocationResult(locationResult);
+//                                if (locationResult==null){
+//                                    return;
+//                                }
+//                                for (Location driverLoc: locationResult.getLocations()){
+//                                    refreshDriverLocation(driverLoc);
+//                                }
+//                            }
+//                        };
+//                    }else{
+//                        // location settings turned off
+//                        // todo: popup says turn on location settings
+//                        Toast.makeText(getApplicationContext(), "Please turn on the gps location and request a new ride", Toast.LENGTH_LONG).show();
+//                    }
+//                }
+//            });
+//        }
+
+        // getting driver location from db
+
+
+
         
 //        // Add a marker in Sydney and move the camera
 //        LatLng sydney = new LatLng(-34, 151);
@@ -161,30 +238,23 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
     }
 
 
-    private String developDirectionURL(String origin, String destination){
-        return directionURL+"origin="+origin.toString()+"&destination="+destination.toString()+"&key="+getString(R.string.google_api_key);
-    }
-
-    private void getLocationUpdates(){
-        fusedLocationDriver.requestLocationUpdates(driverLocationReq, driverLocationCallback, Looper.getMainLooper());
-    }
+//    private String developDirectionURL(String origin, String destination){
+//        return directionURL+"origin="+origin.toString()+"&destination="+destination.toString()+"&key="+getString(R.string.google_api_key);
+//    }
 
 
-    @Override
-    public void onResponse(Object response) {
-
-    }
-
-    private void refreshDriverLocation(Location driverLocation){
-        // use the GPS signals of the driver
-
-        driverMarker.setPosition(new LatLng(driverLocation.getLatitude(), driverLocation.getLongitude()));
-        mMap.addMarker(driverMarkerOpt).setVisible(true);
-    }
-
-    @Override
-    public void onErrorResponse(VolleyError error) {
-        Log.e(rideRouteTAG, error.toString());
-        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_LONG).show();
-    }
+//    private void setOriginLatLng(){
+//        // getting location attributes
+//        originLatLng = new LatLng(originLat, originLng);
+//        destinationLatLng = new LatLng(destinationLat, destinationLon);
+//        // making marker options for the route
+//        origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
+//        destination = new MarkerOptions().position(destinationLatLng).title("Destination of the Route");
+//        // adding markers to map
+//        mMap.clear();
+//        Marker originMarker = mMap.addMarker(origin);
+//        Marker destinationMarker = mMap.addMarker(destination);
+//        originMarker.setVisible(true);
+//        destinationMarker.setVisible(true);
+//    }
 }

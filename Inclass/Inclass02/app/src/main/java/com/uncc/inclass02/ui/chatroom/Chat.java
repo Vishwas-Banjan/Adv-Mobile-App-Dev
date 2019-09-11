@@ -1,23 +1,18 @@
 package com.uncc.inclass02.ui.chatroom;
 
-import android.Manifest;
-import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -36,17 +31,15 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.GlideApp;
 import com.uncc.inclass02.R;
-import com.uncc.inclass02.utilities.Auth;
-import com.uncc.inclass02.utilities.Driver;
-import com.uncc.inclass02.utilities.Message;
-import com.uncc.inclass02.utilities.Place;
-import com.uncc.inclass02.utilities.UserProfile;
 import com.uncc.inclass02.ui.location.AddMoreBottomDialog;
+import com.uncc.inclass02.ui.location.RideRouteActivity;
+import com.uncc.inclass02.utilities.Auth;
+import com.uncc.inclass02.utilities.Message;
+import com.uncc.inclass02.utilities.UserProfile;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.Objects;
 
 
 /**
@@ -193,6 +186,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     @Override
     public void acceptReq(final String userId, final String driverId, final String tripId) {
         if (userId.equals(driverId)) {
+            Toast.makeText(getContext(), "You cannot be your own driver.", Toast.LENGTH_LONG).show();
             return; // rider cannot be driver
         }
         DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY).child(driverId);
@@ -218,6 +212,8 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    // todo: go to ride route activity
+                    Intent goToRideRouteActivity = new Intent(getActivity(), RideRouteActivity.class);
                     Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.add_driver_success, Snackbar.LENGTH_LONG).show();
                 }
             }
@@ -293,12 +289,8 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
         switch (view.getId()){
             case R.id.add_more_btn:{
                 // do the bottom sheet
-<<<<<<< HEAD
-                AddMoreBottomDialog ambd = new AddMoreBottomDialog();
-=======
                 AddMoreBottomDialog ambd = AddMoreBottomDialog.newInstance(this);
                 assert getFragmentManager() != null;
->>>>>>> master
                 ambd.show(getFragmentManager(), ambd.getTag());
                 break;
             }
