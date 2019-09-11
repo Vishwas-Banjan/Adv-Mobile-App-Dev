@@ -6,6 +6,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.MenuItem;
@@ -25,6 +26,7 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.GlideApp;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
@@ -159,6 +161,10 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
             public void onSuccess(Void aVoid) {
                 mRootRef.child(driverId).setValue(driver);
                 mMesgRef.push().setValue(message);
+                Intent goToRidePage = new Intent(getApplicationContext(), RideRouteActivity.class);
+                goToRidePage.putExtra(AppConstant.MAP_TO_SHOW_RIDER, true);
+                goToRidePage.putExtra(AppConstant.TRIP_ID, tripId);
+                startActivity(goToRidePage);
             }
         });
     }

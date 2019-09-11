@@ -60,6 +60,9 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
     Trip currentTrip;
     DatabaseReference rideReference;
     SupportMapFragment mapFragment;
+    FusedLocationProviderClient fusedLocationDriver;
+    LocationRequest driverLocationReq;
+    LocationCallback driverLocationCallback;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +75,7 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
                 .findFragmentById(R.id.map);
         Bundle fromRequestRide = getIntent().getExtras();
         mAuth = new Auth();
-        riderID = mAuth.getCurrentUserID();
+
         // toolbar config
         ride_route_toolbar = findViewById(R.id.ride_route_toolbar);
         ride_route_toolbar.setNavigationIcon(R.drawable.quantum_ic_arrow_back_grey600_24);
@@ -93,14 +96,38 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
                // getting trip id and ride id and pickup location
                mapToShowRider = fromRequestRide.containsKey(AppConstant.MAP_TO_SHOW_RIDER) && fromRequestRide.getBoolean(AppConstant.MAP_TO_SHOW_RIDER);
                tripID = fromRequestRide.getString(AppConstant.TRIP_ID);
+
+               if (!mapToShowRider){
+                   // if app is opened for driver's end
+                   FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(tripID).addListenerForSingleValueEvent(new ValueEventListener() {
+                       @Override
+                       public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                           Log.d(rideRouteTAG, dataSnapshot+"");
+                           riderID = dataSnapshot.getValue().toString();
+                           getTheDatabaseWorking(riderID);
+                       }
+
+                       @Override
+                       public void onCancelled(@NonNull DatabaseError databaseError) {
+                           handleError("sorry ride not possible");
+                       }
+                   });
+               }else{
+                   // if the app is opened for rider's end
+                   riderID = mAuth.getCurrentUserID();
+                   getTheDatabaseWorking(riderID);
+               }
            }else{
                handleError("sorry ride not possible");
            }
-           rideReference = FirebaseDatabase.getInstance().getReference("rides").child("zTzPG3alQYXFlYWJHe9QcFDSz6H2").child("-LoSXpeV1SI_RM0GORRq");
-           new GetFirebaseData().execute("");
        }catch (Exception e){
            handleError(e.getMessage());
        }
+    }
+
+    private void getTheDatabaseWorking(String riderID){
+        rideReference = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(riderID).child(tripID);
+        new GetFirebaseData().execute("");
     }
 
     private void handleError(String msg){
@@ -163,15 +190,53 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
             Place destinationPlace = currentTrip.getDropoffLoc();
             originLatLng = new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc());
             origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
-            destination = new MarkerOptions().position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc())).title("Destination of the Route");
+            destination = new MarkerOptions().position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc())).title("Destination");
             mMap.clear();
             mMap.addMarker(origin).setVisible(true);
             mMap.addMarker(destination).setVisible(true);
-            if (mapToShowRider){
+            driverID = currentTrip.getDrivers().entrySet().iterator().next().getValue().getId();
+            if (mAuth.getCurrentUserID().equals(driverID)){
+                // checking if current user is driver or not
+                if (driverID.equals(mAuth.getCurrentUserID())){
+                    // getting current location
+                    fusedLocationDriver.getLastLocation().addOnSuccessListener(RideRouteActivity.this, new OnSuccessListener<Location>() {
+                        @Override
+                        public void onSuccess(Location location) {
+                            if (location!=null){
+                                // setting up driver's current location
+                                driverMarkerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()));
+                                driverMarker = mMap.addMarker(driverMarkerOpt);
+                                driverMarker.setVisible(true);
+                                // getting driver's current updates location
+                                fusedLocationDriver = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+                                driverLocationReq = LocationRequest.create();
+                                driverLocationReq.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                                driverLocationReq.setInterval(1000);
+                                // location service callback
+                                driverLocationCallback = new LocationCallback(){
+                                    @Override
+                                    public void onLocationResult(LocationResult locationResult) {
+                                        super.onLocationResult(locationResult);
+                                        if (locationResult==null){
+                                            return;
+                                        }
+                                        for (Location driverLoc: locationResult.getLocations()){
+                                            refreshDriverLocation(driverLoc);
+                                        }
+                                    }
+                                };
+                            }else{
+                                // location settings turned off
+                                // todo: popup says turn on location settings
+                                handleError("Please turn on the gps location and request a new ride");
+                            }
+                        }
+                    });
+                }
+            }else{
                 driverMarkerOpt = new MarkerOptions().position(originLatLng).title("Driver's Position");
                 driverMarker = mMap.addMarker(destination);
                 driverMarker.setVisible(true);
-                driverID = currentTrip.getDrivers().entrySet().iterator().next().getValue().getId();
                 // means this map is for rider, so show driver's activity
                 rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION).addValueEventListener(new ValueEventListener() {
                     @Override
@@ -193,51 +258,20 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
                         handleError(databaseError.getMessage());
                     }
                 });
-
             }
         }
     };
 
+    public void refreshDriverLocation(Location driverLoc){
+        driverMarker.setPosition(new LatLng(driverLoc.getLatitude(), driverLoc.getLongitude()));
+        rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION).child(AppConstant.DRIVER_CURRENT_LatLoc).setValue(driverLoc.getLatitude());
+        rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION).child(AppConstant.DRIVER_CURRENT_LonLoc).setValue(driverLoc.getLongitude());
+    }
+
     @Override
     public void onMapReady(final GoogleMap googleMap) {
 
-//        // checking if current user is driver or not
-//        if (driverID.equals(mAuth.getCurrentUserID())){
-//            // getting current location
-//            fusedLocationDriver.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-//                @Override
-//                public void onSuccess(Location location) {
-//                    if (location!=null){
-//                        // setting up driver's current location
-//                        driverMarkerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()));
-//                        driverMarker = mMap.addMarker(driverMarkerOpt);
-//                        driverMarker.setVisible(true);
-//                        // getting driver's current updates location
-//                        fusedLocationDriver = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-//                        driverLocationReq = LocationRequest.create();
-//                        driverLocationReq.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//                        driverLocationReq.setInterval(1000);
-//                        // location service callback
-//                        driverLocationCallback = new LocationCallback(){
-//                            @Override
-//                            public void onLocationResult(LocationResult locationResult) {
-//                                super.onLocationResult(locationResult);
-//                                if (locationResult==null){
-//                                    return;
-//                                }
-//                                for (Location driverLoc: locationResult.getLocations()){
-//                                    refreshDriverLocation(driverLoc);
-//                                }
-//                            }
-//                        };
-//                    }else{
-//                        // location settings turned off
-//                        // todo: popup says turn on location settings
-//                        Toast.makeText(getApplicationContext(), "Please turn on the gps location and request a new ride", Toast.LENGTH_LONG).show();
-//                    }
-//                }
-//            });
-//        }
+
 
         // getting driver location from db
 

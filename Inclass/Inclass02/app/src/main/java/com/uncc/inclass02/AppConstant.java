@@ -41,5 +41,7 @@ public class AppConstant {
     public static final String DRIVER_CURRENT_LOCATION = "currLoc";
     public static final String DRIVER_CURRENT_LatLoc = "latLoc";
     public static final String DRIVER_CURRENT_LonLoc = "longLoc";
+    public static final String RIDER_ID = "RIDER_ID";
+    public static final String RIDERS_RECORD = "RIDERS_RECORD";
 
 }
