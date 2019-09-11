@@ -58,7 +58,7 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
     }
 
     private void shareLocation() {
-        startActivity(AppConstant.REQUEST_LOC_CODE, SendLocation.class);
+        startActivityNow(AppConstant.REQUEST_LOC_CODE, SendLocation.class);
     }
 
     @Override
@@ -86,10 +86,10 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
     }
 
     public void goToRequestRide(){
-        startActivity(AppConstant.REQUEST_RIDE_CODE, RequestRide.class);
+        startActivityNow(AppConstant.REQUEST_RIDE_CODE, RequestRide.class);
     }
 
-    private void startActivity(int code, Class<?> cls) {
+    private void startActivityNow(int code, Class<?> cls) {
         Intent i = new Intent(getActivity(), cls);
         startActivityForResult(i, code);
     }

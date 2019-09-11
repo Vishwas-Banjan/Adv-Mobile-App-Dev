@@ -1,5 +1,7 @@
 package com.uncc.inclass02.ui.chatroom;
 
+import android.content.Intent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,6 +10,7 @@ import android.widget.TextView;
 
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Message;
 
@@ -139,6 +142,18 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             acceptReq = mView.findViewById(R.id.accept_request);
             viewMap = mView.findViewById(R.id.view_map_button);
             startRide = mView.findViewById(R.id.start_ride);
+
+            startRide.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Log.d("MessageListAdapter", "start ride called");
+                    int p = getLayoutPosition();
+                    Intent goToStartRide = new Intent(mView.getContext(), RideRouteActivity.class);
+                    goToStartRide.putExtra(AppConstant.MAP_TO_SHOW_RIDER, true);
+                    goToStartRide.putExtra(AppConstant.TRIP_ID, messageList.get(p).getTripId());
+                    mView.getContext().startActivity(goToStartRide);
+                }
+            });
 
             trashCan.setOnClickListener(new View.OnClickListener() {
                 @Override

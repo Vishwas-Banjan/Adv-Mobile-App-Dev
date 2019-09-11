@@ -38,4 +38,9 @@ public class AppConstant {
     public static final String API_KEY = "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q";
     public static final int PERMISSION_REQUEST_READ_FINE_LOCATION = 1;
     public static final String LOCATION_TEXT = "LOCATION_TEXT";
+    public static final String MAP_TO_SHOW_RIDER = "MAP_TO_SHOW_RIDER";
+    public static final String DRIVER_ID = "DRIVER_ID";
+    public static final String DRIVER_CURRENT_LOCATION = "currLoc";
+    public static final String DRIVER_CURRENT_LatLoc = "latLoc";
+    public static final String DRIVER_CURRENT_LonLoc = "longLoc";
 }

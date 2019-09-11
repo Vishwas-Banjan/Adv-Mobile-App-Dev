@@ -1,12 +1,12 @@
 package com.uncc.inclass02.utilities;
 
+import java.io.Serializable;
 import java.util.Map;
 
-public class Trip {
+public class Trip implements Serializable {
     String id;
     Place pickUpLoc;
     Place dropoffLoc;
-    String createdDate;
     String status;
     Map<String, Driver> drivers;
 
@@ -40,14 +40,6 @@ public class Trip {
 
     public void setDropoffLoc(Place dropoffLoc) {
         this.dropoffLoc = dropoffLoc;
-    }
-
-    public String getCreatedDate() {
-        return createdDate;
-    }
-
-    public void setCreatedDate(String createdDate) {
-        this.createdDate = createdDate;
     }
 
     public Map<String, Driver> getDrivers() {

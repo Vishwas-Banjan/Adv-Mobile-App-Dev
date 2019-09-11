@@ -3,6 +3,7 @@ package com.uncc.inclass02.ui.ride;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -24,8 +25,10 @@ import com.google.android.libraries.places.widget.model.AutocompleteActivityMode
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ServerValue;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Trip;
 
@@ -129,8 +132,7 @@ public class RequestRide extends AppCompatActivity {
         Trip trip = new Trip();
         mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID());
         final String key = mRootRef.push().getKey();
-        trip.setId(key);
-        trip.setCreatedDate(getCurrTime());
+        trip.setId(getCurrTime());
         trip.setPickUpLoc(pickupLoc);
         trip.setDropoffLoc(dropoffLoc);
         trip.setStatus(AppConstant.TRIP_ACTIVE);
@@ -152,7 +154,7 @@ public class RequestRide extends AppCompatActivity {
     }
 
     private String getCurrTime() {
-        SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstant.TIME_FORMAT);
+        @SuppressLint("SimpleDateFormat") SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstant.TIME_FORMAT);
         return dateFormat.format(new Date());
     }
 

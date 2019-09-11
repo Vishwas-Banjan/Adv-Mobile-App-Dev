@@ -6,10 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -31,13 +31,12 @@ import com.google.firebase.storage.StorageReference;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.GlideApp;
 import com.uncc.inclass02.R;
-import com.uncc.inclass02.ui.ride.RequestRide;
+import com.uncc.inclass02.ui.location.AddMoreBottomDialog;
+import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
-import com.uncc.inclass02.utilities.Place;
 import com.uncc.inclass02.utilities.UserProfile;
-import com.uncc.inclass02.ui.location.AddMoreBottomDialog;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -62,7 +61,6 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     DatabaseReference mUserRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY);
     DatabaseReference mRideRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY);
     EditText messageET;
-    private Button addMoreBtn;
 
     public Chat() {
         // Required empty public constructor
@@ -204,6 +202,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     @Override
     public void acceptReq(final String userId, final String driverId, final String tripId) {
         if (userId.equals(driverId)) {
+            Toast.makeText(getContext(), "You cannot be your own driver.", Toast.LENGTH_LONG).show();
             return; // rider cannot be driver
         }
         DatabaseReference mUserRef = FirebaseDatabase.getInstance().getReference(AppConstant.USER_DB_KEY).child(driverId);
@@ -239,6 +238,8 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
+                    // todo: go to ride route activity
+                    Intent goToRideRouteActivity = new Intent(getActivity(), RideRouteActivity.class);
                     Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.add_driver_success, Snackbar.LENGTH_LONG).show();
                 }
             }

@@ -32,6 +32,7 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
     private LocationManager locationManager;
     private LocationListener locationListener;
     List<Place> places;
+    static float[] COLOR_PICKER = new float[]{BitmapDescriptorFactory.HUE_RED, BitmapDescriptorFactory.HUE_GREEN};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,6 +73,7 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
         PolylineOptions polylineOptions = new PolylineOptions();
         LatLngBounds.Builder builder = new LatLngBounds.Builder();
 
+        int i = 0;
         for (Place place : places) {
             LatLng latLng = new LatLng(place.getLatLoc(), place.getLongLoc());
             polylineOptions.add(latLng);
@@ -80,7 +82,7 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(place.getLatLoc(), place.getLongLoc()))
                     .title(place.getName())
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(COLOR_PICKER[i++])));
         }
 
         mMap.addPolyline(polylineOptions);
@@ -113,11 +115,9 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
         int idx = str.indexOf(substr);
         int i = idx - 1;
         StringBuilder sb = new StringBuilder();
-        String s = null;
         while (i >= 0) {
             if (!Character.isDigit(str.charAt(i)) && str.charAt(i) != '\n') {
                 sb.append(str.charAt(i));
-                s = sb.toString();
             } else {
                 break;
             }
