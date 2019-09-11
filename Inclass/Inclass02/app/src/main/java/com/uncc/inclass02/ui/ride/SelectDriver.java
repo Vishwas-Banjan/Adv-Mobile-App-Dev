@@ -59,8 +59,7 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         Bundle b = getIntent().getExtras();
         if(b != null) {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
-             tripId = "-LoXGAAczudVTKP8KqTY";
-             // tripId = b.getString(AppConstant.TRIP_ID);
+            tripId = b.getString(AppConstant.TRIP_ID);
             Log.d(selectDriverTAG, tripId);
         }
 

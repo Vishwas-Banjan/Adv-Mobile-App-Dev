@@ -172,25 +172,20 @@ public class RideRouteActivity extends FragmentActivity{
         @Override
         protected String doInBackground(String... objects) {
             // firebase database instance
-            rideReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            rideReference.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // get all the data
-                    Log.d(rideRouteTAG, dataSnapshot+"");
-                    if (dataSnapshot.exists()){
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
                         currentTrip = dataSnapshot.getValue(Trip.class);
                         mapFragment.getMapAsync((OnMapReadyCallback) onMapReadyCallback);
-                    }else {
-                        handleError("Ride not exists anymore");
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    handleError(databaseError.getMessage());
+
                 }
             });
-            return null;
         }
 
         @Override
