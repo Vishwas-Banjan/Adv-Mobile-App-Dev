@@ -83,10 +83,6 @@ public class RideRouteActivity extends FragmentActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkPermission();
-        }
-
         requestWindowFeature(Window.FEATURE_ACTION_BAR);
         setContentView(R.layout.activity_ride_route);
 
@@ -121,6 +117,11 @@ public class RideRouteActivity extends FragmentActivity{
                     Log.d(rideRouteTAG, "rider id is: "+riderID);
                     getTheDatabaseWorking(riderID);
                 }else{
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        checkPermission();
+                    }else{
+                        startLocationUpdates();
+                    }
                     FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(tripID).addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -227,7 +228,8 @@ public class RideRouteActivity extends FragmentActivity{
             mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLngBounds(originLatLng, destinationLatLng).getCenter(), 10));
 
             // means this map is for rider, so show driver's activity
-            rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION).addValueEventListener(new ValueEventListener() {
+            rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION)
+                    .addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
@@ -271,7 +273,6 @@ public class RideRouteActivity extends FragmentActivity{
                 // If request is cancelled, the result arrays are empty.
                 if (grantResults.length > 0
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
                     startLocationUpdates();
 
                 } else {
@@ -316,8 +317,7 @@ public class RideRouteActivity extends FragmentActivity{
                         // do work here
                         onLocationChanged(locationResult.getLastLocation());
                     }
-                },
-                Looper.myLooper());
+                }, Looper.myLooper());
     }
 
 //    @Override
