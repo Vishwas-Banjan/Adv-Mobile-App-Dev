@@ -36,7 +36,6 @@ public class Chatroom extends AppCompatActivity {
     ViewPager viewPager;
     String chatroomId;
     DatabaseReference mRootRef;
-    String key;
     TextView badge;
     ImageView notification;
     String tripId = AppConstant.WRONG_TRIP_ID;
@@ -73,12 +72,12 @@ public class Chatroom extends AppCompatActivity {
     }
 
     private void addToChatroom() {
-        key = mRootRef.push().getKey();
-        mRootRef.child(key).setValue(new Auth().getCurrentUserID());
+        String uid = new Auth().getCurrentUserID();
+        mRootRef.child(uid).setValue(uid);
     }
 
     private void removeFromChatroom() {
-        mRootRef.child(key).removeValue();
+        mRootRef.child(new Auth().getCurrentUserID()).removeValue();
     }
 
     @Override
@@ -171,6 +170,7 @@ public class Chatroom extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        tripId = AppConstant.WRONG_TRIP_ID;
         removeFromChatroom();
     }
 }
