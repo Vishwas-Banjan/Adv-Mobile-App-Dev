@@ -34,6 +34,7 @@ import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.location.AddMoreBottomDialog;
 import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
+import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
 import com.uncc.inclass02.utilities.UserProfile;
 

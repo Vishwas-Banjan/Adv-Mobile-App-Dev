@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentActivity;
 
 import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -50,14 +51,15 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
 
     private GoogleMap mMap;
     private Toolbar ride_route_toolbar;
-    private String rideRouteTAG = "RideRouteTAG", tripID, driverID = null;
-    private boolean mapToShowRider;
+    private String rideRouteTAG = "RideRouteTAG", tripID, driverID = null, riderID;
+    private boolean mapToShowRider, fetchedData = false;
     private  LatLng originLatLng;
     MarkerOptions origin, destination, driverMarkerOpt;
     Marker driverMarker;
     Auth mAuth;
     Trip currentTrip;
     DatabaseReference rideReference;
+    SupportMapFragment mapFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -66,11 +68,11 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
         setContentView(R.layout.activity_ride_route);
 
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+        mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
-        // databaseReference = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY);
         Bundle fromRequestRide = getIntent().getExtras();
         mAuth = new Auth();
+        riderID = mAuth.getCurrentUserID();
         // toolbar config
         ride_route_toolbar = findViewById(R.id.ride_route_toolbar);
         ride_route_toolbar.setNavigationIcon(R.drawable.quantum_ic_arrow_back_grey600_24);
@@ -90,45 +92,52 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
            if (fromRequestRide!=null){
                // getting trip id and ride id and pickup location
                mapToShowRider = fromRequestRide.containsKey(AppConstant.MAP_TO_SHOW_RIDER) && fromRequestRide.getBoolean(AppConstant.MAP_TO_SHOW_RIDER);
-               tripID = fromRequestRide.getString(AppConstant.TRIP_ID_RESULT);
-               if (fromRequestRide.containsKey(AppConstant.DRIVER_ID)){
-                   driverID = fromRequestRide.getString(AppConstant.DRIVER_ID);
-               }
-               getFirebaseData();
+               tripID = fromRequestRide.getString(AppConstant.TRIP_ID);
            }else{
                handleError("sorry ride not possible");
            }
-           assert mapFragment != null;
-           mapFragment.getMapAsync(this);
+           rideReference = FirebaseDatabase.getInstance().getReference("rides").child("zTzPG3alQYXFlYWJHe9QcFDSz6H2").child("-LoSXpeV1SI_RM0GORRq");
+           new GetFirebaseData().execute("");
        }catch (Exception e){
            handleError(e.getMessage());
        }
     }
 
-    private void getFirebaseData(){
-        // firebase database instance
-        rideReference = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(tripID);
-        rideReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                // get all the data
-                if (dataSnapshot.exists()){
-                    currentTrip = dataSnapshot.getValue(Trip.class);
-                }else {
-                    handleError("Ride not exists anymore");
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                handleError(databaseError.getMessage());
-            }
-        });
-    }
-
     private void handleError(String msg){
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         startActivity(new Intent(this, Dashboard.class));
+    }
+
+    private class GetFirebaseData extends AsyncTask<String, String, String>{
+
+        @Override
+        protected String doInBackground(String... objects) {
+            // firebase database instance
+            rideReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // get all the data
+                    Log.d(rideRouteTAG, dataSnapshot+"");
+                    if (dataSnapshot.exists()){
+                        currentTrip = dataSnapshot.getValue(Trip.class);
+                        mapFragment.getMapAsync((OnMapReadyCallback) onMapReadyCallback);
+                    }else {
+                        handleError("Ride not exists anymore");
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    handleError(databaseError.getMessage());
+                }
+            });
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            super.onPostExecute(s);
+        }
     }
 
 
@@ -142,47 +151,56 @@ public class RideRouteActivity extends FragmentActivity implements OnMapReadyCal
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
-    @Override
-    public void onMapReady(final GoogleMap googleMap) {
-        mMap = googleMap;
-        // in both the cases show the origin and destination markers
-        // making marker options for the route
-        Place originPlace = currentTrip.getPickUpLoc();
-        Place destinationPlace = currentTrip.getDropoffLoc();
-        originLatLng = new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc());
-        origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
-        destination = new MarkerOptions().position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc())).title("Destination of the Route");
 
-        mMap.clear();
-        mMap.addMarker(origin).setVisible(true);
-        mMap.addMarker(destination).setVisible(true);
-        if (mapToShowRider){
-            driverMarkerOpt = new MarkerOptions().position(originLatLng).title("Driver Position");
-            driverMarker = mMap.addMarker(destination);
-            driverMarker.setVisible(true);
-            // means this map is for rider, so show driver's activity
-            rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION).addValueEventListener(new ValueEventListener() {
-                @Override
-                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                    if (dataSnapshot.exists()){
-                        // update Location
-                        LatLng driverLatLng = new LatLng((double)dataSnapshot.child(AppConstant.DRIVER_CURRENT_LatLoc).getValue(), (double)dataSnapshot.child(AppConstant.DRIVER_CURRENT_LonLoc).getValue());
-                        driverMarker.setPosition(driverLatLng);
-                        if (driverLatLng==originLatLng){
+    Object onMapReadyCallback = new OnMapReadyCallback(){
+
+        @Override
+        public void onMapReady(GoogleMap googleMap) {
+            mMap = googleMap;
+            // in both the cases show the origin and destination markers
+            // making marker options for the route
+            Place originPlace = currentTrip.getPickUpLoc();
+            Place destinationPlace = currentTrip.getDropoffLoc();
+            originLatLng = new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc());
+            origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
+            destination = new MarkerOptions().position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc())).title("Destination of the Route");
+            mMap.clear();
+            mMap.addMarker(origin).setVisible(true);
+            mMap.addMarker(destination).setVisible(true);
+            if (mapToShowRider){
+                driverMarkerOpt = new MarkerOptions().position(originLatLng).title("Driver's Position");
+                driverMarker = mMap.addMarker(destination);
+                driverMarker.setVisible(true);
+                driverID = currentTrip.getDrivers().entrySet().iterator().next().getValue().getId();
+                // means this map is for rider, so show driver's activity
+                rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION).addValueEventListener(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        if (dataSnapshot.exists()){
+                            // update Location
+                            LatLng driverLatLng = new LatLng(Double.parseDouble(dataSnapshot.child(AppConstant.DRIVER_CURRENT_LatLoc).getValue()+""), Double.parseDouble(dataSnapshot.child(AppConstant.DRIVER_CURRENT_LonLoc).getValue()+""));
+                            driverMarker.setPosition(driverLatLng);
+                            if (driverLatLng==originLatLng){
+                                handleError("Ride Over");
+                            }
+                        }else{
                             handleError("Ride Over");
                         }
-                    }else{
-                        handleError("Ride Over");
                     }
-                }
 
-                @Override
-                public void onCancelled(@NonNull DatabaseError databaseError) {
-                    handleError(databaseError.getMessage());
-                }
-            });
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) {
+                        handleError(databaseError.getMessage());
+                    }
+                });
 
+            }
         }
+    };
+
+    @Override
+    public void onMapReady(final GoogleMap googleMap) {
+
 //        // checking if current user is driver or not
 //        if (driverID.equals(mAuth.getCurrentUserID())){
 //            // getting current location
