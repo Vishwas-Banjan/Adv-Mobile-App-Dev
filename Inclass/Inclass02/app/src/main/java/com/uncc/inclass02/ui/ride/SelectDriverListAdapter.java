@@ -74,6 +74,7 @@ public class SelectDriverListAdapter extends RecyclerView.Adapter<SelectDriverLi
                 public void onClick(View v) {
                     int p = getLayoutPosition();
                     Driver driver = driverList.get(p);
+                    asyncTask.selectDriver(userId, driver.getId(), driver);
 
                 }
             });

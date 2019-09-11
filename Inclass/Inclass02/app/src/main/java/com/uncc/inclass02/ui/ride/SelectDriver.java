@@ -27,8 +27,11 @@ import com.uncc.inclass02.GlideApp;
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
+import com.uncc.inclass02.utilities.Message;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class SelectDriver extends AppCompatActivity implements SelectDriverAsyncTask {
 
@@ -51,9 +54,11 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         Bundle b = getIntent().getExtras();
         if(b != null) {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
-            tripId = b.getString(AppConstant.TRIP_ID);
+            tripId = "-LoSXpeV1SI_RM0GORRq";
+            // tripId = b.getString(AppConstant.TRIP_ID);
         }
 
+        String id = new Auth().getCurrentUserID();
         mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child(tripId).child(AppConstant.DRIVER_DB_KEY);
 
         driverList = new ArrayList<>();
@@ -85,7 +90,7 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    displayMessageList(dataSnapshot);
+                    displayDriverList(dataSnapshot);
                 }
             }
 
@@ -96,7 +101,7 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         });
     }
 
-    private void displayMessageList(DataSnapshot dataSnapshot) {
+    private void displayDriverList(DataSnapshot dataSnapshot) {
         driverList.clear();
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             Driver driver = child.getValue(Driver.class);
@@ -137,5 +142,29 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
                         .into(iv);
             }
         });
+    }
+
+    @Override
+    public void selectDriver(String userId, final String driverId, final Driver driver) {
+        final DatabaseReference mMesgRef = FirebaseDatabase.getInstance().getReference(AppConstant.CHATROOM_DB_KEY).child(chatroomId).child(AppConstant.MESSAGES);
+        final Message message = new Message();
+        message.setText("You are selected to be a driver for trip ID: " + tripId);
+        message.setUserId(userId);
+        message.setPostedAt(getCurrTime());
+        message.setType(AppConstant.CONFIRM_DRIVER_TYPE);
+        message.setTripId(tripId);
+        message.setRecipientId(driverId);
+        mRootRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
+            @Override
+            public void onSuccess(Void aVoid) {
+                mRootRef.child(driverId).setValue(driver);
+                mMesgRef.push().setValue(message);
+            }
+        });
+    }
+
+    private String getCurrTime() {
+        SimpleDateFormat dateFormat = new SimpleDateFormat(AppConstant.TIME_FORMAT);
+        return dateFormat.format(new Date());
     }
 }

@@ -7,6 +7,12 @@ public class Driver extends UserProfile {
     String id;
     boolean seen;
 
+
+
+    public Driver() {
+        this.currLoc = new Place();
+    }
+
     public boolean isSeen() {
         return seen;
     }
@@ -15,7 +21,6 @@ public class Driver extends UserProfile {
         this.seen = seen;
     }
 
-    @Exclude
     public String getId() {
         return id;
     }

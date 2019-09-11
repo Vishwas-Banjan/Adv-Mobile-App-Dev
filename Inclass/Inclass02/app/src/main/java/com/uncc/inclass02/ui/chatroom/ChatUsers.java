@@ -161,7 +161,7 @@ public class ChatUsers extends Fragment implements ChatUserAsyncTask {
             @Override
             public void onSuccess(Uri downloadUrl)
             {
-                GlideApp.with(getActivity())
+                GlideApp.with(getActivity().getApplicationContext())
                         .load(downloadUrl)
                         .into(iv);
             }
@@ -172,7 +172,7 @@ public class ChatUsers extends Fragment implements ChatUserAsyncTask {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                GlideApp.with(getActivity())
+                GlideApp.with(getActivity().getApplicationContext())
                         .load("https://www.freeiconspng.com/uploads/no-image-icon-11.PNG")
                         .into(iv);
             }
