@@ -55,4 +55,5 @@
     <string name="start_ride">Start ride</string>
     <string name="view_map">View Map</string>
     <string name="add_driver_success">Thank you for accepting request</string>
+    <string name="google_maps_key">AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q</string>
 </resources>

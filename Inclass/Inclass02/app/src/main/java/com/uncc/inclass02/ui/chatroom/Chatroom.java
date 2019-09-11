@@ -22,6 +22,9 @@ import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.MenuItemCompat;
@@ -132,14 +135,15 @@ public class Chatroom extends AppCompatActivity {
         valueListener = mTripRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                List<Driver> drivers = new ArrayList<>();
                 if (dataSnapshot.exists()) {
                     for (DataSnapshot child : dataSnapshot.getChildren()) {
                         Driver driver = child.getValue(Driver.class);
-                        if (!driver.isSeen()) {
-                            notification.setVisibility(View.VISIBLE);
-                            return;
-                        }
-
+                        drivers.add(driver);
+                    }
+                    if (drivers.size() > 0) {
+                        badge.setText(drivers.size());
+                        badge.setVisibility(View.VISIBLE);
                     }
                 }
             }
