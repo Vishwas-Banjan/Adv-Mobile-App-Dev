@@ -2,6 +2,7 @@ package com.uncc.inclass02;
 
 public class AppConstant {
     public static final int LOGIN_CODE = 100;
+    public static final int VIEW_MAP = 150;
     public static final int SIGNUP_CODE = 200;
     public static final int DASHBOARD_CODE = 300;
     public static final int CHATROOM_CODE = 400;
@@ -36,6 +37,7 @@ public class AppConstant {
     public static final String WRONG_TRIP_ID = "WRONG_TRIP_ID";
     public static final String API_KEY = "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q";
     public static final int PERMISSION_REQUEST_READ_FINE_LOCATION = 1;
+    public static final String LOCATION_TEXT = "LOCATION_TEXT";
     public static final String MAP_TO_SHOW_RIDER = "MAP_TO_SHOW_RIDER";
     public static final String DRIVER_ID = "DRIVER_ID";
     public static final String DRIVER_CURRENT_LOCATION = "currLoc";

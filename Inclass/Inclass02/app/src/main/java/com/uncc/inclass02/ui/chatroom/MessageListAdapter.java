@@ -140,7 +140,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
             likesIV = mView.findViewById(R.id.likes);
             trashCan = mView.findViewById(R.id.trash);
             acceptReq = mView.findViewById(R.id.accept_request);
-            viewMap = mView.findViewById(R.id.view_map);
+            viewMap = mView.findViewById(R.id.view_map_button);
             startRide = mView.findViewById(R.id.start_ride);
 
             startRide.setOnClickListener(new View.OnClickListener() {
@@ -169,6 +169,15 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                     int p = getLayoutPosition();
                     Message mesg = messageList.get(p);
                     asyncTask.acceptReq(mesg.getUserId(), userId, mesg.getTripId());
+                }
+            });
+
+            viewMap.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    int p = getLayoutPosition();
+                    Message mesg = messageList.get(p);
+                    asyncTask.viewMap(mesg.getText());
                 }
             });
 

@@ -41,6 +41,9 @@ import com.uncc.inclass02.utilities.UserProfile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -217,6 +220,16 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
 
             }
         });
+    }
+
+    @Override
+    public void viewMap(String text) {
+        Intent i = new Intent(getActivity(), ViewMap.class);
+        Bundle b = new Bundle();
+        b.putString(AppConstant.LOCATION_TEXT, text);
+        i.putExtras(b);
+        startActivityForResult(i, AppConstant.VIEW_MAP);
+
     }
 
     private void addDriver(String userId, String driverId, UserProfile driverInfo, String tripId) {

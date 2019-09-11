@@ -155,7 +155,7 @@ public class RequestRide extends AppCompatActivity {
 
     private String buildRideText() {
         return "Pick up location: " + pickupLoc.getLatLoc() + ", " + pickupLoc.getLongLoc()
-                + "\nDropoff Location: " + dropoffLoc.getLatLoc() + ", " + dropoffLoc.getLongLoc();
+                + " \nDropoff Location: " + dropoffLoc.getLatLoc() + ", " + dropoffLoc.getLongLoc();
     }
 
     private String getCurrTime() {
