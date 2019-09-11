@@ -65,15 +65,31 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.GONE);
                 holder.startRide.setVisibility(View.GONE);
+                holder.imageView.setVisibility(View.VISIBLE);
+                holder.nameTV.setVisibility(View.VISIBLE);
+                holder.numLikesTV.setVisibility(View.VISIBLE);
+                holder.likesIV.setVisibility(View.VISIBLE);
+                holder.trashCan.setVisibility(View.VISIBLE);
                 break;
             case AppConstant.LOC_REQ_TYPE:
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.VISIBLE);
                 holder.startRide.setVisibility(View.GONE);
+                holder.imageView.setVisibility(View.VISIBLE);
+                holder.nameTV.setVisibility(View.VISIBLE);
+                holder.numLikesTV.setVisibility(View.VISIBLE);
+                holder.likesIV.setVisibility(View.VISIBLE);
+                holder.trashCan.setVisibility(View.VISIBLE);
                 break;
             case AppConstant.RIDE_REQ_TYPE:
                 holder.startRide.setVisibility(View.GONE);
                 holder.trashCan.setVisibility(View.GONE);
+                holder.imageView.setVisibility(View.VISIBLE);
+                holder.nameTV.setVisibility(View.VISIBLE);
+                holder.numLikesTV.setVisibility(View.VISIBLE);
+                holder.likesIV.setVisibility(View.VISIBLE);
+                holder.acceptReq.setVisibility(View.VISIBLE);
+                holder.viewMap.setVisibility(View.VISIBLE);
                 break;
             case AppConstant.CONFIRM_DRIVER_TYPE:
                 holder.imageView.setVisibility(View.GONE);
@@ -83,6 +99,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.GONE);
                 holder.trashCan.setVisibility(View.GONE);
+                holder.startRide.setVisibility(View.VISIBLE);
                 break;
         }
 
