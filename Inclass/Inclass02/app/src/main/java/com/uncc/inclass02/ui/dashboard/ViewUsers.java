@@ -167,7 +167,7 @@ public class ViewUsers extends Fragment implements UserAsyncTask {
             @Override
             public void onSuccess(Uri downloadUrl)
             {
-                GlideApp.with(getActivity())
+                GlideApp.with(getActivity().getApplicationContext())
                         .load(downloadUrl)
                         .into(iv);
             }
@@ -178,7 +178,7 @@ public class ViewUsers extends Fragment implements UserAsyncTask {
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                GlideApp.with(getActivity())
+                GlideApp.with(getActivity().getApplicationContext())
                         .load("https://www.freeiconspng.com/uploads/no-image-icon-11.PNG")
                         .into(iv);
             }

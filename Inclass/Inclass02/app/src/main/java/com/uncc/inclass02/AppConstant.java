@@ -26,6 +26,7 @@ public class AppConstant {
     public static final String TEXT_TYPE = "TEXT";
     public static final String LOC_REQ_TYPE = "LOC_REQ";
     public static final String RIDE_REQ_TYPE = "RIDE_REQ";
+    public static final String CONFIRM_DRIVER_TYPE = "CONFIRM_DRIVER_TYPE";
     public static final String TRIP_COMPLETE = "complete";
     public static final String TRIP_ACTIVE = "active";
     public static final String RIDE_REQ_RESULT = "RIDE_REQ_RESULT";

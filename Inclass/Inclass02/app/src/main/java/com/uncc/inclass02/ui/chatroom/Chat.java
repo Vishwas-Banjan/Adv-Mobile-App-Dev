@@ -157,9 +157,21 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
         for (DataSnapshot child : dataSnapshot.getChildren()) {
             Message message = child.getValue(Message.class);
             message.setId(child.getKey());
-            messageList.add(message);
+            if (isAdded(message)) {
+                messageList.add(message);
+            }
         }
         recyclerView.smoothScrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+    }
+
+    private boolean isAdded(Message message) {
+        if (message.getRecipientId() != null) {
+            if (message.getRecipientId().equals(new Auth().getCurrentUserID())) {
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 
     @Override
@@ -223,7 +235,13 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
                 Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.invalid_location, Snackbar.LENGTH_LONG).show();
             }
         });
-        mDriverRef.setValue(driverInfo);
+        Driver d = new Driver();
+        d.setFirstName(driverInfo.getFirstName());
+        d.setLastName(driverInfo.getLastName());
+        d.setEmail(driverInfo.getEmail());
+        d.setGender(driverInfo.getGender());
+        d.setId(driverId);
+        mDriverRef.setValue(d);
     }
 
     public UserProfile getUserInfo(DataSnapshot dataSnapshot) {
@@ -265,7 +283,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
             @Override
             public void onSuccess(Uri downloadUrl)
             {
-                GlideApp.with(getActivity())
+                GlideApp.with(getActivity().getApplicationContext())
                         .load(downloadUrl)
                         .into(iv);
             }
@@ -276,7 +294,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
         }).addOnFailureListener(new OnFailureListener() {
             @Override
             public void onFailure(@NonNull Exception e) {
-                GlideApp.with(getActivity())
+                GlideApp.with(getActivity().getApplicationContext())
                         .load("https://www.freeiconspng.com/uploads/no-image-icon-11.PNG")
                         .into(iv);
             }

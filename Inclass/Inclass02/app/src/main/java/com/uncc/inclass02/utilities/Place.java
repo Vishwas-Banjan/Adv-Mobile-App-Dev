@@ -4,9 +4,9 @@ import java.io.Serializable;
 
 public class Place implements Serializable {
 
-    private String name;
-    private double latLoc;
-    private double longLoc;
+    String name;
+    Double latLoc = 0.00;
+    Double longLoc = 0.00;
 
     public Place() {
     }
