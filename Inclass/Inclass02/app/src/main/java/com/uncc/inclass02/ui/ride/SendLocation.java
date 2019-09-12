@@ -65,6 +65,7 @@ public class SendLocation extends AppCompatActivity {
                 }
             }
         };
+        Toast.makeText(getApplicationContext(), "Shared your location", Toast.LENGTH_LONG).show();
         LocationServices.getFusedLocationProviderClient(SendLocation.this).requestLocationUpdates(mLocationRequest, mLocationCallback, null);
     }
 

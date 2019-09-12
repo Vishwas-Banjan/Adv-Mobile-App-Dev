@@ -172,7 +172,7 @@ public class RideRouteActivity extends FragmentActivity{
         @Override
         protected String doInBackground(String... objects) {
             // firebase database instance
-            rideReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            rideReference.addValueEventListener(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     // get all the data
@@ -215,6 +215,7 @@ public class RideRouteActivity extends FragmentActivity{
         @Override
         public void onMapReady(GoogleMap googleMap) {
             mMap = googleMap;
+            mMap.clear();
             // in both the cases show the origin and destination markers
             // making marker options for the route
 
@@ -232,13 +233,13 @@ public class RideRouteActivity extends FragmentActivity{
 
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
-                    .title("Pickup Location")
+                    .title("Destination Location")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
 
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
-                    .title("Pickup Location")
+                    .title("Driver Location")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
             builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
 
