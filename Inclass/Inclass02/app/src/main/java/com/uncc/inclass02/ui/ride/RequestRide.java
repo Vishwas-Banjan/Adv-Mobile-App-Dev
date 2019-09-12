@@ -90,7 +90,7 @@ public class RequestRide extends AppCompatActivity {
     }
 
     private void openPlaceAutocomplete(int code) {
-        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS);
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.FULLSCREEN, fields)
                 .build(this);

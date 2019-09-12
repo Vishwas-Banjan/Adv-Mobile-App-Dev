@@ -178,6 +178,7 @@ public class Chatroom extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 //        tripId = AppConstant.WRONG_TRIP_ID;
+
         removeFromChatroom();
     }
 }
