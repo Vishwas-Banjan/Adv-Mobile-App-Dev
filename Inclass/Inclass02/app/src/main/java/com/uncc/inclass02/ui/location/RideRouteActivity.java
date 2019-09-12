@@ -107,44 +107,56 @@ public class RideRouteActivity extends FragmentActivity{
         // this.trip = (Trip) fromRequestRide.getSerializableExtra("trip");
         // this.driverID = fromRequestRide.getStringExtra("driverID");
 
-        try{
-            if (fromRequestRide!=null){
-                // getting trip id and ride id and pickup location
-                mapToShowRider = fromRequestRide.containsKey(AppConstant.MAP_TO_SHOW_RIDER) && fromRequestRide.getBoolean(AppConstant.MAP_TO_SHOW_RIDER);
-                tripID = fromRequestRide.getString(AppConstant.TRIP_ID);
-                if (mapToShowRider){
-                    riderID = mAuth.getCurrentUserID();
-                    Log.d(rideRouteTAG, "rider id is: "+riderID);
-                    getTheDatabaseWorking(riderID);
-                }else{
-                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                        checkPermission();
-                    }else{
-                        startLocationUpdates();
-                    }
-                    FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(tripID).addListenerForSingleValueEvent(new ValueEventListener() {
-                        @Override
-                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                            riderID = dataSnapshot.getValue().toString();
-                            Log.d(rideRouteTAG, "rider id is: "+riderID);
-                            getTheDatabaseWorking(riderID);
-                        }
+        tripID = fromRequestRide.getString(AppConstant.TRIP_ID);
+        riderID = fromRequestRide.getString(AppConstant.RIDER_ID);
+        driverID = fromRequestRide.getString(AppConstant.DRIVER_ID);
+        getTheDatabaseWorking();
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            handleError("sorry ride not possible");
-                        }
-                    });
-                }
-            }else{
-                handleError("sorry ride not possible");
-            }
-        }catch (Exception e){
-            handleError(e.getMessage());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkPermission();
+        } else {
+            startLocationUpdates();
         }
+
+//        try{
+//            if (fromRequestRide!=null){
+//                // getting trip id and ride id and pickup location
+//                mapToShowRider = fromRequestRide.containsKey(AppConstant.MAP_TO_SHOW_RIDER) && fromRequestRide.getBoolean(AppConstant.MAP_TO_SHOW_RIDER);
+//                tripID = fromRequestRide.getString(AppConstant.TRIP_ID);
+//                if (mapToShowRider){
+//                    riderID = mAuth.getCurrentUserID();
+//                    Log.d(rideRouteTAG, "rider id is: "+riderID);
+//                    getTheDatabaseWorking(riderID);
+//                }else{
+//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                        checkPermission();
+//                    }else{
+//
+//                        startLocationUpdates();
+//                    }
+//                    FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(tripID).addListenerForSingleValueEvent(new ValueEventListener() {
+//                        @Override
+//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                            riderID = dataSnapshot.getValue().toString();
+//                            Log.d(rideRouteTAG, "rider id is: "+riderID);
+//                            getTheDatabaseWorking(riderID);
+//                        }
+//
+//                        @Override
+//                        public void onCancelled(@NonNull DatabaseError databaseError) {
+//                            handleError("sorry ride not possible");
+//                        }
+//                    });
+//                }
+//            }else{
+//                handleError("sorry ride not possible");
+//            }
+//        }catch (Exception e){
+//            handleError(e.getMessage());
+//        }
     }
 
-    private void getTheDatabaseWorking(String riderID){
+    private void getTheDatabaseWorking(){
         rideReference = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(riderID).child(tripID);
         new GetFirebaseData().execute("");
     }
@@ -288,36 +300,38 @@ public class RideRouteActivity extends FragmentActivity{
         }
     }
 
-    public LatLng onLocationChanged(Location location) {
-        return new LatLng(location.getLatitude(), location.getLongitude());
+    public void onLocationChanged(Location location) {
+        DatabaseReference dbRef = rideReference.child(AppConstant.DRIVER_DB_KEY).child(driverID).child(AppConstant.DRIVER_CURRENT_LOCATION);
+        dbRef.setValue(new Place(location.getLatitude(), location.getLongitude(), null));
     }
 
     protected void startLocationUpdates() {
+        if (driverID.equals(new Auth().getCurrentUserID())) {
+            // Create the location request to start receiving updates
+            mLocationRequest = new LocationRequest();
+            mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+            mLocationRequest.setInterval(UPDATE_INTERVAL);
+            mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
-        // Create the location request to start receiving updates
-        mLocationRequest = new LocationRequest();
-        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        mLocationRequest.setInterval(UPDATE_INTERVAL);
-        mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
+            // Create LocationSettingsRequest object using location request
+            LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
+            builder.addLocationRequest(mLocationRequest);
+            LocationSettingsRequest locationSettingsRequest = builder.build();
 
-        // Create LocationSettingsRequest object using location request
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder();
-        builder.addLocationRequest(mLocationRequest);
-        LocationSettingsRequest locationSettingsRequest = builder.build();
+            // Check whether location settings are satisfied
+            // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
+            SettingsClient settingsClient = LocationServices.getSettingsClient(this);
+            settingsClient.checkLocationSettings(locationSettingsRequest);
 
-        // Check whether location settings are satisfied
-        // https://developers.google.com/android/reference/com/google/android/gms/location/SettingsClient
-        SettingsClient settingsClient = LocationServices.getSettingsClient(this);
-        settingsClient.checkLocationSettings(locationSettingsRequest);
-
-        // new Google API SDK v11 uses getFusedLocationProviderClient(this)
-        getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
-                    @Override
-                    public void onLocationResult(LocationResult locationResult) {
-                        // do work here
-                        onLocationChanged(locationResult.getLastLocation());
-                    }
-                }, Looper.myLooper());
+            // new Google API SDK v11 uses getFusedLocationProviderClient(this)
+            getFusedLocationProviderClient(this).requestLocationUpdates(mLocationRequest, new LocationCallback() {
+                @Override
+                public void onLocationResult(LocationResult locationResult) {
+                    // do work here
+                    onLocationChanged(locationResult.getLastLocation());
+                }
+            }, Looper.myLooper());
+        }
     }
 
 //    @Override

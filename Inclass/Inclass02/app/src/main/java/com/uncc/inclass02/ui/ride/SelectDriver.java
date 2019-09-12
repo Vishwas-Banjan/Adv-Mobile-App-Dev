@@ -59,8 +59,8 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         Bundle b = getIntent().getExtras();
         if(b != null) {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
-//            tripId = "-LoVgtPBUbzS7xJnye1W";
-             tripId = b.getString(AppConstant.TRIP_ID);
+             tripId = "-LoXGAAczudVTKP8KqTY";
+             // tripId = b.getString(AppConstant.TRIP_ID);
             Log.d(selectDriverTAG, tripId);
         }
 
@@ -166,8 +166,9 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
                 mRootRef.child(driverId).setValue(driver);
                 mMesgRef.push().setValue(message);
                 Intent goToRidePage = new Intent(getApplicationContext(), RideRouteActivity.class);
-                goToRidePage.putExtra(AppConstant.MAP_TO_SHOW_RIDER, true);
-                goToRidePage.putExtra(AppConstant.TRIP_ID, tripId);
+                goToRidePage.putExtra(AppConstant.RIDER_ID, message.getUserId());
+                goToRidePage.putExtra(AppConstant.TRIP_ID, message.getTripId());
+                goToRidePage.putExtra(AppConstant.DRIVER_ID, message.getRecipientId());
                 startActivity(goToRidePage);
             }
         });
