@@ -19,12 +19,23 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.utilities.Place;
 
+import org.joda.time.DateTime;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
 
@@ -47,7 +58,7 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
         mapFragment.getMapAsync(this);
 
         Bundle b = getIntent().getExtras();
-        if(b != null) {
+        if (b != null) {
             places = extractPlaceFromText(b.getString(AppConstant.LOCATION_TEXT));
         }
 
@@ -67,6 +78,17 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
         mMap = googleMap;
 
         drawPolylines();
+
+
+        DirectionsResult results = getDirectionsDetails(places.get(0).getLatLoc() + ", " + places.get(0).getLongLoc()
+                , places.get(1).getLatLoc() + ", " + places.get(1).getLongLoc(), TravelMode.DRIVING);
+        if (results != null) {
+            addPolyline(results, googleMap);
+            positionCamera(results.routes[overview], googleMap);
+            addMarkersToMap(results, googleMap);
+        }
+
+
     }
 
     private void drawPolylines() {
@@ -101,7 +123,7 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
         List<Place> places = new ArrayList<>();
         String[] numbers = str.replaceAll("[^0-9.-]+", " ").trim().split(" ");
         double[] ds = new double[numbers.length];
-        for (int i = 0; i < numbers.length; i+=2) {
+        for (int i = 0; i < numbers.length; i += 2) {
             double latLoc = Double.parseDouble(numbers[i]);
             double longLoc = Double.parseDouble(numbers[i + 1]);
             String substr = latLoc + ", " + longLoc;
@@ -124,5 +146,81 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
             i--;
         }
         return sb.reverse().toString().replace(":", "").trim();
+    }
+
+
+    private GeoApiContext getGeoContext() {
+        GeoApiContext geoApiContext = new GeoApiContext();
+        return geoApiContext
+                .setQueryRateLimit(3)
+                .setApiKey(getResources().getString(R.string.google_api_key))
+                .setConnectTimeout(1, TimeUnit.SECONDS)
+                .setReadTimeout(1, TimeUnit.SECONDS)
+                .setWriteTimeout(1, TimeUnit.SECONDS);
+    }
+
+    private DirectionsResult getDirectionsDetails(String origin, String destination, TravelMode mode) {
+        DateTime now = new DateTime();
+        try {
+            return DirectionsApi.newRequest(getGeoContext())
+                    .mode(mode)
+                    .origin(origin)
+                    .destination(destination)
+                    .departureTime(now)
+                    .await();
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static final int overview = 0;
+
+    private void addMarkersToMap(DirectionsResult results, GoogleMap mMap) {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview]
+                .legs[overview].startLocation.lat, results.routes[overview]
+                .legs[overview].startLocation.lng)).title("Start Point: " + results.routes[overview]
+                .legs[overview].startAddress));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview]
+                .legs[overview].endLocation.lat, results.routes[overview]
+                .legs[overview].endLocation.lng)).title("End Point: " + results.routes[overview]
+                .legs[overview].endAddress).snippet(getEndLocationTitle(results)));
+    }
+
+    private void positionCamera(DirectionsRoute route, GoogleMap mMap) {
+        LatLngBounds.Builder latLongBuilder = new LatLngBounds.Builder();
+        ArrayList<LatLng> latLngArrayList = new ArrayList<>();
+        latLngArrayList.add(new LatLng(route.legs[overview]
+                .startLocation.lat, route.legs[overview].startLocation.lng));
+        latLngArrayList.add(new LatLng(route.legs[overview]
+                .endLocation.lat, route.legs[overview].endLocation.lng));
+        if (latLngArrayList.size() > 0) {
+            for (LatLng p : latLngArrayList) {
+                latLongBuilder.include(p);
+            }
+        }
+        LatLngBounds bounds = latLongBuilder.build();
+        mMap.setLatLngBoundsForCameraTarget(bounds);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLongBuilder.build(), 50));
+    }
+
+    private void addPolyline(DirectionsResult results, GoogleMap mMap) {
+        List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
+        mMap.addPolyline(new PolylineOptions().addAll(decodedPath)
+                .width(30)
+                .color(this.getColor(R.color.colorPrimary)
+                ));
+    }
+
+    private String getEndLocationTitle(DirectionsResult results) {
+        return "Time :" + results.routes[overview]
+                .legs[overview].duration.humanReadable + " Distance :" + results.routes[overview]
+                .legs[overview].distance.humanReadable;
     }
 }
