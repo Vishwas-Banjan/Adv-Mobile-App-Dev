@@ -41,9 +41,6 @@ import com.uncc.inclass02.utilities.UserProfile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 
 /**
@@ -238,7 +235,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     }
 
     private void addDriver(String userId, String driverId, UserProfile driverInfo, String tripId) {
-        DatabaseReference mDriverRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(userId).child(tripId).child(AppConstant.DRIVER_DB_KEY).child(driverId);
+        DatabaseReference mDriverRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(userId).child(tripId).child(AppConstant.CANDIDATE_DB_KEY).child(driverId);
         mDriverRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

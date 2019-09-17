@@ -7,6 +7,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -14,17 +16,11 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -36,15 +32,10 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
-import com.google.android.gms.maps.model.Polyline;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -53,7 +44,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.dashboard.Dashboard;
-import com.uncc.inclass02.ui.ride.SendLocation;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Place;
 import com.uncc.inclass02.utilities.Trip;
@@ -62,18 +52,16 @@ import static com.google.android.gms.location.LocationServices.getFusedLocationP
 
 public class RideRouteActivity extends FragmentActivity{
 
+    private static final float MIN_DISTANCE = 100;
     private GoogleMap mMap;
     private Toolbar ride_route_toolbar;
-    private String rideRouteTAG = "RideRouteTAG", tripID, driverID = null, riderID;
-    private boolean mapToShowRider, fetchedData = false;
-    private  LatLng originLatLng, destinationLatLng;
-    MarkerOptions origin, driverMarkerOpt;
-    Marker driverMarker;
+    private String tripID, driverID = null, riderID;
     Auth mAuth;
     Trip currentTrip;
     DatabaseReference rideReference;
     FirebaseDatabase firebaseDatabase;
     SupportMapFragment mapFragment;
+    boolean showTripCompleteDialog;
 
     private LocationRequest mLocationRequest;
 
@@ -118,43 +106,6 @@ public class RideRouteActivity extends FragmentActivity{
         } else {
             startLocationUpdates();
         }
-
-//        try{
-//            if (fromRequestRide!=null){
-//                // getting trip id and ride id and pickup location
-//                mapToShowRider = fromRequestRide.containsKey(AppConstant.MAP_TO_SHOW_RIDER) && fromRequestRide.getBoolean(AppConstant.MAP_TO_SHOW_RIDER);
-//                tripID = fromRequestRide.getString(AppConstant.TRIP_ID);
-//                if (mapToShowRider){
-//                    riderID = mAuth.getCurrentUserID();
-//                    Log.d(rideRouteTAG, "rider id is: "+riderID);
-//                    getTheDatabaseWorking(riderID);
-//                }else{
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                        checkPermission();
-//                    }else{
-//
-//                        startLocationUpdates();
-//                    }
-//                    FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(tripID).addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            riderID = dataSnapshot.getValue().toString();
-//                            Log.d(rideRouteTAG, "rider id is: "+riderID);
-//                            getTheDatabaseWorking(riderID);
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//                            handleError("sorry ride not possible");
-//                        }
-//                    });
-//                }
-//            }else{
-//                handleError("sorry ride not possible");
-//            }
-//        }catch (Exception e){
-//            handleError(e.getMessage());
-//        }
     }
 
     private void getTheDatabaseWorking(){
@@ -174,20 +125,20 @@ public class RideRouteActivity extends FragmentActivity{
             // firebase database instance
             rideReference.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // get all the data
-                    Log.d(rideRouteTAG, dataSnapshot+"");
-                    if (dataSnapshot.exists()){
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
                         currentTrip = dataSnapshot.getValue(Trip.class);
+                        if (currentTrip.getStatus().equals(AppConstant.TRIP_COMPLETE)){
+                            finish();
+                            return;
+                        }
                         mapFragment.getMapAsync((OnMapReadyCallback) onMapReadyCallback);
-                    }else {
-                        handleError("Ride not exists anymore");
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    handleError(databaseError.getMessage());
+
                 }
             });
             return null;
@@ -225,10 +176,18 @@ public class RideRouteActivity extends FragmentActivity{
             Place destinationPlace = currentTrip.getDropoffLoc();
             Place driver = currentTrip.getDrivers().get(driverID).getCurrLoc();
 
+            if (!showTripCompleteDialog) {
+                float[] results = new float[1];
+                Location.distanceBetween(originPlace.getLatLoc(), originPlace.getLongLoc(), driver.getLatLoc(), driver.getLongLoc(), results);
+
+                if (new Auth().getCurrentUserID().equals(riderID) && results[0] < MIN_DISTANCE) {
+                    showTripCompleteDialog();
+                }
+            }
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()))
                     .title("Pickup Location")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             builder.include(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()));
 
             mMap.addMarker(new MarkerOptions()
@@ -237,11 +196,13 @@ public class RideRouteActivity extends FragmentActivity{
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
-                    .title("Driver Location")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+            if (driver.getLatLoc() != 0 && driver.getLongLoc() != 0) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
+                        .title("Driver Location")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+            }
 
             LatLngBounds bounds = builder.build();
 
@@ -253,6 +214,46 @@ public class RideRouteActivity extends FragmentActivity{
             mMap.animateCamera(cu);
         }
     };
+
+    private void showTripCompleteDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RideRouteActivity.this, R.style.AppTheme_AppBarOverlay);
+        alertDialogBuilder.setMessage(getResources().getString(R.string.trip_complete_dialog));
+        alertDialogBuilder.setPositiveButton("COMPLETE", null);
+        alertDialogBuilder.setNegativeButton("CANCEL", null);
+
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setTripComplete();
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+
+                Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showTripCompleteDialog = false;
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    private void setTripComplete() {
+        DatabaseReference ref = rideReference.child(AppConstant.TRIP_STATUS_DB_KEY);
+        ref.setValue(AppConstant.TRIP_COMPLETE);
+    }
 
     public void checkPermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
@@ -323,82 +324,4 @@ public class RideRouteActivity extends FragmentActivity{
             }, Looper.myLooper());
         }
     }
-
-//    @Override
-//    public void onMapReady(final GoogleMap googleMap) {
-//
-////        // checking if current user is driver or not
-////        if (driverID.equals(mAuth.getCurrentUserID())){
-////            // getting current location
-////            fusedLocationDriver.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-////                @Override
-////                public void onSuccess(Location location) {
-////                    if (location!=null){
-////                        // setting up driver's current location
-////                        driverMarkerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()));
-////                        driverMarker = mMap.addMarker(driverMarkerOpt);
-////                        driverMarker.setVisible(true);
-////                        // getting driver's current updates location
-////                        fusedLocationDriver = LocationServices.getFusedLocationProviderClient(getApplicationContext());
-////                        driverLocationReq = LocationRequest.create();
-////                        driverLocationReq.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-////                        driverLocationReq.setInterval(1000);
-////                        // location service callback
-////                        driverLocationCallback = new LocationCallback(){
-////                            @Override
-////                            public void onLocationResult(LocationResult locationResult) {
-////                                super.onLocationResult(locationResult);
-////                                if (locationResult==null){
-////                                    return;
-////                                }
-////                                for (Location driverLoc: locationResult.getLocations()){
-////                                    refreshDriverLocation(driverLoc);
-////                                }
-////                            }
-////                        };
-////                    }else{
-////                        // location settings turned off
-////                        // todo: popup says turn on location settings
-////                        Toast.makeText(getApplicationContext(), "Please turn on the gps location and request a new ride", Toast.LENGTH_LONG).show();
-////                    }
-////                }
-////            });
-////        }
-//
-//        // getting driver location from db
-//
-//
-//
-//
-////        // Add a marker in Sydney and move the camera
-////        LatLng sydney = new LatLng(-34, 151);
-////        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-////        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
-////        directionURL = developDirectionURL(originLatLng.latitude+","+originLatLng.longitude, destinationLatLng.latitude+","+destinationLatLng.longitude);
-//        // async task fetch url
-////        RequestQueue rideRouteReqQue = Volley.newRequestQueue(this);
-////        StringRequest req = new StringRequest(directionURL, this, this);
-////        rideRouteReqQue.add(req);
-//    }
-
-
-//    private String developDirectionURL(String origin, String destination){
-//        return directionURL+"origin="+origin.toString()+"&destination="+destination.toString()+"&key="+getString(R.string.google_api_key);
-//    }
-
-
-//    private void setOriginLatLng(){
-//        // getting location attributes
-//        originLatLng = new LatLng(originLat, originLng);
-//        destinationLatLng = new LatLng(destinationLat, destinationLon);
-//        // making marker options for the route
-//        origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
-//        destination = new MarkerOptions().position(destinationLatLng).title("Destination of the Route");
-//        // adding markers to map
-//        mMap.clear();
-//        Marker originMarker = mMap.addMarker(origin);
-//        Marker destinationMarker = mMap.addMarker(destination);
-//        originMarker.setVisible(true);
-//        destinationMarker.setVisible(true);
-//    }
 }

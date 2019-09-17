@@ -140,17 +140,13 @@ public class RequestRide extends AppCompatActivity {
         mRootRef.child(key).setValue(trip).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(key).setValue(new Auth().getCurrentUserID()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
-                        // todo: setting it to shared preferrence
-                        resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        finish();
-                    }
-                });
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
+                // todo: setting it to shared preferrence
+                resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
             }
         });
     }

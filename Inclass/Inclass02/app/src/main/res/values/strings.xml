@@ -57,4 +57,5 @@
     <string name="add_driver_success">Thank you for accepting request</string>
     <string name="google_maps_key">AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q</string>
     <string name="trip_history">Trips</string>
+    <string name="trip_complete_dialog">Is Your Trip Complete?</string>
 </resources>
