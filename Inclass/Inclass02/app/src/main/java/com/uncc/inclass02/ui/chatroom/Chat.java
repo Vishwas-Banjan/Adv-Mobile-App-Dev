@@ -3,6 +3,7 @@ package com.uncc.inclass02.ui.chatroom;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
+
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
@@ -18,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -35,13 +44,6 @@ import com.uncc.inclass02.utilities.UserProfile;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-import androidx.viewpager.widget.ViewPager;
 
 
 /**
@@ -100,6 +102,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
 
 
         messageList = new ArrayList<>();
@@ -221,6 +224,7 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
             }
         });
     }
+
 
 
     @Override
@@ -348,13 +352,17 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference dateRef = storageRef.child(link);
-        dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
             @Override
-            public void onSuccess(Uri downloadUrl) {
+            public void onSuccess(Uri downloadUrl)
+            {
                 GlideApp.with(getActivity().getApplicationContext())
                         .load(downloadUrl)
                         .into(iv);
             }
+
+
 
 
         }).addOnFailureListener(new OnFailureListener() {
@@ -370,15 +378,15 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.add_more_btn: {
+        switch (view.getId()){
+            case R.id.add_more_btn:{
                 // do the bottom sheet
                 AddMoreBottomDialog ambd = AddMoreBottomDialog.newInstance(this);
                 assert getFragmentManager() != null;
                 ambd.show(getFragmentManager(), ambd.getTag());
                 break;
             }
-            case R.id.sendButton: {
+            case R.id.sendButton:{
                 String mesg = messageET.getText().toString();
                 if (!mesg.isEmpty()) {
                     sendMessage(mesg, AppConstant.TEXT_TYPE, null);
@@ -396,6 +404,6 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
     @Override
     public void setTrip(String text, String tripId) {
         sendMessage(text, AppConstant.RIDE_REQ_TYPE, tripId);
-        ((Chatroom) getActivity()).setTripId(tripId);
+        ((Chatroom)getActivity()).setTripId(tripId);
     }
 }

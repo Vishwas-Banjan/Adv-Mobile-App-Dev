@@ -7,14 +7,12 @@
     android:orientation="vertical"
     tools:context=".ui.location.RideRouteActivity"
     android:weightSum="3">
-
     <androidx.appcompat.widget.Toolbar
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/backgroundColor"
         map:titleTextColor="@color/textColor"
-        android:id="@+id/ride_route_toolbar" />
-
+        android:id="@+id/ride_route_toolbar"/>
     <fragment
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"

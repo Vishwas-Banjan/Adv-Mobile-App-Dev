@@ -51,39 +51,39 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
 
     @Override
     public void onClick(final View view) {
-        switch (view.getId()) {
-            case R.id.login_button: {
+        switch (view.getId()){
+            case R.id.login_button:{
                 email = emailText.getText().toString();
                 password = passwordText.getText().toString();
                 // check if email and passwords are filled
                 // password is atleast 6 char long
-                if (email.isEmpty() || password.isEmpty() || password.length() < 6) {
+                if (email.isEmpty()||password.isEmpty()||password.length()<6){
                     // notify user about that
                     Snackbar.make(view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
-                } else {
+                }else{
                     // logging in
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
                         @Override
                         public void onComplete(@NonNull Task<AuthResult> task) {
-                            Log.d(TAG, "login successful: " + task.getException());
-                            if (task.isSuccessful()) {
+                            Log.d(TAG, "login successful: "+task.getException());
+                            if(task.isSuccessful()){
 //                                Log.d(TAG, "login successful: "+task.getException());
                                 Login.this.startActivity(new Intent(Login.this, Dashboard.class));
                                 finish();
-                            } else {
-                                Snackbar.make(view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
+                            }else{
+                                Snackbar.make( view, R.string.invalid_login, Snackbar.LENGTH_LONG).show();
                             }
                         }
                     });
                 }
                 break;
             }
-            case R.id.go_to_create_account: {
+            case R.id.go_to_create_account:{
                 // go to create account
                 startActivity(new Intent(Login.this, CreateAccount.class));
                 break;
             }
-            case R.id.forgotPassword: {
+            case R.id.forgotPassword:{
                 // enter email
                 AlertDialog.Builder forgotPasswordDialog = new AlertDialog.Builder(this);
                 View forgotPassView = getLayoutInflater().inflate(R.layout.fragment_ask_for_data, null, false);
@@ -97,9 +97,9 @@ public class Login extends AppCompatActivity implements View.OnClickListener {
                     public void onClick(DialogInterface dialogInterface, int i) {
                         // forgotPassword
                         Task resetPassword = mAuth.sendPasswordResetEmail(input.getText().toString());
-                        if (resetPassword.isSuccessful()) {
+                        if (resetPassword.isSuccessful()){
                             Snackbar.make(view, "We've Sent you a mail to reset your password", Snackbar.LENGTH_LONG).show();
-                        } else {
+                        }else{
                             Snackbar.make(view, resetPassword.getException().getMessage(), Snackbar.LENGTH_LONG).show();
                         }
                         dialogInterface.cancel();

@@ -156,13 +156,17 @@ public class ChatUsers extends Fragment implements ChatUserAsyncTask {
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference dateRef = storageRef.child(link);
-        dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+        dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
+        {
             @Override
-            public void onSuccess(Uri downloadUrl) {
+            public void onSuccess(Uri downloadUrl)
+            {
                 GlideApp.with(getActivity().getApplicationContext())
                         .load(downloadUrl)
                         .into(iv);
             }
+
+
 
 
         }).addOnFailureListener(new OnFailureListener() {

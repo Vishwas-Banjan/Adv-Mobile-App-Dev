@@ -1,11 +1,12 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
+<menu
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto" >
 
     <item
         android:id="@+id/action_cart"
         android:icon="@mipmap/ic_notification"
         android:title="Chat"
         app:actionLayout="@layout/chatroom_action_item_layout"
-        app:showAsAction="always" />
+        app:showAsAction="always"/>
 
 </menu>
