@@ -7,7 +7,7 @@ import com.google.firebase.database.Exclude;
 public class UserProfile {
     private String firstName, lastName, email, gender, city;
 
-    public UserProfile(){
+    public UserProfile() {
 
     }
 
@@ -19,8 +19,8 @@ public class UserProfile {
         this.city = city;
     }
 
-    public void printData(){
-        Log.d("UserClass",firstName+", "+lastName+", email: "+email);
+    public void printData() {
+        Log.d("UserClass", firstName + ", " + lastName + ", email: " + email);
     }
 
     public String getFirstName() {
@@ -65,7 +65,7 @@ public class UserProfile {
 
     @Exclude
     public String getPhoto() {
-        return this.email.replace('.','_')+".jpeg";
+        return this.email.replace('.', '_') + ".jpeg";
     }
 
 }

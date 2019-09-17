@@ -1,10 +1,6 @@
 package com.uncc.inclass02.ui.chatroom;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentActivity;
-
 import android.content.Context;
-import android.graphics.Point;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
@@ -36,6 +32,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+
+import androidx.fragment.app.FragmentActivity;
 
 public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
 
@@ -77,7 +75,7 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        drawPolylines();
+        // drawPolylines();
 
 
         DirectionsResult results = getDirectionsDetails(places.get(0).getLatLoc() + ", " + places.get(0).getLongLoc()

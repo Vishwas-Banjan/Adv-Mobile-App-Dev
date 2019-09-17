@@ -1,5 +1,5 @@
 <resources>
-    
+
     <style name="AppTheme.Launcher">
         <item name="android:windowBackground">@drawable/ic_splash_screen</item>
         <item name="windowActionBar">false</item>
@@ -11,13 +11,13 @@
         <item name="colorPrimary">@color/backgroundColor</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
-<!--        <item name="android:background">@color/backgroundColor</item>-->
+        <!--        <item name="android:background">@color/backgroundColor</item>-->
         <item name="android:textColor">@color/textColor</item>
         <item name="android:textColorHint">@color/textColor</item>
         <item name="android:editTextColor">@color/textColor</item>
         <item name="android:editTextBackground">@drawable/button_background</item>
         <item name="android:headerBackground">@color/backgroundColor</item>
-<!--        <item name="android:toolbarStyle">@color/backgroundColor</item>-->
+        <!--        <item name="android:toolbarStyle">@color/backgroundColor</item>-->
     </style>
 
     <style name="AppTheme.NoActionBar">

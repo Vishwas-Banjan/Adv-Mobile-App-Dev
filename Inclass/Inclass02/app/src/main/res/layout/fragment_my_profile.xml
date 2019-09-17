@@ -24,8 +24,7 @@
                 android:layout_gravity="center"
                 android:background="@color/backgroundColor"
                 android:id="@+id/profile_pic"
-                android:contentDescription="@string/profile_image">
-            </ImageView>
+                android:contentDescription="@string/profile_image"></ImageView>
 
         </FrameLayout>
 
