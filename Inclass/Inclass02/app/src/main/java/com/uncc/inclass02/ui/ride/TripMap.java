@@ -1,10 +1,10 @@
 package com.uncc.inclass02.ui.ride;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.os.Bundle;
 
 import com.uncc.inclass02.R;
+
+import androidx.appcompat.app.AppCompatActivity;
 
 public class TripMap extends AppCompatActivity {
 

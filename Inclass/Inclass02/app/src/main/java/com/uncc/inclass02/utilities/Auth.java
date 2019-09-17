@@ -10,34 +10,34 @@ public class Auth {
     private FirebaseUser currentUser;
     private String LOG_TAG = "Auth Class";
 
-    public Auth(){
+    public Auth() {
         mAuth = FirebaseAuth.getInstance();
         currentUser = mAuth.getCurrentUser();
     }
 
     public Boolean getAuthStatus() {
-        Log.d(LOG_TAG, "current user: "+currentUser);
-        return currentUser!=null;
+        Log.d(LOG_TAG, "current user: " + currentUser);
+        return currentUser != null;
     }
 
 
-    public String getCurrentUserID(){
-        return  currentUser.getUid();
+    public String getCurrentUserID() {
+        return currentUser.getUid();
     }
 
-    public FirebaseUser getCurrentUser(){
+    public FirebaseUser getCurrentUser() {
         return currentUser;
     }
 
-    public String getCurrentUserEmail(){
-        return  currentUser.getEmail();
+    public String getCurrentUserEmail() {
+        return currentUser.getEmail();
     }
 
-    public boolean signOutUser(){
-        try{
+    public boolean signOutUser() {
+        try {
             mAuth.signOut();
             return true;
-        }catch (Exception e){
+        } catch (Exception e) {
             return false;
         }
     }

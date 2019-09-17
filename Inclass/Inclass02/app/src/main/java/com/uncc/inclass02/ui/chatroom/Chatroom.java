@@ -48,14 +48,14 @@ public class Chatroom extends AppCompatActivity {
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         Bundle b = getIntent().getExtras();
-        if(b != null) {
+        if (b != null) {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
             setTitle(b.getString(AppConstant.CHATROOM_NAME));
             mRootRef = FirebaseDatabase.getInstance().getReference(AppConstant.CHATROOM_DB_KEY).child(chatroomId).child(AppConstant.CURR_USERS);
-            Log.d(chatRoomTAG, b.containsKey(AppConstant.TRIP_ID_RESULT)+" ");
-            if (b.containsKey(AppConstant.TRIP_ID_RESULT)){
+            Log.d(chatRoomTAG, b.containsKey(AppConstant.TRIP_ID_RESULT) + " ");
+            if (b.containsKey(AppConstant.TRIP_ID_RESULT)) {
                 tripId = b.getString(AppConstant.TRIP_ID_RESULT);
-            }else{
+            } else {
                 tripId = AppConstant.WRONG_TRIP_ID;
             }
         }
@@ -145,8 +145,8 @@ public class Chatroom extends AppCompatActivity {
                         drivers.add(driver);
                     }
                     if (drivers.size() > 0) {
-                        Log.d(chatRoomTAG, drivers.size()+"");
-                        badge.setText(drivers.size()+"");
+                        Log.d(chatRoomTAG, drivers.size() + "");
+                        badge.setText(drivers.size() + "");
                         badge.setVisibility(View.VISIBLE);
                     }
                 }

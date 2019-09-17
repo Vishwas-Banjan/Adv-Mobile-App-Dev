@@ -13,6 +13,7 @@
         android:layout_height="wrap_content"
         android:weightSum="4"
         android:orientation="horizontal">
+
         <ImageView
             android:id="@+id/userImage"
             android:layout_width="75dp"
@@ -26,6 +27,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
             android:orientation="vertical">
+
             <TextView
                 android:id="@+id/userName"
                 android:layout_width="wrap_content"
@@ -39,6 +41,7 @@
                 android:layout_height="wrap_content"
                 android:text="TextView" />
         </LinearLayout>
+
         <ImageView
             android:id="@+id/trash"
             android:layout_width="30dp"
@@ -76,7 +79,7 @@
             android:layout_margin="5dp"
             android:textSize="12dp"
             android:background="@drawable/button_background_no_margin"
-            android:textColor="@color/textColor"/>
+            android:textColor="@color/textColor" />
 
         <TextView
             android:id="@+id/view_map_button"
@@ -86,7 +89,7 @@
             android:layout_margin="5dp"
             android:textSize="12dp"
             android:background="@drawable/button_background_no_margin"
-            android:textColor="@color/textColor"/>
+            android:textColor="@color/textColor" />
 
         <TextView
             android:id="@+id/accept_request"
@@ -96,7 +99,7 @@
             android:layout_margin="5dp"
             android:textSize="12dp"
             android:background="@drawable/button_background_no_margin"
-            android:textColor="@color/textColor"/>
+            android:textColor="@color/textColor" />
 
         <LinearLayout
             android:layout_width="wrap_content"
