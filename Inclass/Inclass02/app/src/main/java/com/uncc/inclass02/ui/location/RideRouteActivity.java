@@ -36,11 +36,25 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+<<<<<<< HEAD
+=======
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
+>>>>>>> Vishwas
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.dashboard.Dashboard;
@@ -184,11 +198,25 @@ public class RideRouteActivity extends FragmentActivity{
                     showTripCompleteDialog();
                 }
             }
+=======
+
+            DirectionsResult results = getDirectionsDetails(driver.getLatLoc() + ", " + driver.getLongLoc()
+                    , destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc(), TravelMode.DRIVING,
+                    originPlace.getLatLoc() + ", " + originPlace.getLongLoc());
+            if (results != null) {
+                addPolyline(results, googleMap);
+                positionCamera(results.routes[overview], googleMap);
+                addMarkersToMap(results, googleMap);
+            }
+
+
+>>>>>>> Vishwas
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()))
                     .title("Pickup Location")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             builder.include(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()));
+<<<<<<< HEAD
 
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
@@ -203,6 +231,20 @@ public class RideRouteActivity extends FragmentActivity{
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                 builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
             }
+=======
+//
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
+//                    .title("Destination Location")
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+//            builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
+
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
+//                    .title("Driver Location")
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+//            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+>>>>>>> Vishwas
 
             LatLngBounds bounds = builder.build();
 
@@ -324,4 +366,163 @@ public class RideRouteActivity extends FragmentActivity{
             }, Looper.myLooper());
         }
     }
+<<<<<<< HEAD
+=======
+
+//    @Override
+//    public void onMapReady(final GoogleMap googleMap) {
+//
+////        // checking if current user is driver or not
+////        if (driverID.equals(mAuth.getCurrentUserID())){
+////            // getting current location
+////            fusedLocationDriver.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
+////                @Override
+////                public void onSuccess(Location location) {
+////                    if (location!=null){
+////                        // setting up driver's current location
+////                        driverMarkerOpt.position(new LatLng(location.getLatitude(), location.getLongitude()));
+////                        driverMarker = mMap.addMarker(driverMarkerOpt);
+////                        driverMarker.setVisible(true);
+////                        // getting driver's current updates location
+////                        fusedLocationDriver = LocationServices.getFusedLocationProviderClient(getApplicationContext());
+////                        driverLocationReq = LocationRequest.create();
+////                        driverLocationReq.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+////                        driverLocationReq.setInterval(1000);
+////                        // location service callback
+////                        driverLocationCallback = new LocationCallback(){
+////                            @Override
+////                            public void onLocationResult(LocationResult locationResult) {
+////                                super.onLocationResult(locationResult);
+////                                if (locationResult==null){
+////                                    return;
+////                                }
+////                                for (Location driverLoc: locationResult.getLocations()){
+////                                    refreshDriverLocation(driverLoc);
+////                                }
+////                            }
+////                        };
+////                    }else{
+////                        // location settings turned off
+////                        // todo: popup says turn on location settings
+////                        Toast.makeText(getApplicationContext(), "Please turn on the gps location and request a new ride", Toast.LENGTH_LONG).show();
+////                    }
+////                }
+////            });
+////        }
+//
+//        // getting driver location from db
+//
+//
+//
+//
+////        // Add a marker in Sydney and move the camera
+////        LatLng sydney = new LatLng(-34, 151);
+////        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
+////        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+////        directionURL = developDirectionURL(originLatLng.latitude+","+originLatLng.longitude, destinationLatLng.latitude+","+destinationLatLng.longitude);
+//        // async task fetch url
+////        RequestQueue rideRouteReqQue = Volley.newRequestQueue(this);
+////        StringRequest req = new StringRequest(directionURL, this, this);
+////        rideRouteReqQue.add(req);
+//    }
+
+
+//    private String developDirectionURL(String origin, String destination){
+//        return directionURL+"origin="+origin.toString()+"&destination="+destination.toString()+"&key="+getString(R.string.google_api_key);
+//    }
+
+
+//    private void setOriginLatLng(){
+//        // getting location attributes
+//        originLatLng = new LatLng(originLat, originLng);
+//        destinationLatLng = new LatLng(destinationLat, destinationLon);
+//        // making marker options for the route
+//        origin = new MarkerOptions().position(originLatLng).title("Origin of the Route");
+//        destination = new MarkerOptions().position(destinationLatLng).title("Destination of the Route");
+//        // adding markers to map
+//        mMap.clear();
+//        Marker originMarker = mMap.addMarker(origin);
+//        Marker destinationMarker = mMap.addMarker(destination);
+//        originMarker.setVisible(true);
+//        destinationMarker.setVisible(true);
+//    }
+
+
+    private GeoApiContext getGeoContext() {
+        GeoApiContext geoApiContext = new GeoApiContext();
+        return geoApiContext
+                .setQueryRateLimit(3)
+                .setApiKey(getResources().getString(R.string.google_api_key))
+                .setConnectTimeout(1, TimeUnit.SECONDS)
+                .setReadTimeout(1, TimeUnit.SECONDS)
+                .setWriteTimeout(1, TimeUnit.SECONDS);
+    }
+
+    private DirectionsResult getDirectionsDetails(String origin, String destination, TravelMode mode, String waypoint) {
+        DateTime now = new DateTime();
+        try {
+            return DirectionsApi.newRequest(getGeoContext())
+                    .mode(mode)
+                    .origin(origin)
+                    .waypoints("via:" + waypoint)
+                    .destination(destination)
+                    .departureTime(now)
+                    .await();
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static final int overview = 0;
+
+    private void addMarkersToMap(DirectionsResult results, GoogleMap mMap) {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview]
+                .legs[overview].startLocation.lat, results.routes[overview]
+                .legs[overview].startLocation.lng)).title("Start Point: " + results.routes[overview]
+                .legs[overview].startAddress));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview]
+                .legs[overview].endLocation.lat, results.routes[overview]
+                .legs[overview].endLocation.lng)).title("End Point: " + results.routes[overview]
+                .legs[overview].endAddress).snippet(getEndLocationTitle(results)));
+    }
+
+    private void positionCamera(DirectionsRoute route, GoogleMap mMap) {
+        LatLngBounds.Builder latLongBuilder = new LatLngBounds.Builder();
+        ArrayList<LatLng> latLngArrayList = new ArrayList<>();
+        latLngArrayList.add(new LatLng(route.legs[overview]
+                .startLocation.lat, route.legs[overview].startLocation.lng));
+        latLngArrayList.add(new LatLng(route.legs[overview]
+                .endLocation.lat, route.legs[overview].endLocation.lng));
+        if (latLngArrayList.size() > 0) {
+            for (LatLng p : latLngArrayList) {
+                latLongBuilder.include(p);
+            }
+        }
+        LatLngBounds bounds = latLongBuilder.build();
+        mMap.setLatLngBoundsForCameraTarget(bounds);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLongBuilder.build(), 50));
+    }
+
+    private void addPolyline(DirectionsResult results, GoogleMap mMap) {
+        List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
+        mMap.addPolyline(new PolylineOptions().addAll(decodedPath)
+                .width(30)
+                .color(this.getColor(R.color.colorPrimary)
+                ));
+    }
+
+    private String getEndLocationTitle(DirectionsResult results) {
+        return "Time :" + results.routes[overview]
+                .legs[overview].duration.humanReadable + " Distance :" + results.routes[overview]
+                .legs[overview].distance.humanReadable;
+    }
+
+>>>>>>> Vishwas
 }
