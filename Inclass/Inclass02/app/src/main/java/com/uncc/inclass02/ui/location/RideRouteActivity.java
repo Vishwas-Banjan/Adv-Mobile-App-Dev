@@ -36,13 +36,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
-<<<<<<< HEAD
-=======
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
->>>>>>> Vishwas
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -61,6 +58,13 @@ import com.uncc.inclass02.ui.dashboard.Dashboard;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Place;
 import com.uncc.inclass02.utilities.Trip;
+
+import org.joda.time.DateTime;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
@@ -198,7 +202,6 @@ public class RideRouteActivity extends FragmentActivity{
                     showTripCompleteDialog();
                 }
             }
-=======
 
             DirectionsResult results = getDirectionsDetails(driver.getLatLoc() + ", " + driver.getLongLoc()
                     , destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc(), TravelMode.DRIVING,
@@ -210,13 +213,12 @@ public class RideRouteActivity extends FragmentActivity{
             }
 
 
->>>>>>> Vishwas
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()))
                     .title("Pickup Location")
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             builder.include(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()));
-<<<<<<< HEAD
+
 
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
@@ -231,7 +233,6 @@ public class RideRouteActivity extends FragmentActivity{
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
                 builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
             }
-=======
 //
 //            mMap.addMarker(new MarkerOptions()
 //                    .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
@@ -244,7 +245,6 @@ public class RideRouteActivity extends FragmentActivity{
 //                    .title("Driver Location")
 //                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
 //            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
->>>>>>> Vishwas
 
             LatLngBounds bounds = builder.build();
 
@@ -366,9 +366,6 @@ public class RideRouteActivity extends FragmentActivity{
             }, Looper.myLooper());
         }
     }
-<<<<<<< HEAD
-=======
-
 //    @Override
 //    public void onMapReady(final GoogleMap googleMap) {
 //
@@ -524,5 +521,4 @@ public class RideRouteActivity extends FragmentActivity{
                 .legs[overview].distance.humanReadable;
     }
 
->>>>>>> Vishwas
 }
