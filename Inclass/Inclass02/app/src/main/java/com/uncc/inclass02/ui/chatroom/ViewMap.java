@@ -77,7 +77,7 @@ public class ViewMap extends FragmentActivity implements OnMapReadyCallback {
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        drawPolylines();
+        // drawPolylines();
 
 
         DirectionsResult results = getDirectionsDetails(places.get(0).getLatLoc() + ", " + places.get(0).getLongLoc()

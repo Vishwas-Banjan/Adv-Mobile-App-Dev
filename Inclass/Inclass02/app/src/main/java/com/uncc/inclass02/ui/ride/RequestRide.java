@@ -110,7 +110,7 @@ public class RequestRide extends AppCompatActivity {
     private void setPlaceValue(int resultCode, Intent data, TextView tv, com.uncc.inclass02.utilities.Place place) {
         if (resultCode == RESULT_OK) {
             Place placeData = Autocomplete.getPlaceFromIntent(data);
-            tv.setText(toStringLatLong(placeData.getLatLng()));
+            tv.setText(toStringLatLong(placeData));
             place.setLatLoc(placeData.getLatLng().latitude);
             place.setLongLoc(placeData.getLatLng().longitude);
             place.setName(placeData.getName());
@@ -121,8 +121,8 @@ public class RequestRide extends AppCompatActivity {
         }
     }
 
-    private String toStringLatLong(LatLng loc) {
-        return "Lat: " + loc.latitude + "\nLong: " + loc.longitude;
+    private String toStringLatLong(Place place) {
+        return place.getName();
     }
 
     private void submit() {
