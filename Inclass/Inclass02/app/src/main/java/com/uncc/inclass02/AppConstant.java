@@ -39,7 +39,7 @@ public class AppConstant {
     public static final String TRIP_ID_RESULT = "TRIP_ID_RESULT";
     public static final String TRIP_ID = "TRIP_ID";
     public static final String WRONG_TRIP_ID = "WRONG_TRIP_ID";
-    public static final String API_KEY = "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q";
+    public static final String API_KEY = "AIzaSyBNqI8ClNOkg6O2LLdnIurwYyL54aN8iUo";
     public static final int PERMISSION_REQUEST_READ_FINE_LOCATION = 1;
     public static final String LOCATION_TEXT = "LOCATION_TEXT";
     public static final String MAP_TO_SHOW_RIDER = "MAP_TO_SHOW_RIDER";

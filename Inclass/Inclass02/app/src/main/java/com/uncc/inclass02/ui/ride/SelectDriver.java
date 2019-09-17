@@ -171,12 +171,7 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         goToRidePage.putExtra(AppConstant.RIDER_ID, message.getUserId());
         goToRidePage.putExtra(AppConstant.TRIP_ID, message.getTripId());
         goToRidePage.putExtra(AppConstant.DRIVER_ID, message.getRecipientId());
-        setTripOnGoing();
         startActivity(goToRidePage);
-    }
-
-    private void setTripOnGoing() {
-        mRootRef.child(AppConstant.TRIP_STATUS_DB_KEY).setValue(AppConstant.TRIP_ONGOING);
     }
 
     private String getCurrTime() {
