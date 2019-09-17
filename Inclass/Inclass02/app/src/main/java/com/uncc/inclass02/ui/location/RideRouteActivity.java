@@ -449,7 +449,7 @@ public class RideRouteActivity extends FragmentActivity{
         GeoApiContext geoApiContext = new GeoApiContext();
         return geoApiContext
                 .setQueryRateLimit(3)
-                .setApiKey(getResources().getString(R.string.google_api_key))
+                .setApiKey(getResources().getString(R.string.google_maps_key))
                 .setConnectTimeout(1, TimeUnit.SECONDS)
                 .setReadTimeout(1, TimeUnit.SECONDS)
                 .setWriteTimeout(1, TimeUnit.SECONDS);
