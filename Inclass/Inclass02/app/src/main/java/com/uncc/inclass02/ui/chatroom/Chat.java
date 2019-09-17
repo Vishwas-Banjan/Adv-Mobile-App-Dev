@@ -3,6 +3,7 @@ package com.uncc.inclass02.ui.chatroom;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -36,6 +38,7 @@ import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
+import com.uncc.inclass02.utilities.Trip;
 import com.uncc.inclass02.utilities.UserProfile;
 
 import java.text.SimpleDateFormat;
@@ -234,14 +237,69 @@ public class Chat extends Fragment implements MessageAsyncTask, PlaceAsyncTask, 
 
     }
 
-    private void addDriver(String userId, String driverId, UserProfile driverInfo, String tripId) {
+    @Override
+    public void startRide(final Message mesg) {
+        DatabaseReference mtripListRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(mesg.getUserId()).child(mesg.getTripId());
+        mtripListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Trip trip = dataSnapshot.getValue(Trip.class);
+                    if (trip.getStatus().equals(AppConstant.TRIP_ACTIVE)) {
+                        setTripOnGoing(mesg.getUserId(), mesg.getTripId());
+                        Intent goToStartRide = new Intent(getActivity(), RideRouteActivity.class);
+                        goToStartRide.putExtra(AppConstant.RIDER_ID, mesg.getUserId());
+                        goToStartRide.putExtra(AppConstant.TRIP_ID, mesg.getTripId());
+                        goToStartRide.putExtra(AppConstant.DRIVER_ID, mesg.getRecipientId());
+                        getActivity().startActivity(goToStartRide);
+
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.unable_start_ride, Snackbar.LENGTH_LONG).show();
+                    }
+
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void setTripOnGoing(String riderId, String tripId) {
+        mRideRef.child(riderId).child(tripId).child(AppConstant.TRIP_STATUS_DB_KEY).setValue(AppConstant.TRIP_ONGOING);
+    }
+
+    private void addDriver(final String userId, final String driverId, final UserProfile driverInfo, final String tripId) {
+        DatabaseReference mtripListRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(userId).child(tripId);
+        mtripListRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    Trip trip = dataSnapshot.getValue(Trip.class);
+                    if (trip.getStatus().equals(AppConstant.TRIP_ACTIVE)) {
+                        addCandidateDriver(userId, driverId, driverInfo, tripId);
+                    } else {
+                        Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.unable_accept_request, Snackbar.LENGTH_LONG).show();
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    private void addCandidateDriver(String userId, String driverId, UserProfile driverInfo, String tripId) {
         DatabaseReference mDriverRef = FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(userId).child(tripId).child(AppConstant.CANDIDATE_DB_KEY).child(driverId);
         mDriverRef.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
                     // todo: go to ride route activity
-                    Intent goToRideRouteActivity = new Intent(getActivity(), RideRouteActivity.class);
                     Snackbar.make(getActivity().findViewById(android.R.id.content), R.string.add_driver_success, Snackbar.LENGTH_LONG).show();
                 }
             }
