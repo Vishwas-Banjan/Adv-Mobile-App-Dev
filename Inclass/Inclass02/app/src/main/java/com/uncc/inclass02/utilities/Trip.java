@@ -8,7 +8,16 @@ public class Trip implements Serializable {
     Place pickUpLoc;
     Place dropoffLoc;
     String status;
+    Map<String, Driver> candidates;
     Map<String, Driver> drivers;
+
+    public Map<String, Driver> getDrivers() {
+        return drivers;
+    }
+
+    public void setDrivers(Map<String, Driver> drivers) {
+        this.drivers = drivers;
+    }
 
     public String getStatus() {
         return status;
@@ -42,15 +51,12 @@ public class Trip implements Serializable {
         this.dropoffLoc = dropoffLoc;
     }
 
-    public Map<String, Driver> getDrivers() {
-        return drivers;
+    public Map<String, Driver> getCandidates() {
+        return candidates;
     }
 
-    public void setDrivers(Map<String, Driver> drivers) {
-        this.drivers = drivers;
+    public void setCandidates(Map<String, Driver> candidates) {
+        this.candidates = candidates;
     }
 
-    public String toString(){
-        return "id="+id+"";
-    }
 }

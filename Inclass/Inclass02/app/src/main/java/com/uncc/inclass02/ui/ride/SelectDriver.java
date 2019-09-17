@@ -31,10 +31,13 @@ import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
 import com.uncc.inclass02.utilities.Message;
+import com.uncc.inclass02.utilities.Trip;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Map;
+import java.util.Set;
 
 public class SelectDriver extends AppCompatActivity implements SelectDriverAsyncTask {
 
@@ -57,14 +60,14 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         firebaseDatabase = FirebaseDatabase.getInstance();
 
         Bundle b = getIntent().getExtras();
-        if(b != null) {
+        if (b != null) {
             chatroomId = b.getString(AppConstant.CHATROOM_ID);
             tripId = b.getString(AppConstant.TRIP_ID);
             Log.d(selectDriverTAG, tripId);
         }
 
         String id = new Auth().getCurrentUserID();
-        mRootRef = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(new Auth().getCurrentUserID()).child(tripId).child(AppConstant.DRIVER_DB_KEY);
+        mRootRef = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(id).child(tripId);
 
         driverList = new ArrayList<>();
         driverListAdapter = new SelectDriverListAdapter(driverList, this);
@@ -108,10 +111,16 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
 
     private void displayDriverList(DataSnapshot dataSnapshot) {
         driverList.clear();
-        for (DataSnapshot child : dataSnapshot.getChildren()) {
-            Driver driver = child.getValue(Driver.class);
-            driverList.add(driver);
+        Trip trip = dataSnapshot.getValue(Trip.class);
+        if (trip.getStatus() != null && trip.getStatus().equals(AppConstant.TRIP_ACTIVE)) {
+            Map<String, Driver> candidates = trip.getCandidates();
+            if (candidates != null) {
+                for (String key : candidates.keySet()) {
+                    driverList.add(trip.getCandidates().get(key));
+                }
+            }
         }
+
         if (driverList.size() == 0) {
             String text = getResources().getString(R.string.no_driver);
             message.setText(text);
@@ -126,17 +135,13 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
 
         StorageReference storageRef = FirebaseStorage.getInstance().getReference();
         StorageReference dateRef = storageRef.child(link);
-        dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>()
-        {
+        dateRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
             @Override
-            public void onSuccess(Uri downloadUrl)
-            {
+            public void onSuccess(Uri downloadUrl) {
                 GlideApp.with(SelectDriver.this)
                         .load(downloadUrl)
                         .into(iv);
             }
-
-
 
 
         }).addOnFailureListener(new OnFailureListener() {
@@ -159,18 +164,19 @@ public class SelectDriver extends AppCompatActivity implements SelectDriverAsync
         message.setType(AppConstant.CONFIRM_DRIVER_TYPE);
         message.setTripId(tripId);
         message.setRecipientId(driverId);
-        mRootRef.removeValue().addOnSuccessListener(new OnSuccessListener<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                mRootRef.child(driverId).setValue(driver);
-                mMesgRef.push().setValue(message);
-                Intent goToRidePage = new Intent(getApplicationContext(), RideRouteActivity.class);
-                goToRidePage.putExtra(AppConstant.RIDER_ID, message.getUserId());
-                goToRidePage.putExtra(AppConstant.TRIP_ID, message.getTripId());
-                goToRidePage.putExtra(AppConstant.DRIVER_ID, message.getRecipientId());
-                startActivity(goToRidePage);
-            }
-        });
+        mRootRef.child(AppConstant.CANDIDATE_DB_KEY).removeValue();
+        mRootRef.child(AppConstant.DRIVER_DB_KEY).child(driverId).setValue(driver);
+        mMesgRef.push().setValue(message);
+        Intent goToRidePage = new Intent(getApplicationContext(), RideRouteActivity.class);
+        goToRidePage.putExtra(AppConstant.RIDER_ID, message.getUserId());
+        goToRidePage.putExtra(AppConstant.TRIP_ID, message.getTripId());
+        goToRidePage.putExtra(AppConstant.DRIVER_ID, message.getRecipientId());
+        setTripOnGoing();
+        startActivity(goToRidePage);
+    }
+
+    private void setTripOnGoing() {
+        mRootRef.child(AppConstant.TRIP_STATUS_DB_KEY).setValue(AppConstant.TRIP_ONGOING);
     }
 
     private String getCurrTime() {

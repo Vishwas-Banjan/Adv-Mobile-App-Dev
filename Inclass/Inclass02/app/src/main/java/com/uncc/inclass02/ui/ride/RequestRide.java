@@ -90,7 +90,7 @@ public class RequestRide extends AppCompatActivity {
     }
 
     private void openPlaceAutocomplete(int code) {
-        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG);
+        List<Place.Field> fields = Arrays.asList(Place.Field.NAME, Place.Field.LAT_LNG, Place.Field.ADDRESS);
         Intent intent = new Autocomplete.IntentBuilder(
                 AutocompleteActivityMode.FULLSCREEN, fields)
                 .build(this);
@@ -140,17 +140,13 @@ public class RequestRide extends AppCompatActivity {
         mRootRef.child(key).setValue(trip).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(key).setValue(new Auth().getCurrentUserID()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
-                        // todo: setting it to shared preferrence
-                        resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        finish();
-                    }
-                });
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
+                // todo: setting it to shared preferrence
+                resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
             }
         });
     }
