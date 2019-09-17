@@ -10,11 +10,11 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    private void redirectOnAuth(boolean authStatus) {
+    private void redirectOnAuth(boolean authStatus){
         Intent i;
-        if (authStatus) {
+        if(authStatus){
             i = new Intent(MainActivity.this, Dashboard.class);
-        } else {
+        }else{
             i = new Intent(MainActivity.this, Login.class);
         }
         i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

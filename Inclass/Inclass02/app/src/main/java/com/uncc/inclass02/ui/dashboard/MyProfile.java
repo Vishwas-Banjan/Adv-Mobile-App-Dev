@@ -60,7 +60,7 @@ import static android.app.Activity.RESULT_OK;
  * Use the {@link MyProfile#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MyProfile extends Fragment implements android.view.View.OnClickListener {
+public class MyProfile extends Fragment implements android.view.View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -111,14 +111,14 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
             // TODO: Rename and change types of parameters
             String mParam1 = getArguments().getString(ARG_PARAM1);
         }
-        database = FirebaseDatabase.getInstance();
+        database  = FirebaseDatabase.getInstance();
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        FrameLayout frameLayout = (FrameLayout) inflater.inflate(R.layout.fragment_my_profile, container, false);
+        FrameLayout frameLayout = (FrameLayout)inflater.inflate(R.layout.fragment_my_profile, container, false);
         profilePicImg = frameLayout.findViewById(R.id.profile_pic);
         updateCity = frameLayout.findViewById(R.id.updateCity);
         updateFirstName = frameLayout.findViewById(R.id.updateFirstName);
@@ -142,7 +142,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
     }
 
     @SuppressLint("StaticFieldLeak")
-    private class GetUserData extends AsyncTask<Void, Void, Void> {
+    private class GetUserData extends AsyncTask<Void, Void, Void>{
         private String msg;
         private boolean errorFlag = false;
         Bitmap profileImage;
@@ -151,27 +151,27 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         @Override
         protected Void doInBackground(Void... params) {
             Auth auth = new Auth();
-            try {
-                StorageReference mStorageRef = FirebaseStorage.getInstance().getReference(auth.getCurrentUserEmail().replace('.', '_') + ".jpeg");
-                final File localFile = File.createTempFile("profilePic", "jpeg");
+            try{
+                    StorageReference mStorageRef = FirebaseStorage.getInstance().getReference(auth.getCurrentUserEmail().replace('.', '_') + ".jpeg");
+                    final File localFile = File.createTempFile("profilePic", "jpeg");
 
-                mStorageRef.getFile(localFile)
-                        .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
-                            @Override
-                            public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
-                                // Successfully downloaded data to local file
-                                profileImage = BitmapFactory.decodeFile(localFile.getAbsolutePath());
-                                profilePicImg.setImageBitmap(profileImage);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception exception) {
-                        // Handle failed download
-                        profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_icons8_user_female_skin_type_4);
-                        profilePicImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_icons8_user_female_skin_type_4));
-                        // Toast.makeText(getActivity(), "Error: "+exception.getMessage(), Toast.LENGTH_LONG).show();
-                    }
-                });
+                    mStorageRef.getFile(localFile)
+                            .addOnSuccessListener(new OnSuccessListener<FileDownloadTask.TaskSnapshot>() {
+                                @Override
+                                public void onSuccess(FileDownloadTask.TaskSnapshot taskSnapshot) {
+                                    // Successfully downloaded data to local file
+                                    profileImage = BitmapFactory.decodeFile(localFile.getAbsolutePath());
+                                    profilePicImg.setImageBitmap(profileImage);
+                                }
+                            }).addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception exception) {
+                            // Handle failed download
+                            profileImage = BitmapFactory.decodeResource(getResources(), R.drawable.ic_icons8_user_female_skin_type_4);
+                            profilePicImg.setImageDrawable(getResources().getDrawable(R.drawable.ic_icons8_user_female_skin_type_4));
+                            // Toast.makeText(getActivity(), "Error: "+exception.getMessage(), Toast.LENGTH_LONG).show();
+                        }
+                    });
                 // Read from the database
                 myRef.addValueEventListener(new ValueEventListener() {
                     @Override
@@ -184,7 +184,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                         if (userProfileProfileData.getEmail() != null) {
 //                            Log.d(TAG, "Value is: " + userProfileProfileData);
                             handleMyUI(userProfileProfileData);
-                        } else {
+                        }else{
                             errorFlag = true;
                             Log.w(TAG, "Failed to read value.");
                         }
@@ -200,8 +200,8 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                 });
 
 
-            } catch (Exception e) {
-                Toast.makeText(getActivity(), "Error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+            }catch (Exception e){
+                Toast.makeText(getActivity(), "Error: "+e.getMessage(), Toast.LENGTH_LONG).show();
                 errorFlag = true;
 //                Log.d(TAG, e.getMessage());
             }
@@ -213,11 +213,11 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         protected void onPostExecute(Void s) {
             super.onPostExecute(s);
 
-            if (errorFlag) {
+            if (errorFlag){
                 // error happen
                 handleError();
-            } else {
-                if (profileImage != null) {
+            }else{
+                if (profileImage!=null){
                     handleMyImage(profileImage);
                 }
 
@@ -225,21 +225,21 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         }
     }
 
-    private void handleError() {
+    private void handleError(){
         Toast.makeText(getContext(), "Please check your internet connection", Toast.LENGTH_SHORT).show();
     }
 
-    private void handleMyUI(UserProfile userProfileProfileData) {
+    private void handleMyUI(UserProfile userProfileProfileData){
         // hide progressbar
         progressBar.setVisibility(ProgressBar.INVISIBLE);
         this.userProfile = userProfileProfileData;
-        updateFirstName.setText("First Name: " + userProfileProfileData.getFirstName());
-        updateLastName.setText("Last Name: " + userProfileProfileData.getLastName());
-        updateGender.setText("Gender: " + userProfileProfileData.getGender());
-        updateCity.setText("City: " + userProfileProfileData.getCity());
+        updateFirstName.setText("First Name: "+ userProfileProfileData.getFirstName());
+        updateLastName.setText("Last Name: "+ userProfileProfileData.getLastName());
+        updateGender.setText("Gender: "+ userProfileProfileData.getGender());
+        updateCity.setText("City: "+ userProfileProfileData.getCity());
     }
 
-    private void handleMyImage(Bitmap profileImage) {
+    private void handleMyImage(Bitmap profileImage){
         profilePicImg.setImageBitmap(profileImage);
         this.profileImage = profileImage;
     }
@@ -250,8 +250,8 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         View inputDataDialog = getLayoutInflater().inflate(R.layout.fragment_ask_for_data, null, false);
         final EditText input = inputDataDialog.findViewById(R.id.input);
         String title = "First Name";
-        switch (view.getId()) {
-            case R.id.updateFirstName: {
+        switch (view.getId()){
+            case R.id.updateFirstName:{
                 title = "First Name";
 //                Log.d(TAG, "firstName Btn success is clicked");
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
@@ -260,35 +260,35 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
 //                        Log.d(TAG, "firstName Btn success is clicked");
-                        updateData("firstName", input.getText().toString());
+                        updateData("firstName",input.getText().toString());
                         dialog.cancel();
                     }
                 });
                 break;
             }
-            case R.id.updateLastName: {
+            case R.id.updateLastName:{
                 title = "Last Name";
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PERSON_NAME);
                 input.setHint(userProfile.getLastName());
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        updateData("lastName", input.getText().toString());
+                        updateData("lastName",input.getText().toString());
                         dialog.cancel();
                     }
                 });
                 break;
             }
-            case R.id.updateGender: {
+            case R.id.updateGender:{
                 title = "Gender";
                 inputDataDialog = getLayoutInflater().inflate(R.layout.fragment_input_gender, null, false);
                 final Switch genderInput = inputDataDialog.findViewById(R.id.gender);
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (genderInput.isChecked()) {
+                        if (genderInput.isChecked()){
                             updateData("gender", "male");
-                        } else {
+                        }else{
                             updateData("gender", "female");
                         }
                         dialog.cancel();
@@ -296,20 +296,20 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                 });
                 break;
             }
-            case R.id.updateCity: {
+            case R.id.updateCity:{
                 title = "City";
                 input.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_NORMAL);
                 input.setHint(userProfile.getCity());
                 builder.setPositiveButton("Save", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        updateData("city", input.getText().toString());
+                        updateData("city",input.getText().toString());
                         dialog.cancel();
                     }
                 });
                 break;
             }
-            case R.id.updatePassword: {
+            case R.id.updatePassword:{
                 title = "Set New Password";
                 input.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
                 input.setHint("Input New Password");
@@ -318,27 +318,27 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
                     public void onClick(DialogInterface dialog, int which) {
                         Auth auth = new Auth();
                         FirebaseUser user = auth.getCurrentUser();
-                        if (input.getText().toString().length() >= 6) {
+                        if (input.getText().toString().length()>=6){
                             if (user != null) {
                                 user.updatePassword(input.getText().toString()).addOnCompleteListener(new OnCompleteListener<Void>() {
                                     @Override
                                     public void onComplete(@NonNull Task<Void> task) {
-                                        if (task.isSuccessful()) {
+                                        if (task.isSuccessful()){
                                             Snackbar.make(view, "Updated your password successfully", Snackbar.LENGTH_SHORT).show();
-                                        } else {
+                                        }else{
                                             Snackbar.make(view, task.getException().getMessage(), Snackbar.LENGTH_SHORT).show();
                                         }
                                     }
                                 });
                             }
-                        } else {
+                        }else{
                             Snackbar.make(view, "Please input password atleast 6 digit long", Snackbar.LENGTH_SHORT).show();
                         }
                     }
                 });
                 break;
             }
-            case R.id.profile_pic: {
+            case R.id.profile_pic:{
                 // upload new profile pic
                 clickPicForProfilePic();
                 return;
@@ -357,16 +357,17 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         builder.show();
     }
 
-    private void clickPicForProfilePic() {
+    private void clickPicForProfilePic(){
         // intent to capture image
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT>=23){
             // if permission already granted
             if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 String[] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE",
                         "android.permission.CAMERA",
                         "android.permission.READ_EXTERNAL_STORAGE"};
                 requestPermissions(permissions, CAMERA_PERMISSION_CODE);
-            } else {
+            }
+            else {
                 // go to camera
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_CODE);
@@ -379,8 +380,8 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // check your permission
 //        Log.d(TAG, "reqCode:  "+requestCode+",    grantResult:   "+grantResults[0]);
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        if (requestCode==CAMERA_PERMISSION_CODE){
+            if (grantResults[0]==PackageManager.PERMISSION_GRANTED){
                 // go to camera
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_CODE);
@@ -392,7 +393,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //  check your intent
-        if (requestCode == CAMERA_CODE && resultCode == RESULT_OK && data != null && data.getExtras() != null) {
+        if (requestCode==CAMERA_CODE && resultCode == RESULT_OK && data!=null && data.getExtras()!=null){
             // process data
             this.oldProfileImage = this.profileImage;
             profileImage = (Bitmap) data.getExtras().get("data");
@@ -401,34 +402,34 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         }
     }
 
-    private void updateData(String key, String value) {
+    private void updateData(String key, String value){
         Log.d(TAG, "update UI is called");
         myRef.child(key).setValue(value);
         // update UI
-        switch (key) {
-            case "firstName": {
+        switch (key){
+            case "firstName":{
                 this.userProfile.setFirstName(value);
-                updateFirstName.setText("First Name: " + value);
+                updateFirstName.setText("First Name: "+value);
                 break;
             }
-            case "lastName": {
+            case "lastName":{
                 this.userProfile.setLastName(value);
-                updateLastName.setText("Last Name: " + value);
+                updateLastName.setText("Last Name: "+value);
                 break;
             }
-            case "gender": {
+            case "gender":{
                 this.userProfile.setGender(value);
-                updateGender.setText("Gender: " + value);
+                updateGender.setText("Gender: "+value);
                 break;
             }
-            case "city": {
+            case "city":{
                 this.userProfile.setCity(value);
-                updateCity.setText("City: " + value);
+                updateCity.setText("City: "+value);
                 break;
             }
         }
 
-        String msg = "Your " + key + " is updated to " + value;
+        String msg = "Your "+key+" is updated to "+value;
         Toast.makeText(getContext(), msg, Toast.LENGTH_LONG).show();
     }
 
@@ -446,7 +447,7 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
 
         @Override
         protected String doInBackground(String... str) {
-            StorageReference mountainsRef = mStorageRef.child(userProfile.getEmail().replace('.', '_') + ".jpeg");
+            StorageReference mountainsRef = mStorageRef.child(userProfile.getEmail().replace('.', '_')+".jpeg");
             // Get the data from an ImageView as bytes
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             profileImage.compress(Bitmap.CompressFormat.JPEG, 60, baos);
@@ -471,15 +472,15 @@ public class MyProfile extends Fragment implements android.view.View.OnClickList
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (flag) {
+            if(flag){
                 Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
-            } else {
+            }else{
                 handleErrorOnUploadImage(flag, msg);
             }
         }
     }
 
-    private void handleErrorOnUploadImage(boolean flag, String msg) {
+    private void handleErrorOnUploadImage(boolean flag, String msg){
         Toast.makeText(getActivity(), msg, Toast.LENGTH_SHORT).show();
         profilePicImg.setImageBitmap(oldProfileImage);
     }

@@ -7,9 +7,9 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.android.material.snackbar.Snackbar;
-
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.material.snackbar.Snackbar;
 
 public class CreateAccount extends AppCompatActivity {
 
@@ -40,14 +40,14 @@ public class CreateAccount extends AppCompatActivity {
                 email = signupEmail.getText().toString();
                 password = signupPassword.getText().toString();
                 verifyPassword = signupVerifyPassword.getText().toString();
-                if (password.equals(verifyPassword) && password.length() >= 6 && !email.isEmpty()) {
+                if(password.equals(verifyPassword)&&password.length()>=6&&!email.isEmpty()){
                     // go to create account 2 activity
                     Intent goToCreateAccount2 = new Intent(CreateAccount.this, CreateAccount2.class);
                     goToCreateAccount2.putExtra("email", email);
                     goToCreateAccount2.putExtra("password", password);
                     startActivity(goToCreateAccount2);
                     finish();
-                } else {
+                }else{
                     Snackbar.make(view, "Please fill in the details and make sure that password is atleast 6 characters long", Snackbar.LENGTH_LONG).show();
                 }
             }

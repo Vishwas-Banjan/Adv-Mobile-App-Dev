@@ -1,5 +1,11 @@
 package com.uncc.inclass02.ui.location;
 
+import androidx.annotation.NonNull;
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.fragment.app.FragmentActivity;
+
 import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -30,7 +36,10 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -57,15 +66,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.widget.Toolbar;
-import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentActivity;
-
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class RideRouteActivity extends FragmentActivity {
+public class RideRouteActivity extends FragmentActivity{
 
     private static final float MIN_DISTANCE = 100;
     private GoogleMap mMap;
@@ -123,17 +126,17 @@ public class RideRouteActivity extends FragmentActivity {
         }
     }
 
-    private void getTheDatabaseWorking() {
+    private void getTheDatabaseWorking(){
         rideReference = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(riderID).child(tripID);
         new GetFirebaseData().execute("");
     }
 
-    private void handleError(String msg) {
+    private void handleError(String msg){
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         startActivity(new Intent(this, Dashboard.class));
     }
 
-    private class GetFirebaseData extends AsyncTask<String, String, String> {
+    private class GetFirebaseData extends AsyncTask<String, String, String>{
 
         @Override
         protected String doInBackground(String... objects) {
@@ -143,7 +146,7 @@ public class RideRouteActivity extends FragmentActivity {
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         currentTrip = dataSnapshot.getValue(Trip.class);
-                        if (currentTrip.getStatus().equals(AppConstant.TRIP_COMPLETE)) {
+                        if (currentTrip.getStatus().equals(AppConstant.TRIP_COMPLETE)){
                             finish();
                             return;
                         }
@@ -294,13 +297,13 @@ public class RideRouteActivity extends FragmentActivity {
         ref.setValue(AppConstant.TRIP_COMPLETE);
     }
 
-    public void checkPermission() {
+    public void checkPermission(){
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ) {//Can add more as per requirement
+                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ){//Can add more as per requirement
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
                     AppConstant.PERMISSION_REQUEST_READ_FINE_LOCATION);
         } else {
             startLocationUpdates();

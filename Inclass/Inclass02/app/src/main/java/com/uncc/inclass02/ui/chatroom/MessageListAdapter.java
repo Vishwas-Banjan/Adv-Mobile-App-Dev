@@ -1,5 +1,6 @@
 package com.uncc.inclass02.ui.chatroom;
 
+import android.content.Intent;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
+import com.uncc.inclass02.ui.location.RideRouteActivity;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Message;
 
@@ -58,7 +60,7 @@ public class MessageListAdapter extends RecyclerView.Adapter<MessageListAdapter.
     }
 
     private void toggleButtonHandle(Message mesg, ViewHolder holder) {
-        switch (mesg.getType()) {
+        switch(mesg.getType()) {
             case AppConstant.TEXT_TYPE:
                 holder.acceptReq.setVisibility(View.GONE);
                 holder.viewMap.setVisibility(View.GONE);

@@ -2,6 +2,15 @@ package com.uncc.inclass02.ui.ride;
 
 import android.content.Context;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,13 +25,7 @@ import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Trip;
 
 import java.util.ArrayList;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import java.util.List;
 
 /**
  * A fragment representing a list of Items.
@@ -40,7 +43,6 @@ public class RideHistoryFragment extends Fragment {
     ArrayList<Trip> allRides;
     RecyclerView recyclerView;
     MyRideHistoryRecyclerViewAdapter ridesAdapter;
-
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -88,41 +90,41 @@ public class RideHistoryFragment extends Fragment {
             // todo: get the trip items
             FirebaseDatabase.getInstance().getReference(AppConstant.RIDE_DB_KEY).child(currentUserID)
                     .addChildEventListener(new ChildEventListener() {
-                        @Override
-                        public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            // add the child to list item
-                            if (dataSnapshot != null) {
-                                allRides.add(dataSnapshot.getValue(Trip.class));
+                @Override
+                public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    // add the child to list item
+                    if (dataSnapshot!=null){
+                        allRides.add(dataSnapshot.getValue(Trip.class));
 ////                             update ui
-                                ridesAdapter.notifyDataSetChanged();
+                        ridesAdapter.notifyDataSetChanged();
 
 
-                            } else {
-                                // handle error
-                            }
-                        }
+                    }else{
+                        // handle error
+                    }
+                }
 
-                        @Override
-                        public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            // change the items
-                        }
+                @Override
+                public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    // change the items
+                }
 
-                        @Override
-                        public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
-                            // remove the items
-                        }
+                @Override
+                public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+                    // remove the items
+                }
 
-                        @Override
-                        public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                            // remove the items
-                        }
+                @Override
+                public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                    // remove the items
+                }
 
-                        @Override
-                        public void onCancelled(@NonNull DatabaseError databaseError) {
-                            // handle error
-                        }
-                    });
-        } else {
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) {
+                    // handle error
+                }
+            });
+        }else{
             // handle error
         }
 

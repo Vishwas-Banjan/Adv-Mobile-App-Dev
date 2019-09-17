@@ -23,6 +23,6 @@
         android:textAlignment="center"
         android:text="@string/label_join"
         android:background="@drawable/button_background_no_margin"
-        android:textColor="@color/textColor" />
+        android:textColor="@color/textColor"/>
 
 </LinearLayout>

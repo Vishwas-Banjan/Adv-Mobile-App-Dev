@@ -38,7 +38,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.content.ContextCompat;
 
-public class CreateAccount2 extends AppCompatActivity implements View.OnClickListener {
+public class CreateAccount2 extends AppCompatActivity implements View.OnClickListener{
 
     FirebaseAuth mAuth;
     private EditText signupFirstName, signupLastName, signupCity;
@@ -74,8 +74,8 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
         signupGender = findViewById(R.id.signup_gender);
         signupCity = findViewById(R.id.signup_city);
 
-        Log.d(LOG_Account, "password: " + password + ", email: " + email);
-        if (email == null || password == null) {
+        Log.d(LOG_Account, "password: "+password+", email: "+email);
+        if (email == null ||password == null){
             Log.d(LOG_Account, "password is null");
             startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
         }
@@ -87,8 +87,8 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
     @Override
     public void onClick(View view) {
         Log.d(LOG_Account, "something is clicked");
-        Log.d(LOG_Account, "createAccountClicked?= " + view.getId() + ":id,  createAccount: " + R.id.create_account_2 + ", imagebtnID:  " + R.id.profile_pic);
-        switch (view.getId()) {
+        Log.d(LOG_Account, "createAccountClicked?= "+view.getId()+":id,  createAccount: "+R.id.create_account_2+", imagebtnID:  "+R.id.profile_pic);
+        switch (view.getId()){
             case R.id.upload_profile_pic: {
                 clickPicForProfilePic();
                 break;
@@ -101,16 +101,17 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    void clickPicForProfilePic() {
+    void clickPicForProfilePic(){
         // intent to capture image
-        if (Build.VERSION.SDK_INT >= 23) {
+        if (Build.VERSION.SDK_INT>=23){
             // if permission already granted
             if (ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
                 String[] permissions = {"android.permission.WRITE_EXTERNAL_STORAGE",
                         "android.permission.CAMERA",
                         "android.permission.READ_EXTERNAL_STORAGE"};
                 requestPermissions(permissions, CAMERA_PERMISSION_CODE);
-            } else {
+            }
+            else {
                 // go to camera
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_CODE);
@@ -118,16 +119,16 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
         }
     }
 
-    void createUserAccount() {
+    void createUserAccount(){
         Log.d(LOG_Account, "running create user");
         mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
             @Override
             public void onComplete(@NonNull Task<AuthResult> task) {
-                if (task.isSuccessful()) {
+                if(task.isSuccessful()){
                     Log.d(LOG_Account, "task is successful");
                     firstName = signupFirstName.getText().toString();
                     lastName = signupLastName.getText().toString();
-                    gender = signupGender.isChecked() ? "male" : "female";
+                    gender = signupGender.isChecked()? "male": "female";
                     city = signupCity.getText().toString();
                     UserProfile userProfile = new UserProfile(firstName, lastName, email, gender, city);
                     FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -135,14 +136,14 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
                     userDbRef.setValue(userProfile).addOnCompleteListener(new OnCompleteListener<Void>() {
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
-                            if (task.isSuccessful()) {
-                                if (profileImage != null) {
+                            if (task.isSuccessful()){
+                                if (profileImage!=null){
                                     // upload the image
                                     new UploadProfilePic().execute();
                                 }
                                 startActivity(new Intent(CreateAccount2.this, Dashboard.class));
                                 finish();
-                            } else {
+                            }else{
                                 createAccountExceptionHandling(task);
                             }
                         }
@@ -157,21 +158,21 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
     }
 
 
-    private void createAccountExceptionHandling(Task task) {
-        Toast.makeText(getApplicationContext(), task.getException() + "", Toast.LENGTH_SHORT).show();
-        Log.d(LOG_Account, "failed user creation : " + task.getException());
+    private void createAccountExceptionHandling(Task task){
+        Toast.makeText(getApplicationContext(),  task.getException()+"", Toast.LENGTH_SHORT).show();
+        Log.d(LOG_Account, "failed user creation : "+task.getException());
 //        startActivity(new Intent(CreateAccount2.this, CreateAccount.class));
     }
 
 
-    private class UploadProfilePic extends AsyncTask<String, String, String> {
+    private class UploadProfilePic extends AsyncTask<String, String, String>{
         private String msg;
         private boolean flag = false;
 
 
         @Override
         protected String doInBackground(String... strings) {
-            StorageReference mountainsRef = mStorageRef.child(email.replace('.', '_') + ".jpeg");
+            StorageReference mountainsRef = mStorageRef.child(email.replace('.', '_')+".jpeg");
             ByteArrayOutputStream baos = new ByteArrayOutputStream();
             profileImage.compress(Bitmap.CompressFormat.JPEG, 60, baos);
             byte[] data = baos.toByteArray();
@@ -195,7 +196,7 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            if (flag) {
+            if (flag){
                 Snackbar.make(findViewById(R.id.create_account_2), msg, Snackbar.LENGTH_SHORT).show();
             }
         }
@@ -205,9 +206,9 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         // check your permission
-        Log.d(LOG_Account, "reqCode:  " + requestCode + ",    grantResult:   " + grantResults[0]);
-        if (requestCode == CAMERA_PERMISSION_CODE) {
-            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+        Log.d(LOG_Account, "reqCode:  "+requestCode+",    grantResult:   "+grantResults[0]);
+        if (requestCode==CAMERA_PERMISSION_CODE){
+            if (grantResults[0]==PackageManager.PERMISSION_GRANTED){
                 // go to camera
                 Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
                 startActivityForResult(cameraIntent, CAMERA_CODE);
@@ -219,7 +220,7 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         //  check your intent
-        if (requestCode == CAMERA_CODE && resultCode == RESULT_OK && data != null && data.getExtras() != null) {
+        if (requestCode==CAMERA_CODE && resultCode == RESULT_OK && data!=null && data.getExtras()!=null){
             // process data
             profileImage = (Bitmap) data.getExtras().get("data");
             // compress the profile image

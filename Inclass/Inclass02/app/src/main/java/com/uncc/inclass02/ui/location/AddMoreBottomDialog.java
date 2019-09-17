@@ -1,12 +1,19 @@
 package com.uncc.inclass02.ui.location;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.app.Dialog;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 import com.uncc.inclass02.AppConstant;
@@ -15,10 +22,7 @@ import com.uncc.inclass02.ui.chatroom.PlaceAsyncTask;
 import com.uncc.inclass02.ui.ride.RequestRide;
 import com.uncc.inclass02.ui.ride.SendLocation;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
-public class AddMoreBottomDialog extends BottomSheetDialogFragment implements View.OnClickListener {
+public class AddMoreBottomDialog extends BottomSheetDialogFragment implements View.OnClickListener{
     static PlaceAsyncTask asyncTask;
 
     public AddMoreBottomDialog() {
@@ -42,12 +46,12 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.shareLocationBtn: {
+        switch (view.getId()){
+            case R.id.shareLocationBtn:{
                 shareLocation();
                 break;
             }
-            case R.id.askForRideBtn: {
+            case R.id.askForRideBtn:{
                 goToRequestRide();
                 break;
             }
@@ -60,21 +64,21 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        switch (requestCode) {
-            case (AppConstant.REQUEST_RIDE_CODE): {
+        switch(requestCode) {
+            case (AppConstant.REQUEST_RIDE_CODE) : {
                 if (resultCode == Activity.RESULT_OK) {
-                    try {
+                    try{
                         String returnValue = data.getStringExtra(AppConstant.RIDE_REQ_RESULT);
                         String tripId = data.getStringExtra(AppConstant.TRIP_ID_RESULT);
                         asyncTask.setTrip(returnValue, tripId);
                         dismiss();
-                    } catch (Exception e) {
+                    }catch (Exception e){
                         Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_LONG).show();
                     }
                 }
                 break;
             }
-            case (AppConstant.REQUEST_LOC_CODE): {
+            case (AppConstant.REQUEST_LOC_CODE) : {
                 if (resultCode == Activity.RESULT_OK) {
                     String returnValue = data.getStringExtra(AppConstant.LOC_REQ_RESULT);
                     asyncTask.setCurrLocation(returnValue);
@@ -86,7 +90,7 @@ public class AddMoreBottomDialog extends BottomSheetDialogFragment implements Vi
 
     }
 
-    public void goToRequestRide() {
+    public void goToRequestRide(){
         startActivityNow(AppConstant.REQUEST_RIDE_CODE, RequestRide.class);
     }
 
