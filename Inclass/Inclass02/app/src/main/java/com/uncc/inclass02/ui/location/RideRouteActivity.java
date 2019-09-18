@@ -16,6 +16,7 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.widget.Button;
@@ -68,7 +69,7 @@ import java.util.concurrent.TimeUnit;
 
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class RideRouteActivity extends FragmentActivity{
+public class RideRouteActivity extends FragmentActivity {
 
     private static final float MIN_DISTANCE = 100;
     private GoogleMap mMap;
@@ -126,17 +127,17 @@ public class RideRouteActivity extends FragmentActivity{
         }
     }
 
-    private void getTheDatabaseWorking(){
+    private void getTheDatabaseWorking() {
         rideReference = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(riderID).child(tripID);
         new GetFirebaseData().execute("");
     }
 
-    private void handleError(String msg){
+    private void handleError(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         startActivity(new Intent(this, Dashboard.class));
     }
 
-    private class GetFirebaseData extends AsyncTask<String, String, String>{
+    private class GetFirebaseData extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... objects) {
@@ -146,7 +147,7 @@ public class RideRouteActivity extends FragmentActivity{
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         currentTrip = dataSnapshot.getValue(Trip.class);
-                        if (currentTrip.getStatus().equals(AppConstant.TRIP_COMPLETE)){
+                        if (currentTrip.getStatus().equals(AppConstant.TRIP_COMPLETE)) {
                             finish();
                             return;
                         }
@@ -203,13 +204,19 @@ public class RideRouteActivity extends FragmentActivity{
                 }
             }
 
-            DirectionsResult results = getDirectionsDetails(driver.getLatLoc() + ", " + driver.getLongLoc()
-                    , destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc(), TravelMode.DRIVING,
-                    originPlace.getLatLoc() + ", " + originPlace.getLongLoc());
-            if (results != null) {
-                addPolyline(results, googleMap);
-                positionCamera(results.routes[overview], googleMap);
-                addMarkersToMap(results, googleMap);
+            if (driver.getLongLoc() != null && driver.getLatLoc() != null
+                    && destinationPlace.getLatLoc() != null && destinationPlace.getLongLoc() != null
+                    && originPlace.getLongLoc() != null && originPlace.getLatLoc() != null) {
+                DirectionsResult results = getDirectionsDetails(driver.getLatLoc() + ", " + driver.getLongLoc()
+                        , destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc(), TravelMode.DRIVING,
+                        originPlace.getLatLoc() + ", " + originPlace.getLongLoc());
+                if (results != null) {
+                    addPolyline(results, googleMap);
+                    positionCamera(results.routes[overview], googleMap);
+                    addMarkersToMap(results, googleMap);
+                }
+            } else {
+                Log.d("demo", "onMapReady: Location LatLng missing!");
             }
 
 
@@ -297,13 +304,13 @@ public class RideRouteActivity extends FragmentActivity{
         ref.setValue(AppConstant.TRIP_COMPLETE);
     }
 
-    public void checkPermission(){
+    public void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ){//Can add more as per requirement
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ) {//Can add more as per requirement
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     AppConstant.PERMISSION_REQUEST_READ_FINE_LOCATION);
         } else {
             startLocationUpdates();
