@@ -52,6 +52,7 @@ import com.google.maps.android.PolyUtil;
 import com.google.maps.errors.ApiException;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.GeocodedWaypointStatus;
 import com.google.maps.model.TravelMode;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
@@ -207,13 +208,29 @@ public class RideRouteActivity extends FragmentActivity {
             if (driver.getLongLoc() != null && driver.getLatLoc() != null
                     && destinationPlace.getLatLoc() != null && destinationPlace.getLongLoc() != null
                     && originPlace.getLongLoc() != null && originPlace.getLatLoc() != null) {
+
                 DirectionsResult results = getDirectionsDetails(driver.getLatLoc() + ", " + driver.getLongLoc()
                         , destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc(), TravelMode.DRIVING,
                         originPlace.getLatLoc() + ", " + originPlace.getLongLoc());
+
+                Log.d("demo", "onMapReady: " + driver.getLatLoc() + ", " + driver.getLongLoc() + "\n"
+                        + destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc() + "\n"
+                        + originPlace.getLatLoc() + ", " + originPlace.getLongLoc());
                 if (results != null) {
-                    addPolyline(results, googleMap);
-                    positionCamera(results.routes[overview], googleMap);
-                    addMarkersToMap(results, googleMap);
+                    if (results.geocodedWaypoints[0].geocoderStatus != null) {
+                        if (results.geocodedWaypoints[0].geocoderStatus.equals(GeocodedWaypointStatus.OK)) {
+                            googleMap.clear();
+                            addPolyline(results, googleMap);
+                            positionCamera(results.routes[overview], googleMap);
+                            addMarkersToMap(results, googleMap);
+                        } else {
+                            Log.d("demo", "onMapReady: STATUS " + results.geocodedWaypoints[0].geocoderStatus);
+                        }
+                    } else {
+                        Log.d("demo", "onMapReady: STATUS NULL");
+                    }
+                } else {
+                    Log.d("demo", "onMapReady: Result is null");
                 }
             } else {
                 Log.d("demo", "onMapReady: Location LatLng missing!");
