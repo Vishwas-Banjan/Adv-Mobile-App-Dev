@@ -1,6 +1,8 @@
 package com.vbanjan.inclass03.Utils;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     String userFirstName, userLastName, userEmail, userPassword, userCity, userGender;
 
     public User(String userFirstName, String userLastName, String userEmail, String userPassword, String userCity, String userGender) {

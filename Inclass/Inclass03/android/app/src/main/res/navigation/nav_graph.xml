@@ -39,5 +39,9 @@
         android:id="@+id/profileFragment"
         android:name="com.vbanjan.inclass03.ProfileFragment"
         android:label="fragment_profile"
-        tools:layout="@layout/fragment_profile" />
+        tools:layout="@layout/fragment_profile" >
+        <argument
+            android:name="userDetails"
+            app:argType="com.vbanjan.inclass03.Utils.User" />
+    </fragment>
 </navigation>

@@ -34,10 +34,10 @@
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/createAccountButton" />
+        app:layout_constraintTop_toBottomOf="@+id/editButton" />
 
     <com.google.android.material.button.MaterialButton
-        android:id="@+id/createAccountButton"
+        android:id="@+id/editButton"
         style="@style/Widget.MaterialComponents.Button"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
