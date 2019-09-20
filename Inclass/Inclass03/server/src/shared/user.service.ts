@@ -9,7 +9,7 @@ import { User } from '../types/user';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('User') private userModel: Model<User>) {}
+  constructor(@InjectModel('users') private userModel: Model<User>) {}
 
   async create(userDTO: RegisterDTO) {
     const { username } = userDTO;

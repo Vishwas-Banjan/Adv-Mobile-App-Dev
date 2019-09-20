@@ -8,7 +8,7 @@ import { LoggingInterceptor } from './logging.interceptor';
 import { UserService } from './user.service';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: 'User', schema: UserSchema }])],
+  imports: [MongooseModule.forFeature([{ name: 'users', schema: UserSchema }])],
   providers: [
     UserService,
     {
