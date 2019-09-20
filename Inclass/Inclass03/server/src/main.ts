@@ -31,16 +31,14 @@ async function bootstrap() {
   app.useGlobalPipes(
     new ValidationPipe({
       transform: true,
-      whitelist: true
+      whitelist: true,
     }),
   );
 
   // swagger
   const document = SwaggerModule.createDocument(
     app,
-    new DocumentBuilder()
-      .setBasePath('api')
-      .build(),
+    new DocumentBuilder().setBasePath('api').build(),
   );
   SwaggerModule.setup('docs', app, document);
 

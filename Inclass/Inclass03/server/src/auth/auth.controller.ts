@@ -2,8 +2,9 @@ import { Body, Controller, Post, Get, ValidationPipe } from '@nestjs/common';
 
 import { UserService } from '../shared/user.service';
 import { Payload } from '../types/payload';
-import { LoginDTO, RegisterDTO } from './auth.dto';
 import { AuthService } from './auth.service';
+import { RegisterDTO } from './dto/register.dto';
+import { LoginDTO } from './dto/login.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -16,7 +17,7 @@ export class AuthController {
   async login(@Body() userDTO: LoginDTO) {
     const user = await this.userService.findByLogin(userDTO);
     const payload: Payload = {
-      username: user.username
+      username: user.username,
     };
     const token = await this.authService.signPayload(payload);
     return { user, token };
@@ -24,10 +25,10 @@ export class AuthController {
 
   @Post('register')
   async register(@Body() userDTO: RegisterDTO) {
-    console.log(userDTO.username);
+    // console.log(userDTO.username);
     const user = await this.userService.create(userDTO);
     const payload: Payload = {
-      username: user.username
+      username: user.username,
     };
     const token = await this.authService.signPayload(payload);
     return { user, token };
