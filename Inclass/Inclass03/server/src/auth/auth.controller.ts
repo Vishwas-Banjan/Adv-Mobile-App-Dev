@@ -1,4 +1,4 @@
-import { Body, Controller, Post, Get, ValidationPipe, UseGuards } from '@nestjs/common';
+import { Body, Controller, Post, Get, UseGuards } from '@nestjs/common';
 
 import { UserService } from '../shared/user.service';
 import { Payload } from '../types/payload';
@@ -18,10 +18,10 @@ export class AuthController {
   async login(@Body() userDTO: LoginDTO) {
     const user = await this.userService.findByLogin(userDTO);
     const payload: Payload = {
-      username: user.username,
+      email: user.email,
     };
     const token = await this.authService.signPayload(payload);
-    return { user, token };
+    return { token };
   }
 
   @Post('register')
@@ -29,16 +29,16 @@ export class AuthController {
     // console.log(userDTO.username);
     const user = await this.userService.create(userDTO);
     const payload: Payload = {
-      username: user.username,
+      email: user.email,
     };
     const token = await this.authService.signPayload(payload);
-    return { user, token };
+    return { token };
   }
 
   // This route will require successfully passing our default auth strategy (JWT) in order
   // to access the route
   @Get('test')
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(AuthGuard())
   testAuthRoute() {
     return {
       message: 'You did it!',
