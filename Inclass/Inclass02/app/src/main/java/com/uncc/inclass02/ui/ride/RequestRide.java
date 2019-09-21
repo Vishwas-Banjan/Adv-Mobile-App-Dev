@@ -110,7 +110,7 @@ public class RequestRide extends AppCompatActivity {
     private void setPlaceValue(int resultCode, Intent data, TextView tv, com.uncc.inclass02.utilities.Place place) {
         if (resultCode == RESULT_OK) {
             Place placeData = Autocomplete.getPlaceFromIntent(data);
-            tv.setText(toStringLatLong(placeData.getLatLng()));
+            tv.setText(toStringLatLong(placeData));
             place.setLatLoc(placeData.getLatLng().latitude);
             place.setLongLoc(placeData.getLatLng().longitude);
             place.setName(placeData.getName());
@@ -121,8 +121,8 @@ public class RequestRide extends AppCompatActivity {
         }
     }
 
-    private String toStringLatLong(LatLng loc) {
-        return "Lat: " + loc.latitude + "\nLong: " + loc.longitude;
+    private String toStringLatLong(Place place) {
+        return place.getName();
     }
 
     private void submit() {
@@ -140,24 +140,20 @@ public class RequestRide extends AppCompatActivity {
         mRootRef.child(key).setValue(trip).addOnSuccessListener(new OnSuccessListener<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(key).setValue(new Auth().getCurrentUserID()).addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Intent resultIntent = new Intent();
-                        resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
-                        // todo: setting it to shared preferrence
-                        resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
-                        setResult(Activity.RESULT_OK, resultIntent);
-                        finish();
-                    }
-                });
+
+                Intent resultIntent = new Intent();
+                resultIntent.putExtra(AppConstant.RIDE_REQ_RESULT, buildRideText());
+                // todo: setting it to shared preferrence
+                resultIntent.putExtra(AppConstant.TRIP_ID_RESULT, key);
+                setResult(Activity.RESULT_OK, resultIntent);
+                finish();
             }
         });
     }
 
     private String buildRideText() {
-        return "Pick up location: " + pickupLoc.getLatLoc() + ", " + pickupLoc.getLongLoc()
-                + " \nDropoff Location: " + dropoffLoc.getLatLoc() + ", " + dropoffLoc.getLongLoc();
+        return pickupLoc.getName() + ": " + pickupLoc.getLatLoc() + ", " + pickupLoc.getLongLoc()
+                + " \n" + dropoffLoc.getName() + ": " + dropoffLoc.getLatLoc() + ", " + dropoffLoc.getLongLoc();
     }
 
     private String getCurrTime() {

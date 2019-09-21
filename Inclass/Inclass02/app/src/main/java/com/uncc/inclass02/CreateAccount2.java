@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -137,10 +138,10 @@ public class CreateAccount2 extends AppCompatActivity implements View.OnClickLis
                         @Override
                         public void onComplete(@NonNull Task<Void> task) {
                             if (task.isSuccessful()){
-                                if (profileImage!=null){
-                                    // upload the image
-                                    new UploadProfilePic().execute();
+                                if (profileImage == null){
+                                    profileImage = BitmapFactory.decodeResource(getResources(), R.mipmap.ic_launcher_round);
                                 }
+                                new UploadProfilePic().execute();
                                 startActivity(new Intent(CreateAccount2.this, Dashboard.class));
                                 finish();
                             }else{

@@ -4,6 +4,7 @@ public class AppConstant {
     public static final int LOGIN_CODE = 100;
     public static final int VIEW_MAP = 150;
     public static final int SIGNUP_CODE = 200;
+    public static final int TRIP_COMPLETE_CODE = 250;
     public static final int DASHBOARD_CODE = 300;
     public static final int CHATROOM_CODE = 400;
     public static final int REQUEST_RIDE_CODE = 500;
@@ -17,7 +18,9 @@ public class AppConstant {
     public static final String CHATROOM_DB_KEY = "chatrooms";
     public static final String USER_DB_KEY = "userProfiles";
     public static final String RIDE_DB_KEY = "rides";
+    public static final String CANDIDATE_DB_KEY = "candidates";
     public static final String DRIVER_DB_KEY = "drivers";
+    public static final String TRIP_STATUS_DB_KEY = "status";
     public static final String CHATROOM_ID = "id";
     public static final String CHATROOM_NAME = "name";
     public static final String CURR_USERS = "people";
@@ -29,13 +32,14 @@ public class AppConstant {
     public static final String RIDE_REQ_TYPE = "RIDE_REQ";
     public static final String CONFIRM_DRIVER_TYPE = "CONFIRM_DRIVER_TYPE";
     public static final String TRIP_COMPLETE = "complete";
+    public static final String TRIP_ONGOING = "on going";
     public static final String TRIP_ACTIVE = "active";
     public static final String RIDE_REQ_RESULT = "RIDE_REQ_RESULT";
     public static final String LOC_REQ_RESULT = "LOC_REQ_RESULT";
     public static final String TRIP_ID_RESULT = "TRIP_ID_RESULT";
     public static final String TRIP_ID = "TRIP_ID";
     public static final String WRONG_TRIP_ID = "WRONG_TRIP_ID";
-    public static final String API_KEY = "AIzaSyCjQlEN9SKDCtC30zy7grp-lyhPjEv792Q";
+    public static final String API_KEY = "AIzaSyBNqI8ClNOkg6O2LLdnIurwYyL54aN8iUo";
     public static final int PERMISSION_REQUEST_READ_FINE_LOCATION = 1;
     public static final String LOCATION_TEXT = "LOCATION_TEXT";
     public static final String MAP_TO_SHOW_RIDER = "MAP_TO_SHOW_RIDER";

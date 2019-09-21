@@ -20,14 +20,12 @@ import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.ride.SelectDriver;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Driver;
-import com.uncc.inclass02.utilities.Message;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.MenuItemCompat;
 import androidx.viewpager.widget.ViewPager;
 
 public class Chatroom extends AppCompatActivity {
@@ -136,7 +134,7 @@ public class Chatroom extends AppCompatActivity {
     }
 
     private void setDriverListener() {
-        mTripRef.child(this.tripId).child(AppConstant.DRIVER_DB_KEY);
+        mTripRef.child(this.tripId).child(AppConstant.CANDIDATE_DB_KEY);
         valueListener = mTripRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {

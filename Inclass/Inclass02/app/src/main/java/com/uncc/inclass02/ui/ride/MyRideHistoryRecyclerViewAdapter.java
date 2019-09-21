@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.ride.RideHistoryFragment.OnListFragmentInteractionListener;
+import com.uncc.inclass02.utilities.Place;
 import com.uncc.inclass02.utilities.Trip;
 
 import java.util.List;
@@ -39,8 +40,8 @@ public class MyRideHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyRid
     public void onBindViewHolder(final ViewHolder holder, int position) {
         holder.mItem = mValues.get(position);
         holder.mtripid.setText(mValues.get(position).getId());
-        holder.mtriporigin.setText(mValues.get(position).getPickUpLoc().getLatLoc()+", "+mValues.get(position).getPickUpLoc().getLongLoc());
-        holder.mtripdestination.setText(mValues.get(position).getDropoffLoc().getLatLoc()+", "+mValues.get(position).getDropoffLoc().getLongLoc());
+        holder.mtriporigin.setText(toStringLatLong(mValues.get(position).getPickUpLoc()));
+        holder.mtripdestination.setText(toStringLatLong(mValues.get(position).getDropoffLoc()));
         holder.mtripstatus.setText(mValues.get(position).getStatus());
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -52,6 +53,10 @@ public class MyRideHistoryRecyclerViewAdapter extends RecyclerView.Adapter<MyRid
                 }
             }
         });
+    }
+
+    private String toStringLatLong(Place place) {
+        return place.getName();
     }
 
     @Override

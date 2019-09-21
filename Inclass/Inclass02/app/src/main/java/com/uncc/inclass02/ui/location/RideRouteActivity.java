@@ -7,6 +7,8 @@ import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentActivity;
 
 import android.Manifest;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -17,14 +19,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.view.Window;
+import android.widget.Button;
 import android.widget.Toast;
 
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
@@ -36,13 +33,12 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
-import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.database.DataSnapshot;
@@ -50,30 +46,42 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.android.PolyUtil;
+import com.google.maps.errors.ApiException;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.GeocodedWaypointStatus;
+import com.google.maps.model.TravelMode;
 import com.uncc.inclass02.AppConstant;
 import com.uncc.inclass02.R;
 import com.uncc.inclass02.ui.dashboard.Dashboard;
-import com.uncc.inclass02.ui.ride.SendLocation;
 import com.uncc.inclass02.utilities.Auth;
 import com.uncc.inclass02.utilities.Place;
 import com.uncc.inclass02.utilities.Trip;
 
+import org.joda.time.DateTime;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+
 import static com.google.android.gms.location.LocationServices.getFusedLocationProviderClient;
 
-public class RideRouteActivity extends FragmentActivity{
+public class RideRouteActivity extends FragmentActivity {
 
+    private static final float MIN_DISTANCE = 100;
     private GoogleMap mMap;
     private Toolbar ride_route_toolbar;
-    private String rideRouteTAG = "RideRouteTAG", tripID, driverID = null, riderID;
-    private boolean mapToShowRider, fetchedData = false;
-    private  LatLng originLatLng, destinationLatLng;
-    MarkerOptions origin, driverMarkerOpt;
-    Marker driverMarker;
+    private String tripID, driverID = null, riderID;
     Auth mAuth;
     Trip currentTrip;
     DatabaseReference rideReference;
     FirebaseDatabase firebaseDatabase;
     SupportMapFragment mapFragment;
+    boolean showTripCompleteDialog;
 
     private LocationRequest mLocationRequest;
 
@@ -118,76 +126,39 @@ public class RideRouteActivity extends FragmentActivity{
         } else {
             startLocationUpdates();
         }
-
-//        try{
-//            if (fromRequestRide!=null){
-//                // getting trip id and ride id and pickup location
-//                mapToShowRider = fromRequestRide.containsKey(AppConstant.MAP_TO_SHOW_RIDER) && fromRequestRide.getBoolean(AppConstant.MAP_TO_SHOW_RIDER);
-//                tripID = fromRequestRide.getString(AppConstant.TRIP_ID);
-//                if (mapToShowRider){
-//                    riderID = mAuth.getCurrentUserID();
-//                    Log.d(rideRouteTAG, "rider id is: "+riderID);
-//                    getTheDatabaseWorking(riderID);
-//                }else{
-//                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                        checkPermission();
-//                    }else{
-//
-//                        startLocationUpdates();
-//                    }
-//                    FirebaseDatabase.getInstance().getReference(AppConstant.RIDERS_RECORD).child(tripID).addListenerForSingleValueEvent(new ValueEventListener() {
-//                        @Override
-//                        public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-//                            riderID = dataSnapshot.getValue().toString();
-//                            Log.d(rideRouteTAG, "rider id is: "+riderID);
-//                            getTheDatabaseWorking(riderID);
-//                        }
-//
-//                        @Override
-//                        public void onCancelled(@NonNull DatabaseError databaseError) {
-//                            handleError("sorry ride not possible");
-//                        }
-//                    });
-//                }
-//            }else{
-//                handleError("sorry ride not possible");
-//            }
-//        }catch (Exception e){
-//            handleError(e.getMessage());
-//        }
     }
 
-    private void getTheDatabaseWorking(){
+    private void getTheDatabaseWorking() {
         rideReference = firebaseDatabase.getReference(AppConstant.RIDE_DB_KEY).child(riderID).child(tripID);
         new GetFirebaseData().execute("");
     }
 
-    private void handleError(String msg){
+    private void handleError(String msg) {
         Toast.makeText(getApplicationContext(), msg, Toast.LENGTH_LONG).show();
         startActivity(new Intent(this, Dashboard.class));
     }
 
-    private class GetFirebaseData extends AsyncTask<String, String, String>{
+    private class GetFirebaseData extends AsyncTask<String, String, String> {
 
         @Override
         protected String doInBackground(String... objects) {
             // firebase database instance
             rideReference.addValueEventListener(new ValueEventListener() {
                 @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // get all the data
-                    Log.d(rideRouteTAG, dataSnapshot+"");
-                    if (dataSnapshot.exists()){
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
                         currentTrip = dataSnapshot.getValue(Trip.class);
+                        if (currentTrip.getStatus().equals(AppConstant.TRIP_COMPLETE)) {
+                            finish();
+                            return;
+                        }
                         mapFragment.getMapAsync((OnMapReadyCallback) onMapReadyCallback);
-                    }else {
-                        handleError("Ride not exists anymore");
                     }
                 }
 
                 @Override
                 public void onCancelled(@NonNull DatabaseError databaseError) {
-                    handleError(databaseError.getMessage());
+
                 }
             });
             return null;
@@ -225,11 +196,53 @@ public class RideRouteActivity extends FragmentActivity{
             Place destinationPlace = currentTrip.getDropoffLoc();
             Place driver = currentTrip.getDrivers().get(driverID).getCurrLoc();
 
+            if (!showTripCompleteDialog) {
+                float[] results = new float[1];
+                Location.distanceBetween(originPlace.getLatLoc(), originPlace.getLongLoc(), driver.getLatLoc(), driver.getLongLoc(), results);
+
+                if (new Auth().getCurrentUserID().equals(riderID) && results[0] < MIN_DISTANCE) {
+                    showTripCompleteDialog();
+                }
+            }
+
+            if (driver.getLongLoc() != null && driver.getLatLoc() != null
+                    && destinationPlace.getLatLoc() != null && destinationPlace.getLongLoc() != null
+                    && originPlace.getLongLoc() != null && originPlace.getLatLoc() != null) {
+
+                DirectionsResult results = getDirectionsDetails(driver.getLatLoc() + ", " + driver.getLongLoc()
+                        , destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc(), TravelMode.DRIVING,
+                        originPlace.getLatLoc() + ", " + originPlace.getLongLoc());
+
+                Log.d("demo", "onMapReady: " + driver.getLatLoc() + ", " + driver.getLongLoc() + "\n"
+                        + destinationPlace.getLatLoc() + ", " + destinationPlace.getLongLoc() + "\n"
+                        + originPlace.getLatLoc() + ", " + originPlace.getLongLoc());
+                if (results != null) {
+                    if (results.geocodedWaypoints[0].geocoderStatus != null) {
+                        if (results.geocodedWaypoints[0].geocoderStatus.equals(GeocodedWaypointStatus.OK)) {
+                            googleMap.clear();
+                            addPolyline(results, googleMap);
+                            positionCamera(results.routes[overview], googleMap);
+                            addMarkersToMap(results, googleMap);
+                        } else {
+                            Log.d("demo", "onMapReady: STATUS " + results.geocodedWaypoints[0].geocoderStatus);
+                        }
+                    } else {
+                        Log.d("demo", "onMapReady: STATUS NULL");
+                    }
+                } else {
+                    Log.d("demo", "onMapReady: Result is null");
+                }
+            } else {
+                Log.d("demo", "onMapReady: Location LatLng missing!");
+            }
+
+
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()))
                     .title("Pickup Location")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE)));
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
             builder.include(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()));
+
 
             mMap.addMarker(new MarkerOptions()
                     .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
@@ -237,11 +250,25 @@ public class RideRouteActivity extends FragmentActivity{
                     .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
             builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
-                    .title("Driver Location")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+            if (driver.getLatLoc() != 0 && driver.getLongLoc() != 0) {
+                mMap.addMarker(new MarkerOptions()
+                        .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
+                        .title("Driver Location")
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+                builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+            }
+//
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
+//                    .title("Destination Location")
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+//            builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
+
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
+//                    .title("Driver Location")
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
+//            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
 
             LatLngBounds bounds = builder.build();
 
@@ -254,13 +281,53 @@ public class RideRouteActivity extends FragmentActivity{
         }
     };
 
-    public void checkPermission(){
+    private void showTripCompleteDialog() {
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(RideRouteActivity.this, R.style.AppTheme_AppBarOverlay);
+        alertDialogBuilder.setMessage(getResources().getString(R.string.trip_complete_dialog));
+        alertDialogBuilder.setPositiveButton("COMPLETE", null);
+        alertDialogBuilder.setNegativeButton("CANCEL", null);
+
+        final AlertDialog alertDialog = alertDialogBuilder.create();
+
+        alertDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+            @Override
+            public void onShow(final DialogInterface dialog) {
+                Button positiveButton = alertDialog.getButton(AlertDialog.BUTTON_POSITIVE);
+                positiveButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        setTripComplete();
+                        dialog.dismiss();
+                        finish();
+                    }
+                });
+
+                Button negativeButton = alertDialog.getButton(AlertDialog.BUTTON_NEGATIVE);
+                negativeButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        showTripCompleteDialog = false;
+                        dialog.dismiss();
+                    }
+                });
+            }
+        });
+
+        alertDialog.show();
+    }
+
+    private void setTripComplete() {
+        DatabaseReference ref = rideReference.child(AppConstant.TRIP_STATUS_DB_KEY);
+        ref.setValue(AppConstant.TRIP_COMPLETE);
+    }
+
+    public void checkPermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
-                ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
-        ){//Can add more as per requirement
+                ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED
+        ) {//Can add more as per requirement
 
             ActivityCompat.requestPermissions(this,
-                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION},
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
                     AppConstant.PERMISSION_REQUEST_READ_FINE_LOCATION);
         } else {
             startLocationUpdates();
@@ -323,7 +390,6 @@ public class RideRouteActivity extends FragmentActivity{
             }, Looper.myLooper());
         }
     }
-
 //    @Override
 //    public void onMapReady(final GoogleMap googleMap) {
 //
@@ -401,4 +467,82 @@ public class RideRouteActivity extends FragmentActivity{
 //        originMarker.setVisible(true);
 //        destinationMarker.setVisible(true);
 //    }
+
+
+    private GeoApiContext getGeoContext() {
+        GeoApiContext geoApiContext = new GeoApiContext();
+        return geoApiContext
+                .setQueryRateLimit(3)
+                .setApiKey(getResources().getString(R.string.google_maps_key))
+                .setConnectTimeout(1, TimeUnit.SECONDS)
+                .setReadTimeout(1, TimeUnit.SECONDS)
+                .setWriteTimeout(1, TimeUnit.SECONDS);
+    }
+
+    private DirectionsResult getDirectionsDetails(String origin, String destination, TravelMode mode, String waypoint) {
+        DateTime now = new DateTime();
+        try {
+            return DirectionsApi.newRequest(getGeoContext())
+                    .mode(mode)
+                    .origin(origin)
+                    .waypoints("via:" + waypoint)
+                    .destination(destination)
+                    .departureTime(now)
+                    .await();
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return null;
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+            return null;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static final int overview = 0;
+
+    private void addMarkersToMap(DirectionsResult results, GoogleMap mMap) {
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview]
+                .legs[overview].startLocation.lat, results.routes[overview]
+                .legs[overview].startLocation.lng)).title("Start Point: " + results.routes[overview]
+                .legs[overview].startAddress));
+        mMap.addMarker(new MarkerOptions().position(new LatLng(results.routes[overview]
+                .legs[overview].endLocation.lat, results.routes[overview]
+                .legs[overview].endLocation.lng)).title("End Point: " + results.routes[overview]
+                .legs[overview].endAddress).snippet(getEndLocationTitle(results)));
+    }
+
+    private void positionCamera(DirectionsRoute route, GoogleMap mMap) {
+        LatLngBounds.Builder latLongBuilder = new LatLngBounds.Builder();
+        ArrayList<LatLng> latLngArrayList = new ArrayList<>();
+        latLngArrayList.add(new LatLng(route.legs[overview]
+                .startLocation.lat, route.legs[overview].startLocation.lng));
+        latLngArrayList.add(new LatLng(route.legs[overview]
+                .endLocation.lat, route.legs[overview].endLocation.lng));
+        if (latLngArrayList.size() > 0) {
+            for (LatLng p : latLngArrayList) {
+                latLongBuilder.include(p);
+            }
+        }
+        LatLngBounds bounds = latLongBuilder.build();
+        mMap.setLatLngBoundsForCameraTarget(bounds);
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(latLongBuilder.build(), 50));
+    }
+
+    private void addPolyline(DirectionsResult results, GoogleMap mMap) {
+        List<LatLng> decodedPath = PolyUtil.decode(results.routes[overview].overviewPolyline.getEncodedPath());
+        mMap.addPolyline(new PolylineOptions().addAll(decodedPath)
+                .width(30)
+                .color(this.getColor(R.color.colorPrimary)
+                ));
+    }
+
+    private String getEndLocationTitle(DirectionsResult results) {
+        return "Time :" + results.routes[overview]
+                .legs[overview].duration.humanReadable + " Distance :" + results.routes[overview]
+                .legs[overview].distance.humanReadable;
+    }
+
 }
