@@ -12,6 +12,7 @@ export const UserSchema = new mongoose.Schema({
   lastName: String,
   email: String,
   city: String,
+  gender: String,
 });
 
 UserSchema.pre('save', async function(next: mongoose.HookNextFunction) {
