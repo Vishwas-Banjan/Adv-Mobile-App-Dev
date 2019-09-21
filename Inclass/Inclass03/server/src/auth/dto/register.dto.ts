@@ -18,4 +18,7 @@ export class RegisterDTO {
 
   @ApiModelProperty()
   city: string;
+
+  @ApiModelProperty()
+  gender: string;
 }
