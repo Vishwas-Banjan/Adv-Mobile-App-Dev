@@ -5,7 +5,6 @@ import * as Express from 'express';
 import * as cors from 'cors';
 
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 if (process.env.NODE_ENV === 'test') {
@@ -26,14 +25,6 @@ async function bootstrap() {
 
   // global prefix
   app.setGlobalPrefix('api');
-
-  // global validation pipe
-  app.useGlobalPipes(
-    new ValidationPipe({
-      transform: false,
-      whitelist: false,
-    }),
-  );
 
   // swagger
   const document = SwaggerModule.createDocument(
