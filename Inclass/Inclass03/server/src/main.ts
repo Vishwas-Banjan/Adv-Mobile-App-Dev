@@ -9,8 +9,8 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
 if (process.env.NODE_ENV === 'test') {
   process.env.MONGO_URI = process.env.MONGO_URI_TEST;
-  console.log('----------TESTING IN PROCESS----------');
-  console.log('using database', process.env.MONGO_URI);
+  // console.log('----------TESTING IN PROCESS----------');
+  // console.log('using database', process.env.MONGO_URI);
 }
 
 const server = Express();
@@ -20,7 +20,7 @@ server.get('/_ah/health', (req, res) => res.send('ok'));
 server.get('/_ah/start', (req, res) => res.send('ok'));
 
 async function bootstrap() {
-  console.log('using database', process.env.MONGO_URI);
+  // console.log('using database', process.env.MONGO_URI);
   const app = await NestFactory.create(AppModule, new ExpressAdapter(server));
 
   // global prefix
