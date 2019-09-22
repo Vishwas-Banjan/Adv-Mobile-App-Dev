@@ -2,10 +2,10 @@ import { Body, Controller, Post, Get, UseGuards } from '@nestjs/common';
 
 import { AuthService } from './auth.service';
 import { AuthGuard } from '@nestjs/passport';
-import { LoginDTO } from 'src/dto/login.dto';
-import { Payload } from 'src/types/payload';
-import { CreateUserDTO } from 'src/dto/create-user.dto';
-import { UserService } from 'src/shared/user.service';
+import { LoginDTO } from './../../dto/login.dto';
+import { Payload } from './../../types/payload';
+import { CreateUserDTO } from './../../dto/create-user.dto';
+import { UserService } from './../../shared/user.service';
 
 @Controller('auth')
 export class AuthController {

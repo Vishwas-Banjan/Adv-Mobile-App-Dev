@@ -52,7 +52,11 @@ export class UserService {
   async update(
     userDTO: UpdateUserDTO,
     id: string,
+    userId: string,
   ): Promise<User> {
+    if (userId !== id) {
+      throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
+    }
     const product = await this.userModel.findById(id);
     await product.updateOne(userDTO);
     return await this.userModel.findById(id);
