@@ -1,16 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Put,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, Controller, Get, Put, UseGuards, Param } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { User as UserDocument } from '../../types/user';
-import { User } from 'src/utilities/user.decorator';
-import { UpdateUserDTO } from 'src/dto/update-user.dto';
-import { UserService } from 'src/shared/user.service';
+import { User as UserDocument } from './../../types/user';
+import { User } from './../../utilities/user.decorator';
+import { UpdateUserDTO } from './../../dto/update-user.dto';
+import { UserService } from './../../shared/user.service';
 
 @Controller('user')
 export class UserController {
@@ -27,9 +21,10 @@ export class UserController {
   @UseGuards(AuthGuard())
   async update(
     @Body() product: UpdateUserDTO,
+    @Param('id') id: string,
     @User() user: UserDocument,
   ): Promise<UserDocument> {
     const { id: userId } = user;
-    return await this.userService.update(product, userId);
+    return await this.userService.update(product, id, userId);
   }
 }

@@ -9,7 +9,10 @@ import { UserModule } from './modules/user/user.module';
 
 @Module({
   imports: [
-    MongooseModule.forRoot(process.env.MONGO_URI),
+    MongooseModule.forRoot(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    }),
     SharedModule,
     UserModule,
     AuthModule,
