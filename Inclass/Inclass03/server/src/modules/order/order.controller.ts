@@ -1,10 +1,10 @@
 import { Controller, Get, UseGuards, Post, Body } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { User } from '../utilities/user.decorator';
-import { User as UserDocument } from '../types/user';
+import { User as UserDocument } from '../../types/user';
 import { OrderService } from './order.service';
-import { CreateOrderDTO } from './order.dto';
+import { User } from 'src/utilities/user.decorator';
+import { CreateOrderDTO } from 'src/dto/order.dto';
 
 @Controller('order')
 export class OrderController {

@@ -2,16 +2,17 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
-import { Payload } from '../types/payload';
-import { User } from '../types/user';
-import { LoginDTO } from 'src/auth/dto/login.dto';
-import { RegisterDTO } from 'src/auth/dto/register.dto';
+import { CreateUserDTO } from 'src/dto/create-user.dto';
+import { User } from 'src/types/user';
+import { LoginDTO } from 'src/dto/login.dto';
+import { Payload } from 'src/types/payload';
+import { UpdateUserDTO } from 'src/dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel('users') private userModel: Model<User>) {}
 
-  async create(userDTO: RegisterDTO) {
+  async create(userDTO: CreateUserDTO) {
     const { email } = userDTO;
     const user = await this.userModel.findOne({ email });
     if (user) {
@@ -46,6 +47,15 @@ export class UserService {
   async findByPayload(payload: Payload) {
     const { email } = payload;
     return await this.userModel.findOne({ email });
+  }
+
+  async update(
+    userDTO: UpdateUserDTO,
+    id: string,
+  ): Promise<User> {
+    const product = await this.userModel.findById(id);
+    await product.updateOne(userDTO);
+    return await this.userModel.findById(id);
   }
 
   sanitizeUser(user: User) {

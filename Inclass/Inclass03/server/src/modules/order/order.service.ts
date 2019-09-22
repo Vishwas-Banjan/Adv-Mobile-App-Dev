@@ -2,8 +2,8 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
-import { Order } from '../types/order';
-import { CreateOrderDTO } from './order.dto';
+import { Order } from '../../types/order';
+import { CreateOrderDTO } from 'src/dto/order.dto';
 
 @Injectable()
 export class OrderService {
