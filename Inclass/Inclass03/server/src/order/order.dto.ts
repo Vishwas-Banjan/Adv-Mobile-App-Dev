@@ -1,6 +1,6 @@
 export interface CreateOrderDTO {
-  products: {
+  products: Array<{
     product: string;
     quantity: number;
-  }[];
+  }>;
 }

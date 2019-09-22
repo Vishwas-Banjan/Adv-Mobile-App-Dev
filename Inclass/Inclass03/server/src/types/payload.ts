@@ -1,4 +1,4 @@
 export interface Payload {
-  username: string;
+  email: string;
   expiresIn?: string;
 }

@@ -43,6 +43,10 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     NavController navController;
     private OnFragmentInteractionListener mListener;
     SharedPreferences sharedPref;
+    String createAccountURL = "https://nest-api-253406.appspot.com/api/auth/register";
+    EditText userFirstName, userLastName, userEmail, userPassword, userCity;
+    MaterialButtonToggleGroup genderToggleGroup;
+    String TAG = "demo";
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -73,12 +77,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         return inflater.inflate(R.layout.fragment_sign_up, container, false);
     }
 
-    Button createAccount;
-    EditText userFirstName, userLastName, userEmail, userPassword, userCity;
-    MaterialButtonToggleGroup genderToggleGroup;
-    String TAG = "demo";
-
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -102,12 +100,9 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             case R.id.editButton:
                 //TODO Create Account and Login
                 if (validateInputFields()) {
-                    Log.d(TAG, "onClick: Create Account " + getUserInputDetails().toString());
-//                    new signUpUser(getUserInputDetails()).execute(); //Async Task
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("userDetails", getUserInputDetails());
-                    Toast.makeText(getContext(), "New Account Created", Toast.LENGTH_SHORT).show();
-                    navController.navigate(R.id.action_signUpFragment_to_profileFragment, bundle);
+                    new signUpUser(getUserInputDetails()).execute(); //Async Task
+//                    Bundle bundle = new Bundle();
+//                    bundle.putSerializable("userDetails", getUserInputDetails());
                 }
                 break;
         }
@@ -153,8 +148,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    String createAccountURL; //TODO Set CreateUserURL
-
     private class signUpUser extends AsyncTask<Void, Void, String> {
         User user;
         private ProgressDialog progressDialog;
@@ -175,11 +168,14 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
+            sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
             SharedPreferences.Editor editor = sharedPref.edit();
             editor.putString(getString(R.string.userToken), s);
             if (progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
+//            navController.navigate(R.id.action_signUpFragment_to_profileFragment, bundle);
+//            Toast.makeText(getContext(), "New Account Created", Toast.LENGTH_SHORT).show();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -187,6 +183,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         protected String doInBackground(Void... voids) {
             final OkHttpClient client = new OkHttpClient();
             RequestBody formBody = new FormBody.Builder()
+                    .add("username", user.getUserFirstName() + "_" + user.getUserLastName())
                     .add("firstName", user.getUserFirstName())
                     .add("lastName", user.getUserLastName())
                     .add("email", user.getUserEmail())
@@ -205,9 +202,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     throw new IOException("Unexpected code " + response.toString());
                 String json = response.body().string();
                 JSONObject root = new JSONObject(json);
-                if (root.getBoolean("auth") == true) {
-                    token = root.getString("token");
-                }
+                token = root.getString("token");
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {

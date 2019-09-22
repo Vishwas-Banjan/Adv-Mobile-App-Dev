@@ -1,8 +1,8 @@
 import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
+import { User } from 'src/types/user';
 
 export const UserSchema = new mongoose.Schema({
-  username: String,
   password: {
     type: String,
     select: false,
@@ -16,12 +16,13 @@ export const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre('save', async function(next: mongoose.HookNextFunction) {
+  const user = this as User;
   try {
     if (!this.isModified('password')) {
       return next();
     }
-    const hashed = await bcrypt.hash(this['password'], 10);
-    this['password'] = hashed;
+    const hashed = await bcrypt.hash(user.password, 10);
+    user.password = hashed;
     return next();
   } catch (err) {
     return next(err);
