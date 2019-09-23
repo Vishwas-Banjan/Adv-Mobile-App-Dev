@@ -7,8 +7,6 @@ import { SharedModule } from './shared/shared.module';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
 
-process.env.MONGO_URI = "mongodb+srv://rootuser:mobilityUser1@mobility-dvxsj.mongodb.net/users?retryWrites=true&w=majority";
-
 @Module({
   imports: [
     MongooseModule.forRoot(process.env.MONGO_URI, {
