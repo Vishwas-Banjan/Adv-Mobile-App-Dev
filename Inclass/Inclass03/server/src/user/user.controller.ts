@@ -10,9 +10,7 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { SellerGuard } from '../guards/seller.guard';
-// import { Product } from '../types/product';
-import { User as UserDocument } from '../types/user';
+import { User } from '../types/user';
 import { UserService } from './user.service';
 
 @Controller('user')
@@ -20,19 +18,24 @@ export class UserController {
   constructor(private userService: UserService) {}
 
   @Get(':id')
-  @UseGuards(AuthGuard('jwt'), SellerGuard)
-  async getUserData(@Param('id') id: string): Promise<UserDocument> {
-    return await this.userService.findById(id);
+  // @UseGuards(AuthGuard('jwt'), SellerGuard)
+  async getUserData(@Param('id') id: string): Promise<User> {
+    return await this.userService.findByPayload({email: id});
   }
 
-  @Post()
-  @UseGuards(AuthGuard('jwt'), SellerGuard)
-  async create(
-    @Body() user: UserDocument,
-    @Param('id') id: string,
-  ): Promise<UserDocument> {
-    return await this.userService.update(id, user);
+  @Get('')
+  async users(@Param('id') id: string): Promise<String> {
+    return "provide user id";
   }
+
+  // @Post()
+  // @UseGuards(AuthGuard('jwt'), SellerGuard)
+  // async create(
+  //   @Body() user: UserDocument,
+  //   @Param('id') id: string,
+  // ): Promise<UserDocument> {
+  //   return await this.userService.update(id, user);
+  // }
 
   // @Delete(':id')
   // @UseGuards(AuthGuard('jwt'), SellerGuard)

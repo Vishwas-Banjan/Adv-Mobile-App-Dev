@@ -7,6 +7,11 @@ import * as cors from 'cors';
 import { AppModule } from './app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 
+// setting up the env variable
+process.env.MONGO_URI = "mongodb+srv://rootuser:mobilityUser1@mobility-dvxsj.mongodb.net/users?retryWrites=true&w=majority";
+process.env.SECRET_KEY = "mobilityUser1";
+process.env.PORT = "3000";
+
 // if (process.env.NODE_ENV === 'test') {
 //   process.env.MONGO_URI = process.env.MONGO_URI_TEST;
 //   // console.log('----------TESTING IN PROCESS----------');
