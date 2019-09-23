@@ -10,12 +10,12 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { SellerGuard } from '../guards/seller.guard';
-import { Product } from '../types/product';
-import { User as UserDocument } from '../types/user';
-import { User } from '../utilities/user.decorator';
-import { CreateProductDTO, UpdateProductDTO } from './product.dto';
+import { User as UserDocument } from '../../types/user';
 import { ProductService } from './product.service';
+import { Product } from './../../types/product';
+import { SellerGuard } from './../../guards/seller.guard';
+import { User } from './../../utilities/user.decorator';
+import { CreateProductDTO, UpdateProductDTO } from './../../dto/product.dto';
 
 @Controller('product')
 export class ProductController {
