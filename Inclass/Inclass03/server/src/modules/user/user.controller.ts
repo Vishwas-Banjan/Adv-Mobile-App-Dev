@@ -12,8 +12,14 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(AuthGuard())
-  async getUserProfile(@Param('id') id: string): Promise<UserDocument> {
-    return await this.userService.findByPayload({email: id});
+  async getUserProfileById(@Param('id') id: string): Promise<UserDocument> {
+    return await this.userService.findFromID(id);
+  }
+
+  @Get('email/:email')
+  @UseGuards(AuthGuard())
+  async getUserProfileByEmail(@Param('email') email: string): Promise<UserDocument> {
+    return await this.userService.findByPayload({email: email});
   }
 
   @Put(':id')

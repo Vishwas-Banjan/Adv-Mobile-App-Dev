@@ -104,6 +104,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         }
         disableFields();
 //        new getUserDetails().execute(); //Async Task
+//        Log.d("Profile TAG", sharedPref.getString(getString(R.string.userToken), "not found"));
     }
 
     @Override
@@ -151,7 +152,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    String getUser; //TODO Set Get User Details URL
+    private String getUser = R.string.baseURL+"/user"; //TODO Set Get User Details URL
 
     private class getUserDetails extends AsyncTask<Void, Void, User> {
         private ProgressDialog progressDialog;
