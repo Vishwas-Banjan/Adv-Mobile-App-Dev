@@ -12,9 +12,8 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(AuthGuard())
-  async getUserProfile(@User() user: UserDocument): Promise<UserDocument> {
-    const { id } = user;
-    return null;
+  async getUserProfile(@Param('id') id: string): Promise<UserDocument> {
+    return await this.userService.findByPayload({email: id});
   }
 
   @Put(':id')
