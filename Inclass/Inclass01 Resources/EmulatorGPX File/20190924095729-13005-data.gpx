@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<gpx version="1.1" creator="GPS Visualizer https://www.gpsvisualizer.com/" xmlns="http://www.topografix.com/GPX/1/1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.topografix.com/GPX/1/1 http://www.topografix.com/GPX/1/1/gpx.xsd">
+<wpt lat="35.3353242" lon="-80.7159485">
+  <name>35.3353242,-80.7159485</name>
+  <desc>N Tryon / Pavilion Blvd, Charlotte, NC 28262, USA</desc>
+</wpt>
+<wpt lat="35.3221413" lon="-80.7333982">
+  <name>35.3221413,-80.7333982</name>
+  <desc>10023 N Tryon St, Charlotte, NC 28262, USA</desc>
+</wpt>
+<trk>
+  <name>N Tryon / Pavilion Blvd - 10023 N Tryon St</name>
+  <trkseg>
+    <trkpt lat="35.33532" lon="-80.71595"></trkpt>
+    <trkpt lat="35.33516" lon="-80.71656"></trkpt>
+    <trkpt lat="35.33514" lon="-80.71666"></trkpt>
+    <trkpt lat="35.33506" lon="-80.71694"></trkpt>
+    <trkpt lat="35.33472" lon="-80.71815"></trkpt>
+    <trkpt lat="35.33462" lon="-80.71852"></trkpt>
+    <trkpt lat="35.33444" lon="-80.71914"></trkpt>
+    <trkpt lat="35.3344" lon="-80.71926"></trkpt>
+    <trkpt lat="35.33437" lon="-80.71935"></trkpt>
+    <trkpt lat="35.33425" lon="-80.7197"></trkpt>
+    <trkpt lat="35.33408" lon="-80.72012"></trkpt>
+    <trkpt lat="35.33396" lon="-80.72036"></trkpt>
+    <trkpt lat="35.33392" lon="-80.72043"></trkpt>
+    <trkpt lat="35.3339" lon="-80.72046"></trkpt>
+    <trkpt lat="35.33372" lon="-80.72078"></trkpt>
+    <trkpt lat="35.33354" lon="-80.72109"></trkpt>
+    <trkpt lat="35.33344" lon="-80.72126"></trkpt>
+    <trkpt lat="35.33335" lon="-80.72141"></trkpt>
+    <trkpt lat="35.33318" lon="-80.72167"></trkpt>
+    <trkpt lat="35.3331" lon="-80.72177"></trkpt>
+    <trkpt lat="35.33301" lon="-80.7219"></trkpt>
+    <trkpt lat="35.3325" lon="-80.72253"></trkpt>
+    <trkpt lat="35.33247" lon="-80.72256"></trkpt>
+    <trkpt lat="35.33209" lon="-80.72298"></trkpt>
+    <trkpt lat="35.33207" lon="-80.723"></trkpt>
+    <trkpt lat="35.33168" lon="-80.7234"></trkpt>
+    <trkpt lat="35.33133" lon="-80.72375"></trkpt>
+    <trkpt lat="35.33081" lon="-80.7243"></trkpt>
+    <trkpt lat="35.33079" lon="-80.72432"></trkpt>
+    <trkpt lat="35.3301" lon="-80.72503"></trkpt>
+    <trkpt lat="35.32996" lon="-80.72517"></trkpt>
+    <trkpt lat="35.32979" lon="-80.72535"></trkpt>
+    <trkpt lat="35.32928" lon="-80.72589"></trkpt>
+    <trkpt lat="35.32914" lon="-80.72603"></trkpt>
+    <trkpt lat="35.32882" lon="-80.72636"></trkpt>
+    <trkpt lat="35.32874" lon="-80.72645"></trkpt>
+    <trkpt lat="35.32841" lon="-80.72679"></trkpt>
+    <trkpt lat="35.32816" lon="-80.72705"></trkpt>
+    <trkpt lat="35.32726" lon="-80.72799"></trkpt>
+    <trkpt lat="35.32699" lon="-80.72828"></trkpt>
+    <trkpt lat="35.32617" lon="-80.72914"></trkpt>
+    <trkpt lat="35.32571" lon="-80.7296"></trkpt>
+    <trkpt lat="35.32562" lon="-80.72974"></trkpt>
+    <trkpt lat="35.32512" lon="-80.73026"></trkpt>
+    <trkpt lat="35.32469" lon="-80.73071"></trkpt>
+    <trkpt lat="35.32441" lon="-80.73099"></trkpt>
+    <trkpt lat="35.32429" lon="-80.7311"></trkpt>
+    <trkpt lat="35.32398" lon="-80.73144"></trkpt>
+    <trkpt lat="35.32343" lon="-80.73202"></trkpt>
+    <trkpt lat="35.3232" lon="-80.73226"></trkpt>
+    <trkpt lat="35.32311" lon="-80.73236"></trkpt>
+    <trkpt lat="35.32276" lon="-80.73273"></trkpt>
+    <trkpt lat="35.32238" lon="-80.73313"></trkpt>
+    <trkpt lat="35.32213" lon="-80.7334"></trkpt>
+  </trkseg>
+</trk>
+</gpx>

@@ -180,6 +180,7 @@ public class RideRouteActivity extends FragmentActivity {
      * it inside the SupportMapFragment. This method will only be triggered once the user has
      * installed Google Play services and returned to the app.
      */
+    boolean animateCameraflag = true;
 
     final Object onMapReadyCallback = new OnMapReadyCallback() {
 
@@ -244,40 +245,41 @@ public class RideRouteActivity extends FragmentActivity {
             builder.include(new LatLng(originPlace.getLatLoc(), originPlace.getLongLoc()));
 
 
-            mMap.addMarker(new MarkerOptions()
-                    .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
-                    .title("Destination Location")
-                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
-            builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
-
-            if (driver.getLatLoc() != 0 && driver.getLongLoc() != 0) {
-                mMap.addMarker(new MarkerOptions()
-                        .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
-                        .title("Driver Location")
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
-                builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
-            }
-//
 //            mMap.addMarker(new MarkerOptions()
 //                    .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
 //                    .title("Destination Location")
 //                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
 //            builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
 
+//            if (driver.getLatLoc() != 0 && driver.getLongLoc() != 0) {
+//                mMap.addMarker(new MarkerOptions()
+//                        .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
+//                        .title("Driver Location")
+//                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+//                builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+//            }
+//
+//            mMap.addMarker(new MarkerOptions()
+//                    .position(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()))
+//                    .title("Destination Location")
+//                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)));
+            builder.include(new LatLng(destinationPlace.getLatLoc(), destinationPlace.getLongLoc()));
+
 //            mMap.addMarker(new MarkerOptions()
 //                    .position(new LatLng(driver.getLatLoc(), driver.getLongLoc()))
 //                    .title("Driver Location")
 //                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_CYAN)));
-//            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
+            builder.include(new LatLng(driver.getLatLoc(), driver.getLongLoc()));
 
             LatLngBounds bounds = builder.build();
-
             int width = getResources().getDisplayMetrics().widthPixels;
             int height = getResources().getDisplayMetrics().heightPixels;
             int padding = (int) (width * 0.10); // offset from edges of the map 10% of screen
-
-            CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
-            mMap.animateCamera(cu);
+            if (animateCameraflag) {
+                CameraUpdate cu = CameraUpdateFactory.newLatLngBounds(bounds, width, height, padding);
+                mMap.animateCamera(cu);
+                animateCameraflag = false;
+            }
         }
     };
 
@@ -312,8 +314,9 @@ public class RideRouteActivity extends FragmentActivity {
                 });
             }
         });
-
-        alertDialog.show();
+        if (!alertDialog.isShowing()) {
+            alertDialog.show();
+        }
     }
 
     private void setTripComplete() {
@@ -368,6 +371,7 @@ public class RideRouteActivity extends FragmentActivity {
             mLocationRequest = new LocationRequest();
             mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
             mLocationRequest.setInterval(UPDATE_INTERVAL);
+//            mLocationRequest.setSmallestDisplacement(50);
             mLocationRequest.setFastestInterval(FASTEST_INTERVAL);
 
             // Create LocationSettingsRequest object using location request
