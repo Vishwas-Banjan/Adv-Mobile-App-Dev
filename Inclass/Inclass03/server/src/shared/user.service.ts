@@ -28,6 +28,14 @@ export class UserService {
     return await this.userModel.find();
   }
 
+  async findFromID(id: string){
+    const user = await this.userModel.findById(id);
+    if(!user){
+      throw new HttpException('user not found', HttpStatus.NOT_FOUND);
+    }
+    return user;
+  }
+
   async findByLogin(userDTO: LoginDTO) {
     const { email, password } = userDTO;
     const user = await this.userModel

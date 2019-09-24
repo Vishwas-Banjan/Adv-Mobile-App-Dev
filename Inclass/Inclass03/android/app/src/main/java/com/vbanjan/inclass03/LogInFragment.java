@@ -124,7 +124,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    String logInURL; //TODO Set LogIn URL
+    String logInURL = R.string.baseURL+"/auth/login"; //TODO Set LogIn URL
 
     private class logInUser extends AsyncTask<Void, Void, String> {
         private ProgressDialog progressDialog;
