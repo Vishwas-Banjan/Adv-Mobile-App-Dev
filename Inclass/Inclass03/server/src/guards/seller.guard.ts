@@ -8,8 +8,6 @@ import {
 
 @Injectable()
 export class SellerGuard implements CanActivate {
-  constructor() {}
-
   canActivate(context: ExecutionContext) {
     const request = context.switchToHttp().getRequest();
     const user = request.user;

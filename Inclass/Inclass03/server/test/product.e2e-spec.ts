@@ -1,16 +1,19 @@
 import { HttpStatus } from '@nestjs/common';
 import axios from 'axios';
 import * as mongoose from 'mongoose';
-import { RegisterDTO } from 'src/auth/auth.dto';
 import { CreateProductDTO } from 'src/product/product.dto';
 import * as request from 'supertest';
 import { app, database } from './constants';
+import { RegisterDTO } from 'src/auth/dto/register.dto';
 
 let sellerToken: string;
-let productSeller: RegisterDTO = {
-  seller: true,
-  username: 'productSeller',
+const productSeller: RegisterDTO = {
+  email: 'productSeller',
   password: 'password',
+  firstName: '',
+  lastName: '',
+  gender: '',
+  city: '',
 };
 
 beforeAll(async () => {

@@ -2,18 +2,19 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import * as bcrypt from 'bcrypt';
 import { Model } from 'mongoose';
-import { Payload } from '../types/payload';
-import { User } from '../types/user';
-import { LoginDTO } from 'src/auth/dto/login.dto';
-import { RegisterDTO } from 'src/auth/dto/register.dto';
+import { CreateUserDTO } from 'src/dto/create-user.dto';
+import { User } from 'src/types/user';
+import { LoginDTO } from 'src/dto/login.dto';
+import { Payload } from 'src/types/payload';
+import { UpdateUserDTO } from 'src/dto/update-user.dto';
 
 @Injectable()
 export class UserService {
   constructor(@InjectModel('users') private userModel: Model<User>) {}
 
-  async create(userDTO: RegisterDTO) {
-    const { username } = userDTO;
-    const user = await this.userModel.findOne({ username });
+  async create(userDTO: CreateUserDTO) {
+    const { email } = userDTO;
+    const user = await this.userModel.findOne({ email });
     if (user) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
@@ -28,10 +29,10 @@ export class UserService {
   }
 
   async findByLogin(userDTO: LoginDTO) {
-    const { username, password } = userDTO;
+    const { email, password } = userDTO;
     const user = await this.userModel
-      .findOne({ username })
-      .select('username password seller created address');
+      .findOne({ email })
+      .select('email password');
     if (!user) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
@@ -44,8 +45,21 @@ export class UserService {
   }
 
   async findByPayload(payload: Payload) {
-    const { username } = payload;
-    return await this.userModel.findOne({ username });
+    const { email } = payload;
+    return await this.userModel.findOne({ email });
+  }
+
+  async update(
+    userDTO: UpdateUserDTO,
+    id: string,
+    userId: string,
+  ): Promise<User> {
+    if (userId !== id) {
+      throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
+    }
+    const product = await this.userModel.findById(id);
+    await product.updateOne(userDTO);
+    return await this.userModel.findById(id);
   }
 
   sanitizeUser(user: User) {
