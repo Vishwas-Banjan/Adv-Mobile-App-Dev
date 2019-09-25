@@ -56,8 +56,17 @@
         android:name="com.vbanjan.inclass03.ProfileFragment"
         android:label="fragment_profile"
         tools:layout="@layout/fragment_profile">
+        <action
+            android:id="@+id/action_profileFragment_to_logInFragment"
+            app:destination="@id/logInFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/logInFragment"
+            app:popUpToInclusive="true" />
         <argument
-            android:name="userDetails"
-            app:argType="com.vbanjan.inclass03.Utils.User" />
+            android:name="userID"
+            app:argType="string" />
     </fragment>
 </navigation>

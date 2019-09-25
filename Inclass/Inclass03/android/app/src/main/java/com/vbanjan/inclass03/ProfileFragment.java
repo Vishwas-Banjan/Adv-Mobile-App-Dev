@@ -12,24 +12,27 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
-import android.util.Log;
+import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.vbanjan.inclass03.Utils.User;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.io.Serializable;
 
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -43,7 +46,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     MaterialButtonToggleGroup genderToggleGroup;
     MaterialButton editBtn, saveBtn;
     SharedPreferences sharedPref;
-    User user;
+    String userID;
+    NavController navController;
+    String getUserURL = "https://nest-api-253406.appspot.com/api/user/";
 
     private OnFragmentInteractionListener mListener;
 
@@ -54,11 +59,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Serializable bundle = this.getArguments().getSerializable("userDetails");
-        if (bundle != null) {
-            user = (User) this.getArguments().getSerializable("userDetails");
-            Log.d(TAG, "onCreate: ProfileBundle " + user.toString());
+        if (getArguments().getString("userID") != null) {
+            userID = getArguments().getString("userID");
         }
+        setHasOptionsMenu(true);
     }
 
     @Override
@@ -82,15 +86,27 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);
         userFirstName = view.findViewById(R.id.firstNameEditText);
         userLastName = view.findViewById(R.id.lastNameEditText);
         userEmail = view.findViewById(R.id.emailEditText);
         userCity = view.findViewById(R.id.cityEditText);
         genderToggleGroup = view.findViewById(R.id.toggle_button_group);
-        editBtn = view.findViewById(R.id.editButton);
+        editBtn = view.findViewById(R.id.createAccountBtn);
         editBtn.setOnClickListener(this);
         saveBtn = view.findViewById(R.id.saveButton);
         saveBtn.setOnClickListener(this);
+
+        new getUserDetails().execute(); //Async Task
+    }
+
+    @Override
+    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+        inflater.inflate(R.menu.main_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    public void setFields(User user) {
         if (user != null) {
             userFirstName.setText(user.getUserFirstName());
             userLastName.setText(user.getUserLastName());
@@ -102,8 +118,18 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 genderToggleGroup.check(R.id.femaleButton);
             }
         }
-        disableFields();
-//        new getUserDetails().execute(); //Async Task
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        if (item.getItemId() == R.id.logout) {
+            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.remove(String.valueOf(R.string.userToken));
+            editor.apply();
+            navController.navigate(R.id.action_profileFragment_to_logInFragment);
+        }
+        return false;
     }
 
     @Override
@@ -115,7 +141,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            case R.id.editButton:
+            case R.id.createAccountBtn:
                 enableFields();
                 editBtn.setVisibility(View.GONE);
                 saveBtn.setVisibility(View.VISIBLE);
@@ -151,8 +177,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    String getUser; //TODO Set Get User Details URL
-
     private class getUserDetails extends AsyncTask<Void, Void, User> {
         private ProgressDialog progressDialog;
 
@@ -171,19 +195,26 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(User user) {
             super.onPostExecute(user);
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
+            if (user != null) {
+                setFields(user);
+                disableFields();
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+            } else {
+                Toast.makeText(getContext(), "Oops! Couldn't fetch user details", Toast.LENGTH_SHORT).show();
             }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected User doInBackground(Void... voids) {
-
+            User user = new User();
+            sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
             final OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
-                    .header("x-access-token", sharedPref.getString(getString(R.string.userToken), ""))
-                    .url(getUser)
+                    .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
+                    .url(getUserURL + userID)
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
@@ -192,12 +223,11 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                         throw new IOException("Unexpected code " + response);
                     String json = responseBody.string();
                     JSONObject root = new JSONObject(json);
-                    User user = new User();
-                    user.setUserFirstName(root.getString("userFirstName"));
-                    user.setUserLastName(root.getString("userLastName"));
-                    user.setUserEmail(root.getString("userEmail"));
-                    user.setUserCity(root.getString("userCity"));
-                    user.setUserGender(root.getString("userGender"));
+                    user.setUserFirstName(root.getString("firstName"));
+                    user.setUserLastName(root.getString("lastName"));
+                    user.setUserEmail(root.getString("email"));
+                    user.setUserCity(root.getString("city"));
+                    user.setUserGender(root.getString("gender"));
 
                 } catch (IOException e) {
                     e.printStackTrace();

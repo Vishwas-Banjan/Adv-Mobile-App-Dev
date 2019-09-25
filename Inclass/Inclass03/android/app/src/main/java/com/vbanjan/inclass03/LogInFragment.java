@@ -17,9 +17,13 @@ import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import com.vbanjan.inclass03.Utils.User;
 
@@ -39,6 +43,8 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
     NavController navController;
     SharedPreferences sharedPref;
+    String logInURL = "https://nest-api-253406.appspot.com/api/auth/login";
+    String userId;
     private OnFragmentInteractionListener mListener;
 
     public LogInFragment() {
@@ -92,10 +98,10 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                 break;
             case R.id.loginButton:
                 if (validateInputFields()) {
-                    Log.d(TAG, "onClick: Login " + getLogInInputDetails().toString());
-                    //TODO Login Auth
-//                    new logInUser(getLogInInputDetails()).execute(); //Async Task
-                    navController.navigate(R.id.action_logInFragment_to_profileFragment);
+                    //Dismiss keyboard
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(userPassword.getWindowToken(), 0);
+                    new logInUser(getLogInInputDetails()).execute(); //Async Task
                 }
                 break;
         }
@@ -119,12 +125,11 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         return false;
     }
 
+
     public interface OnFragmentInteractionListener {
 
         void onFragmentInteraction(Uri uri);
     }
-
-    String logInURL; //TODO Set LogIn URL
 
     private class logInUser extends AsyncTask<Void, Void, String> {
         private ProgressDialog progressDialog;
@@ -146,11 +151,25 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(getString(R.string.userToken), s);
-            editor.commit();
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
+            if (s != null) {
+                sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.userToken), s);
+                editor.commit();
+                Log.d(TAG, "onPostExecute: UserID: " + userId + "\n Token: " + s);
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("userID", userId);
+
+                navController.navigate(R.id.action_logInFragment_to_profileFragment, bundle);
+            } else {
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                Toast.makeText(getContext(), "Invalid Credentials!", Toast.LENGTH_SHORT).show();
             }
         }
 
@@ -163,7 +182,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                     .add("password", user.getUserPassword())
                     .build();
             Request request = new Request.Builder()
-                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Content-Type", "application/json")
                     .url(logInURL)
                     .post(formBody)
                     .build();
@@ -174,7 +193,10 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
                 String json = response.body().string();
                 JSONObject root = new JSONObject(json);
-                if (root.getBoolean("auth") == true) {
+
+                if (!root.getString("token").equals("")) {
+                    JSONObject userJSON = new JSONObject(root.getString("user"));
+                    userId = userJSON.getString("_id");
                     token = root.getString("token");
                 }
             } catch (JSONException e) {

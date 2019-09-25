@@ -1,6 +1,7 @@
 package com.vbanjan.inclass03;
 
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -20,7 +21,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -47,6 +48,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     EditText userFirstName, userLastName, userEmail, userPassword, userCity;
     MaterialButtonToggleGroup genderToggleGroup;
     String TAG = "demo";
+    String userId;
 
     public SignUpFragment() {
         // Required empty public constructor
@@ -81,7 +83,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
-        view.findViewById(R.id.editButton).setOnClickListener(this);
+        view.findViewById(R.id.createAccountBtn).setOnClickListener(this);
         view.findViewById(R.id.logInTextView).setOnClickListener(this);
         userFirstName = view.findViewById(R.id.firstNameEditText);
         userLastName = view.findViewById(R.id.lastNameEditText);
@@ -97,20 +99,21 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
             case R.id.logInTextView:
                 navController.navigate(R.id.action_signUpFragment_to_logInFragment);
                 break;
-            case R.id.editButton:
-                //TODO Create Account and Login
+            case R.id.createAccountBtn:
                 if (validateInputFields()) {
+                    //Dismiss keyboard
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(userCity.getWindowToken(), 0);
                     new signUpUser(getUserInputDetails()).execute(); //Async Task
-//                    Bundle bundle = new Bundle();
-//                    bundle.putSerializable("userDetails", getUserInputDetails());
                 }
                 break;
         }
     }
 
+    @SuppressLint("ResourceType")
     public User getUserInputDetails() {
         String gender;
-        if (genderToggleGroup.getCheckedButtonId() == 0) {
+        if (genderToggleGroup.getCheckedButtonId() == 1) {
             gender = "Male";
         } else {
             gender = "Female";
@@ -168,14 +171,26 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(String s) {
             super.onPostExecute(s);
-            sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(getString(R.string.userToken), s);
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
+            if (s != null) {
+                sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putString(getString(R.string.userToken), s);
+                editor.commit();
+
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                Toast.makeText(getContext(), "Sign Up Successful!", Toast.LENGTH_SHORT).show();
+                Bundle bundle = new Bundle();
+                bundle.putString("userID", userId);
+
+                navController.navigate(R.id.action_signUpFragment_to_profileFragment, bundle);
+            } else {
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                Toast.makeText(getContext(), "Oops! Something went wrong!", Toast.LENGTH_SHORT).show();
             }
-//            navController.navigate(R.id.action_signUpFragment_to_profileFragment, bundle);
-//            Toast.makeText(getContext(), "New Account Created", Toast.LENGTH_SHORT).show();
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
@@ -183,16 +198,15 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         protected String doInBackground(Void... voids) {
             final OkHttpClient client = new OkHttpClient();
             RequestBody formBody = new FormBody.Builder()
-                    .add("username", user.getUserFirstName() + "_" + user.getUserLastName())
-                    .add("firstName", user.getUserFirstName())
-                    .add("lastName", user.getUserLastName())
                     .add("email", user.getUserEmail())
                     .add("password", user.getUserPassword())
+                    .add("firstName", user.getUserFirstName())
+                    .add("lastName", user.getUserLastName())
                     .add("city", user.getUserCity())
                     .add("gender", user.getUserGender())
                     .build();
             Request request = new Request.Builder()
-                    .header("Content-Type", "application/x-www-form-urlencoded")
+                    .header("Content-Type", "application/json")
                     .url(createAccountURL)
                     .post(formBody)
                     .build();
@@ -202,7 +216,12 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     throw new IOException("Unexpected code " + response.toString());
                 String json = response.body().string();
                 JSONObject root = new JSONObject(json);
-                token = root.getString("token");
+                Log.d(TAG, "doInBackground: " + root.toString());
+                if (!root.getString("token").equals("")) {
+                    token = root.getString("token");
+                    JSONObject userJSON = new JSONObject(root.getString("user"));
+                    userId = userJSON.getString("_id");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
