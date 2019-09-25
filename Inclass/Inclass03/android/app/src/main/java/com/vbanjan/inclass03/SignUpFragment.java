@@ -44,7 +44,6 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     NavController navController;
     private OnFragmentInteractionListener mListener;
     SharedPreferences sharedPref;
-    String createAccountURL = "https://nest-api-253406.appspot.com/api/auth/register";
     EditText userFirstName, userLastName, userEmail, userPassword, userCity;
     MaterialButtonToggleGroup genderToggleGroup;
     String TAG = "demo";
@@ -207,7 +206,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     .build();
             Request request = new Request.Builder()
                     .header("Content-Type", "application/json")
-                    .url(createAccountURL)
+                    .url(getString(R.string.signUpURL))
                     .post(formBody)
                     .build();
             String token = null;

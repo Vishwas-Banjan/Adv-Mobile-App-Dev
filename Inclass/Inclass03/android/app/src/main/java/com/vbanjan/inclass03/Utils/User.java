@@ -17,6 +17,14 @@ public class User implements Serializable {
     public User() {
     }
 
+    public User(String userFirstName, String userLastName, String userEmail, String userCity, String userGender) {
+        this.userFirstName = userFirstName;
+        this.userLastName = userLastName;
+        this.userEmail = userEmail;
+        this.userCity = userCity;
+        this.userGender = userGender;
+    }
+
     @Override
     public String toString() {
         return "User{" +

@@ -1,5 +1,6 @@
 package com.vbanjan.inclass03;
 
+import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -16,12 +17,14 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.preference.PreferenceManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -34,8 +37,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 
+import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
+import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
@@ -48,9 +53,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     SharedPreferences sharedPref;
     String userID;
     NavController navController;
-    String getUserURL = "https://nest-api-253406.appspot.com/api/user/";
-
     private OnFragmentInteractionListener mListener;
+
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -150,6 +154,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 disableFields();
                 saveBtn.setVisibility(View.GONE);
                 editBtn.setVisibility(View.VISIBLE);
+                if (validateInputFields()) {
+                    //Dismiss keyboard
+                    InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(userCity.getWindowToken(), 0);
+                    new updateUserDetails(getUserInputDetails()).execute();
+                }
                 break;
         }
     }
@@ -166,7 +176,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     public void enableFields() {
         userFirstName.setEnabled(true);
         userLastName.setEnabled(true);
-        userEmail.setEnabled(true);
         userCity.setEnabled(true);
         genderToggleGroup.getChildAt(0).setEnabled(true);
         genderToggleGroup.getChildAt(1).setEnabled(true);
@@ -214,7 +223,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             final OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
-                    .url(getUserURL + userID)
+                    .url(getString(R.string.userDetailURL) + userID)
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
@@ -239,5 +248,109 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             }
             return user;
         }
+    }
+
+    private class updateUserDetails extends AsyncTask<Void, Void, User> {
+        User user;
+        private ProgressDialog progressDialog;
+
+        public updateUserDetails(User user) {
+            this.user = user;
+            progressDialog = new ProgressDialog(getContext());
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Updating your account details, please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        @Override
+        protected void onPostExecute(User user) {
+            if (user != null) {
+                setFields(user);
+                disableFields();
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                Toast.makeText(getContext(), "Update Successful", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(getContext(), "Oops! Couldn't fetch user details", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        protected User doInBackground(Void... voids) {
+            sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            final OkHttpClient client = new OkHttpClient();
+            Log.d(TAG, "doInBackground: " + this.user.toString());
+            RequestBody formBody = new FormBody.Builder()
+                    .add("firstName", this.user.getUserFirstName())
+                    .add("lastName", this.user.getUserLastName())
+                    .add("city", this.user.getUserCity())
+                    .add("gender", this.user.getUserGender())
+                    .build();
+            Request request = new Request.Builder()
+                    .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
+                    .header("Content-Type", "application/json")
+                    .url(getString(R.string.userDetailURL) + userID)
+                    .put(formBody)
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful())
+                    throw new IOException("Unexpected code " + response.toString());
+                User user = new User();
+                String json = response.body().string();
+                JSONObject root = new JSONObject(json);
+                user.setUserFirstName(root.getString("firstName"));
+                user.setUserLastName(root.getString("lastName"));
+                user.setUserEmail(root.getString("email"));
+                user.setUserCity(root.getString("city"));
+                user.setUserGender(root.getString("gender"));
+
+            } catch (JSONException ex) {
+                ex.printStackTrace();
+            } catch (IOException ex) {
+                ex.printStackTrace();
+            }
+            return user;
+        }
+    }
+
+
+    public User getUserInputDetails() {
+        String gender;
+        if (genderToggleGroup.getCheckedButtonId() == R.id.maleButton) {
+            gender = "Male";
+        } else {
+            gender = "Female";
+        }
+        User user = new User(userFirstName.getText().toString().trim(),
+                userLastName.getText().toString().trim(),
+                userEmail.getText().toString().trim(),
+                userCity.getText().toString().trim(),
+                gender);
+        return user;
+    }
+
+    public boolean validateInputFields() {
+        if (userFirstName.getText().toString().trim().equals("")) {
+            userFirstName.setError("Field Required");
+        } else if (userLastName.getText().toString().trim().equals("")) {
+            userLastName.setError("Field Required");
+        } else if (userEmail.getText().toString().trim().equals("")) {
+            userEmail.setError("Field Required");
+        } else if (userCity.getText().toString().trim().equals("")) {
+            userCity.setError("Field Required");
+        } else if (genderToggleGroup.getCheckedButtonId() == -1) {
+            Toast.makeText(getContext(), "Select gender", Toast.LENGTH_SHORT).show();
+        } else {
+            return true;
+        }
+        return false;
     }
 }

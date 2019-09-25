@@ -43,7 +43,6 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
     NavController navController;
     SharedPreferences sharedPref;
-    String logInURL = "https://nest-api-253406.appspot.com/api/auth/login";
     String userId;
     private OnFragmentInteractionListener mListener;
 
@@ -183,7 +182,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                     .build();
             Request request = new Request.Builder()
                     .header("Content-Type", "application/json")
-                    .url(logInURL)
+                    .url(getString(R.string.logInURL))
                     .post(formBody)
                     .build();
             String token = null;
