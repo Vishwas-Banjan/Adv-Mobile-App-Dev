@@ -28,9 +28,9 @@ export class UserService {
     return await this.userModel.find();
   }
 
-  async findFromID(id: string){
+  async findFromID(id: string) {
     const user = await this.userModel.findById(id);
-    if(!user){
+    if (!user) {
       throw new HttpException('user not found', HttpStatus.NOT_FOUND);
     }
     return user;
@@ -65,8 +65,8 @@ export class UserService {
     if (userId !== id) {
       throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
     }
-    const product = await this.userModel.findById(id);
-    await product.updateOne(userDTO);
+    const user = await this.userModel.findById(id);
+    await user.updateOne(userDTO);
     return await this.userModel.findById(id);
   }
 

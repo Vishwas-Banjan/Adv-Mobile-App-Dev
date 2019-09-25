@@ -293,11 +293,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                     .add("lastName", this.user.getUserLastName())
                     .add("city", this.user.getUserCity())
                     .add("gender", this.user.getUserGender())
+                    .add("id", userID)
                     .build();
             Request request = new Request.Builder()
                     .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
                     .header("Content-Type", "application/json")
-                    .url(getString(R.string.userDetailURL) + userID)
+                    .url(getString(R.string.userDetailURL))
                     .put(formBody)
                     .build();
             try (Response response = client.newCall(request).execute()) {

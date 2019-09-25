@@ -8,9 +8,19 @@ export const UserSchema = new mongoose.Schema({
     select: false,
   },
   created: { type: Date, default: Date.now },
-  firstName: String,
-  lastName: String,
-  email: String,
+  firstName: {
+    type: String,
+    required: true,
+  },
+  lastName: {
+    type: String,
+    required: true,
+  },
+  email: {
+    type: String,
+    required: true,
+    index: { unique: true },
+  },
   city: String,
   gender: String,
 });
