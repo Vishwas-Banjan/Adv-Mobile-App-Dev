@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8f7b39d9-386a-4776-b769-ad3f23e50446",
+		"_postman_id": "ee81771e-175a-4645-97fe-a99ba7370cae",
 		"name": "Nest-API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -118,7 +118,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/api/auth/test",
+							"raw": "http://localhost:8080/api/auth/test?",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -154,7 +154,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1NjkxODQyNjAsImV4cCI6MTU2OTE4Nzg2MH0.sjukAWjB_Vd5JVveWKhbw2Iv5VIAvpwChtsCvfNYbzI",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1Njk0NDE0NTgsImV4cCI6MTU2OTQ0NTA1OH0.nM969PpSgxMBZchSM_p-na0Zo95CEqZAgq_HVy96OXw",
 									"type": "string"
 								}
 							]
@@ -170,7 +170,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"city\": \"Charlotte2\"\n}",
+							"raw": "{\n\t\"city\": \"Charlotte\",\n\t\"id\": \"5d8bc44a6b1581001cf444c1\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -178,7 +178,44 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/user/5d87d95222f50129109d69cf",
+							"raw": "http://localhost:8080/api/user",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1Njk0NDE0NTgsImV4cCI6MTU2OTQ0NTA1OH0.nM969PpSgxMBZchSM_p-na0Zo95CEqZAgq_HVy96OXw",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/user/5d8bc44a6b1581001cf444c1",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -187,7 +224,7 @@
 							"path": [
 								"api",
 								"user",
-								"5d87d95222f50129109d69cf"
+								"5d8bc44a6b1581001cf444c1"
 							]
 						}
 					},
