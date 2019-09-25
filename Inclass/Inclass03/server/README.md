@@ -1,10 +1,11 @@
 ## Project Description
-Authentication API implementation on NodeJS using Express and NestJS.
+Rest API implementation on NodeJS and NestJS.
 
 ## how to set up
 - clone git repository
-- run npm i
-- make 3 environment variables
-  - process.env.MONGO_URI (mongo db uri)
-  - process.env.SECRET_KEY (password)
-  - process.env.PORT 
+- Download node packages: `npm i`
+- Start the server: `npm run start-server`
+- Start the server with debug mode: `npm run start:dev`
+- Build the app in prod mode: `npm run build`
+- Deploy the app to Google Cloud Platform: `npm run upload`
+To successfully deploy a new build, one must install Google Cloud CDK
