@@ -1,3 +1,18 @@
-import { CreateUserDTO } from './create-user.dto';
+import { ApiModelPropertyOptional, ApiModelProperty } from '@nestjs/swagger';
 
-export type UpdateUserDTO = Partial<CreateUserDTO>;
+export class UpdateUserDTO {
+  @ApiModelPropertyOptional()
+  firstName: string;
+
+  @ApiModelPropertyOptional()
+  lastName: string;
+
+  @ApiModelPropertyOptional()
+  city: string;
+
+  @ApiModelPropertyOptional()
+  gender: string;
+
+  @ApiModelProperty()
+  id: string;
+}

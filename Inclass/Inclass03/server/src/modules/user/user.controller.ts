@@ -16,20 +16,13 @@ export class UserController {
     return await this.userService.findFromID(id);
   }
 
-  @Get('email/:email')
-  @UseGuards(AuthGuard())
-  async getUserProfileByEmail(@Param('email') email: string): Promise<UserDocument> {
-    return await this.userService.findByPayload({email: email});
-  }
-
-  @Put(':id')
+  @Put()
   @UseGuards(AuthGuard())
   async update(
-    @Body() product: UpdateUserDTO,
-    @Param('id') id: string,
+    @Body() userDTO: UpdateUserDTO,
     @User() user: UserDocument,
   ): Promise<UserDocument> {
-    const { id: userId } = user;
-    return await this.userService.update(product, id, userId);
+    const { id } = user;
+    return await this.userService.update(userDTO, userDTO.id, id);
   }
 }
