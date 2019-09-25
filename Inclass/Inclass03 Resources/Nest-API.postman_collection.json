@@ -149,7 +149,17 @@
 				{
 					"name": "update",
 					"request": {
-						"method": "POST",
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1NjkxODQyNjAsImV4cCI6MTU2OTE4Nzg2MH0.sjukAWjB_Vd5JVveWKhbw2Iv5VIAvpwChtsCvfNYbzI",
+									"type": "string"
+								}
+							]
+						},
+						"method": "PUT",
 						"header": [
 							{
 								"key": "Content-Type",
@@ -160,7 +170,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@test.com\",\n\t\"password\": \"123456\",\n\t\"firstName\": \"Test\",\n\t\"lastName\": \"User\",\n\t\"city\": \"Charlotte\",\n\t\"gender\": \"male\"\n}",
+							"raw": "{\n\t\"city\": \"Charlotte2\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -168,7 +178,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/auth/register",
+							"raw": "http://localhost:8080/api/user/5d87d95222f50129109d69cf",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -176,8 +186,8 @@
 							"port": "8080",
 							"path": [
 								"api",
-								"auth",
-								"register"
+								"user",
+								"5d87d95222f50129109d69cf"
 							]
 						}
 					},
