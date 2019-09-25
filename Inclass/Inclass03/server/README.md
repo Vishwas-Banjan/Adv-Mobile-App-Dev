@@ -8,4 +8,5 @@ Rest API implementation on NodeJS and NestJS.
 - Start the server with debug mode: `npm run start:dev`
 - Build the app in prod mode: `npm run build`
 - Deploy the app to Google Cloud Platform: `npm run upload`
+
 To successfully deploy a new build, one must install Google Cloud CDK
