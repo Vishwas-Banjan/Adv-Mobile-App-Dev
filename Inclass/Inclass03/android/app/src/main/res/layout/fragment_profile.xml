@@ -22,7 +22,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/createAccountBtn"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginLeft="32dp"
@@ -31,6 +31,7 @@
                 android:layout_marginRight="32dp"
                 android:text="Edit"
                 android:textSize="16sp"
+                app:cornerRadius="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toggle_button_group" />
@@ -38,7 +39,7 @@
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/saveButton"
                 style="@style/Widget.MaterialComponents.Button"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="32dp"
                 android:layout_marginLeft="32dp"
@@ -48,6 +49,7 @@
                 android:text="Save"
                 android:textSize="16sp"
                 android:visibility="invisible"
+                app:cornerRadius="20dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/toggle_button_group" />
@@ -67,14 +69,16 @@
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Male" />
+                    android:text="Male"
+                    app:cornerRadius="20dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/femaleButton"
                     style="?attr/materialButtonOutlinedStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Female" />
+                    android:text="Female"
+                    app:cornerRadius="20dp" />
 
             </com.google.android.material.button.MaterialButtonToggleGroup>
 
