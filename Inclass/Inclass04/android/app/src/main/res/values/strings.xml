@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Identity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="userToken">userToken</string>
+    <string name="logout">Logout</string>
+    <string name="apiBaseURL">https://nest-api-253406.appspot.com/api/</string>
+    <string name="logInURL">https://nest-api-253406.appspot.com/api/auth/login</string>
+    <string name="signUpURL">https://nest-api-253406.appspot.com/api/auth/register</string>
+    <string name="userDetailURL">https://nest-api-253406.appspot.com/api/user/</string>
+</resources>
