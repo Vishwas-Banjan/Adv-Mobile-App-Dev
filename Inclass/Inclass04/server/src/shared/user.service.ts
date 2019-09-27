@@ -76,15 +76,11 @@ export class UserService {
     return await this.userModel.findOne({ email });
   }
 
-  async update(
-    userDTO: UpdateUserDTO,
-    id: string,
-    userId: string,
-  ): Promise<User> {
-    if (userId !== id) {
+  async update(id: string, userDTO: UpdateUserDTO): Promise<User> {
+    const user = await this.userModel.findById(id);
+    if (!user) {
       throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
     }
-    const user = await this.userModel.findById(id);
     await user.updateOne(userDTO);
     return await this.userModel.findById(id);
   }
@@ -93,6 +89,5 @@ export class UserService {
     const sanitized = user.toObject();
     delete sanitized.password;
     return sanitized;
-    // return user.depopulate('password');
   }
 }

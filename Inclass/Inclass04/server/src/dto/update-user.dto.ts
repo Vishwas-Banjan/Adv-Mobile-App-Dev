@@ -12,7 +12,4 @@ export class UpdateUserDTO {
 
   @ApiModelPropertyOptional()
   gender: string;
-
-  @ApiModelProperty()
-  id: string;
 }
