@@ -170,7 +170,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"city\": \"Charlotte\",\n\t\"id\": \"5d8bc44a6b1581001cf444c1\"\n}",
+							"raw": "{\n\t\"city\": \"Charlotte\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
