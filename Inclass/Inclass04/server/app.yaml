@@ -4,6 +4,9 @@ env_variables:
   PORT: 8080
   SECRET_KEY: 'secret'
   MONGO_URI: 'mongodb+srv://Mobility:Password1@mobility-dvxsj.mongodb.net/mobility?retryWrites=true&w=majority'
+  BRAINTREE_MERCHANT_ID: 'tkgvkhxy352xwzzh'
+  BRAINTREE_PUBLIC_KEY: 'txcwtdvc9mtppzfm'
+  BRAINTREE_PRIVATE_KEY: '0240f1f44a7c6f72ba8e91e9d9908e93'
 
 manual_scaling:
   instances: 1
