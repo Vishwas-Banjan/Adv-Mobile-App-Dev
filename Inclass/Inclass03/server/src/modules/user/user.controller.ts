@@ -12,8 +12,8 @@ export class UserController {
 
   @Get(':id')
   @UseGuards(AuthGuard())
-  async getUserProfileById(@Param('id') id: string): Promise<UserDocument> {
-    return await this.userService.findFromID(id);
+  async getUserProfileById(@User() user: UserDocument): Promise<UserDocument> {
+    return await this.userService.findFromID(user.id);
   }
 
   @Put()
