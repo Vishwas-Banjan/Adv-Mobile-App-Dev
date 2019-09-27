@@ -7,21 +7,40 @@ import { User } from 'src/types/user';
 import { LoginDTO } from 'src/dto/login.dto';
 import { Payload } from 'src/types/payload';
 import { UpdateUserDTO } from 'src/dto/update-user.dto';
+import { PaymentAccountService } from './payment-account.service';
 
 @Injectable()
 export class UserService {
-  constructor(@InjectModel('users') private userModel: Model<User>) {}
+  constructor(
+    @InjectModel('users') private userModel: Model<User>,
+    private paymentAccount: PaymentAccountService,
+  ) {}
 
-  async create(userDTO: CreateUserDTO) {
+  async create(
+    userDTO: CreateUserDTO,
+  ): Promise<{ user: User; clientToken: string }> {
+    // find duplicates
     const { email } = userDTO;
-    const user = await this.userModel.findOne({ email });
-    if (user) {
+    const foundUser = await this.userModel.findOne({ email });
+    if (foundUser) {
       throw new HttpException('User already exists', HttpStatus.BAD_REQUEST);
     }
 
-    const createdUser = new this.userModel(userDTO);
-    await createdUser.save();
-    return this.sanitizeUser(createdUser);
+    // create payment account
+    const customerId = await this.paymentAccount.createCustomer();
+
+    // generate client token
+    const clientToken = await this.paymentAccount.createCustomer();
+
+    let createdUser = new this.userModel(userDTO);
+
+    // save user to db
+    const user = await createdUser.save();
+
+    // remove password field
+    createdUser = this.sanitizeUser(createdUser);
+
+    return { user: createdUser, clientToken };
   }
 
   async find() {
@@ -57,15 +76,11 @@ export class UserService {
     return await this.userModel.findOne({ email });
   }
 
-  async update(
-    userDTO: UpdateUserDTO,
-    id: string,
-    userId: string,
-  ): Promise<User> {
-    if (userId !== id) {
+  async update(id: string, userDTO: UpdateUserDTO): Promise<User> {
+    const user = await this.userModel.findById(id);
+    if (!user) {
       throw new HttpException('Not authorized', HttpStatus.UNAUTHORIZED);
     }
-    const user = await this.userModel.findById(id);
     await user.updateOne(userDTO);
     return await this.userModel.findById(id);
   }
@@ -74,6 +89,5 @@ export class UserService {
     const sanitized = user.toObject();
     delete sanitized.password;
     return sanitized;
-    // return user.depopulate('password');
   }
 }

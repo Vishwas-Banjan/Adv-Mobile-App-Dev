@@ -22,7 +22,6 @@ export class UserController {
     @Body() userDTO: UpdateUserDTO,
     @User() user: UserDocument,
   ): Promise<UserDocument> {
-    const { id } = user;
-    return await this.userService.update(userDTO, userDTO.id, id);
+    return await this.userService.update(user.id, userDTO);
   }
 }
