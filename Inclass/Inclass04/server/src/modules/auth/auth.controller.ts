@@ -16,12 +16,12 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() userDTO: LoginDTO) {
-    const user = await this.userService.findByLogin(userDTO);
+    const { user, clientToken } = await this.userService.findByLogin(userDTO);
     const payload: Payload = {
       email: user.email,
     };
     const token = await this.authService.signPayload(payload);
-    return { user, token };
+    return { user, token, clientToken };
   }
 
   @Post('register')

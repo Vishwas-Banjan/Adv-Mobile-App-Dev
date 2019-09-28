@@ -23,6 +23,7 @@ export const UserSchema = new mongoose.Schema({
   },
   city: String,
   gender: String,
+  payAccId: String,
 });
 
 UserSchema.pre('save', async function(next: mongoose.HookNextFunction) {

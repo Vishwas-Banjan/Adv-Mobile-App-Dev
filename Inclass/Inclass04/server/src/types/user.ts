@@ -8,4 +8,5 @@ export interface User extends Document {
   email: string;
   city: string;
   gender: string;
+  payAccId: string;
 }

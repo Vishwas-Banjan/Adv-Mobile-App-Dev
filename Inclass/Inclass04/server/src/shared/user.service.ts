@@ -27,15 +27,18 @@ export class UserService {
     }
 
     // create payment account
-    const customerId = await this.paymentAccount.createCustomer();
+    const payAccId = await this.paymentAccount.createCustomer();
+    userDTO.payAccId = payAccId;
 
     // generate client token
-    const clientToken = await this.paymentAccount.createCustomer();
+    const clientToken = await this.paymentAccount.getClientToken({
+      customerId: payAccId,
+    });
 
     let createdUser = new this.userModel(userDTO);
 
     // save user to db
-    const user = await createdUser.save();
+    await createdUser.save();
 
     // remove password field
     createdUser = this.sanitizeUser(createdUser);
@@ -56,19 +59,29 @@ export class UserService {
   }
 
   async findByLogin(userDTO: LoginDTO) {
+    // find user by email
     const { email, password } = userDTO;
-    const user = await this.userModel
+    const userModel = await this.userModel
       .findOne({ email })
       .select('email password');
-    if (!user) {
+    if (!userModel) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
-    if (await bcrypt.compare(password, user.password)) {
-      return this.sanitizeUser(user);
+    let user = null;
+    // compare password
+    if (await bcrypt.compare(password, userModel.password)) {
+      user = this.sanitizeUser(userModel);
     } else {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
+
+    // get client token
+    const clientToken = await this.paymentAccount.getClientToken({
+      customerId: userModel.payAccId,
+    });
+
+    return { user, clientToken };
   }
 
   async findByPayload(payload: Payload) {

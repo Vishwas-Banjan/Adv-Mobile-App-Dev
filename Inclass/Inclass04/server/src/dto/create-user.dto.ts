@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
 export class CreateUserDTO {
   @ApiModelProperty()
@@ -18,4 +18,7 @@ export class CreateUserDTO {
 
   @ApiModelProperty()
   gender: string;
+
+  @ApiModelPropertyOptional()
+  payAccId: string;
 }
