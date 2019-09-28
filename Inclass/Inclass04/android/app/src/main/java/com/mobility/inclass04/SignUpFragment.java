@@ -82,6 +82,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
+        mListener.setDrawerLocked(true);
         view.findViewById(R.id.createAccountBtn).setOnClickListener(this);
         view.findViewById(R.id.logInTextView).setOnClickListener(this);
         userFirstName = view.findViewById(R.id.firstNameEditText);
@@ -146,7 +147,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
     }
 
     public interface OnFragmentInteractionListener {
-
+        void setDrawerLocked(boolean shouldLock);
         void onFragmentInteraction(Uri uri);
     }
 

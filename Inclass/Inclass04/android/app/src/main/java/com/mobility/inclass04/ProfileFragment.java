@@ -30,6 +30,7 @@ import android.widget.Toast;
 
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
+import com.google.android.material.navigation.NavigationView;
 import com.mobility.inclass04.Utils.User;
 
 import org.json.JSONException;
@@ -63,7 +64,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
     }
 
     @Override
@@ -97,18 +97,13 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         editBtn.setOnClickListener(this);
         saveBtn = view.findViewById(R.id.saveButton);
         saveBtn.setOnClickListener(this);
-
+        mListener.setDrawerLocked(false);
+        Log.d(TAG, "onViewCreated: Profile ");
         new getUserDetails().execute(); //Async Task
     }
 
-    @Override
-    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.main_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater);
-    }
-
     public void setFields(User user) {
-        if (user != null) {
+        if (!user.equals(null)) {
             userFirstName.setText(user.getUserFirstName());
             userLastName.setText(user.getUserLastName());
             userEmail.setText(user.getUserEmail());
@@ -118,20 +113,12 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             } else {
                 genderToggleGroup.check(R.id.femaleButton);
             }
+            mListener.setNavBarDetails(user);
         }
     }
 
-    @Override
-    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        if (item.getItemId() == R.id.logout) {
-            clearSharedPref();
-            navController.navigate(R.id.action_profileFragment_to_logInFragment);
-        }
-        return false;
-    }
 
-
-    public void clearSharedPref(){
+    public void clearSharedPref() {
         sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         sharedPref.edit().clear().commit();
     }
@@ -184,6 +171,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
     public interface OnFragmentInteractionListener {
         void onFragmentInteraction(Uri uri);
+
+        void setNavBarDetails(User user);
+
+        void setDrawerLocked(boolean shouldLock);
     }
 
     private class getUserDetails extends AsyncTask<Void, Void, User> {
@@ -207,12 +198,9 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
             if (progressDialog.isShowing()) {
                 progressDialog.dismiss();
             }
-            if (!user.equals(null)) {
+            if (user.getUserFirstName() != null) {
                 setFields(user);
                 disableFields();
-                if (progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
             } else {
                 Toast.makeText(getContext(), "Oops! Couldn't fetch user details", Toast.LENGTH_SHORT).show();
                 clearSharedPref();
@@ -236,7 +224,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful())
                         throw new IOException("Unexpected code " + response);
-                    
+
                     String json = responseBody.string();
                     JSONObject root = new JSONObject(json);
                     user.setUserFirstName(root.getString("firstName"));

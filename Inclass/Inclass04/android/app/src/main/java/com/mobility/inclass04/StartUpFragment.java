@@ -50,7 +50,6 @@ public class StartUpFragment extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
         sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        Log.d(TAG, "onViewCreated: "+ sharedPref.getString(getString(R.string.userToken), ""));
         if (sharedPref.getString(getString(R.string.userToken), "").equals("")) {
             navController.navigate(R.id.action_startUpFragment_to_logInFragment);
         } else {

@@ -10,4 +10,6 @@
     <string name="signUpURL">https://nest-api-253406.appspot.com/api/auth/register</string>
     <string name="userDetailURL">https://nest-api-253406.appspot.com/api/user/</string>
     <string name="validateToken">https://nest-api-253406.appspot.com/api/auth/test</string>
+    <string name="navigation_drawer_open">open navigation drawer</string>
+    <string name="navigation_drawer_close">close navigation drawer</string>
 </resources>

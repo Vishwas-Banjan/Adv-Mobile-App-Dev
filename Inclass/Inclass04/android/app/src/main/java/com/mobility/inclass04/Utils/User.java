@@ -1,6 +1,7 @@
 package com.mobility.inclass04.Utils;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 public class User implements Serializable {
     String userFirstName, userLastName, userEmail, userPassword, userCity, userGender;
@@ -37,6 +38,23 @@ public class User implements Serializable {
                 '}';
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        User user = (User) o;
+        return userFirstName.equals(user.userFirstName) &&
+                userLastName.equals(user.userLastName) &&
+                userEmail.equals(user.userEmail) &&
+                userPassword.equals(user.userPassword) &&
+                userCity.equals(user.userCity) &&
+                userGender.equals(user.userGender);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(userFirstName, userLastName, userEmail, userPassword, userCity, userGender);
+    }
 
     public void setUserFirstName(String userFirstName) {
         this.userFirstName = userFirstName;

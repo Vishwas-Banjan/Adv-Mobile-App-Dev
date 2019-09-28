@@ -87,6 +87,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         view.findViewById(R.id.loginButton).setOnClickListener(this);
         userEmail = view.findViewById(R.id.emailEditText);
         userPassword = view.findViewById(R.id.passwordEditText);
+        mListener.setDrawerLocked(true);
     }
 
     @Override
@@ -126,6 +127,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
 
     public interface OnFragmentInteractionListener {
+        void setDrawerLocked(boolean shouldLock);
 
         void onFragmentInteraction(Uri uri);
     }
