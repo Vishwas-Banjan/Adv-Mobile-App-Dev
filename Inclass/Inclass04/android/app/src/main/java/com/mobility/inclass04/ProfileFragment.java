@@ -63,9 +63,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments().getString("userID") != null) {
-            userID = getArguments().getString("userID");
-        }
         setHasOptionsMenu(true);
     }
 
@@ -127,13 +124,16 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.logout) {
-            SharedPreferences sharedPref = PreferenceManager.getDefaultSharedPreferences(getContext());
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.remove(String.valueOf(R.string.userToken));
-            editor.apply();
+            clearSharedPref();
             navController.navigate(R.id.action_profileFragment_to_logInFragment);
         }
         return false;
+    }
+
+
+    public void clearSharedPref(){
+        sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        sharedPref.edit().clear().commit();
     }
 
     @Override
@@ -204,7 +204,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         @Override
         protected void onPostExecute(User user) {
             super.onPostExecute(user);
-            if (user != null) {
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (!user.equals(null)) {
                 setFields(user);
                 disableFields();
                 if (progressDialog.isShowing()) {
@@ -212,6 +215,8 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 }
             } else {
                 Toast.makeText(getContext(), "Oops! Couldn't fetch user details", Toast.LENGTH_SHORT).show();
+                clearSharedPref();
+                navController.navigate(R.id.action_profileFragment_to_logInFragment);
             }
         }
 
@@ -220,6 +225,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         protected User doInBackground(Void... voids) {
             User user = new User();
             sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+            userID = "5d8ea38df2a3790a6c33c48f";
             final OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
@@ -230,6 +236,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful())
                         throw new IOException("Unexpected code " + response);
+                    
                     String json = responseBody.string();
                     JSONObject root = new JSONObject(json);
                     user.setUserFirstName(root.getString("firstName"));

@@ -9,4 +9,5 @@
     <string name="logInURL">https://nest-api-253406.appspot.com/api/auth/login</string>
     <string name="signUpURL">https://nest-api-253406.appspot.com/api/auth/register</string>
     <string name="userDetailURL">https://nest-api-253406.appspot.com/api/user/</string>
+    <string name="validateToken">https://nest-api-253406.appspot.com/api/auth/test</string>
 </resources>
