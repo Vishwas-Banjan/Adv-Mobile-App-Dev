@@ -5,5 +5,5 @@ export const ProductSchema = new mongoose.Schema({
   name: String,
   photo: String,
   price: Number,
-  region: String
+  region: String,
 });

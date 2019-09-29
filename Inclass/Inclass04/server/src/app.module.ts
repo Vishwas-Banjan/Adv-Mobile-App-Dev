@@ -10,6 +10,8 @@ import { UserModule } from './modules/user/user.module';
 import * as braintree from 'braintree';
 import { BraintreeModule } from './braintree';
 import { ProductModule } from './modules/product/product.module';
+import { ImageModule } from './modules/image/image.module';
+import { MulterModule } from '@nestjs/platform-express';
 
 @Module({
   imports: [
@@ -27,6 +29,7 @@ import { ProductModule } from './modules/product/product.module';
     UserModule,
     AuthModule,
     ProductModule,
+    ImageModule,
   ],
   controllers: [AppController],
   providers: [AppService],
