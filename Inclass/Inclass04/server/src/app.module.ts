@@ -9,6 +9,7 @@ import { UserModule } from './modules/user/user.module';
 
 import * as braintree from 'braintree';
 import { BraintreeModule } from './braintree';
+import { ProductModule } from './modules/product/product.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { BraintreeModule } from './braintree';
     SharedModule,
     UserModule,
     AuthModule,
+    ProductModule,
   ],
   controllers: [AppController],
   providers: [AppService],
