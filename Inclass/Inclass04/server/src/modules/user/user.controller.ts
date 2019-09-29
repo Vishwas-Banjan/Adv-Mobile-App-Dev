@@ -10,10 +10,10 @@ import { UserService } from './../../shared/user.service';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get(':id')
+  @Get('')
   @UseGuards(AuthGuard())
-  async getUserProfileById(@Param('id') id: string): Promise<UserDocument> {
-    return await this.userService.findFromID(id);
+  async getUserProfileById(@User() user: UserDocument): Promise<UserDocument> {
+    return await this.userService.findFromID(user.id);
   }
 
   @Put()
