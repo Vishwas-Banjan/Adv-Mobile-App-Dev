@@ -21,7 +21,7 @@ import { CreateProductDTO, UpdateProductDTO } from './../../dto/product.dto';
 export class ProductController {
   constructor(private productService: ProductService) {}
 
-  @Get()
+  @Post()
   async listAll(): Promise<Product[]> {
     return await this.productService.findAll();
   }
