@@ -28,4 +28,10 @@ export default class BraintreeProvider {
   ): Promise<braintree.ValidatedResponse<braintree.Transaction>> {
     return await this.gateway.transaction.sale(request);
   }
+
+  async createCreditCard(
+    request: braintree.CreditCardCreateRequest,
+  ): Promise<braintree.ValidatedResponse<braintree.CreditCard>> {
+    return await this.gateway.creditCard.create(request);
+  }
 }

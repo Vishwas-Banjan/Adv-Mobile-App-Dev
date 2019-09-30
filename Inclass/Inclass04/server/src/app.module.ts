@@ -12,6 +12,7 @@ import { BraintreeModule } from './braintree';
 import { ProductModule } from './modules/product/product.module';
 import { ImageModule } from './modules/image/image.module';
 import { OrderModule } from './modules/order/order.module';
+import { PaymentAccountModule } from './modules/payment-account/payment-account.module';
 
 @Module({
   imports: [
@@ -31,6 +32,7 @@ import { OrderModule } from './modules/order/order.module';
     ProductModule,
     ImageModule,
     OrderModule,
+    PaymentAccountModule,
   ],
   controllers: [AppController],
   providers: [AppService],
