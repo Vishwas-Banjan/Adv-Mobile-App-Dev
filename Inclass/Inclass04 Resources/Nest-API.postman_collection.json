@@ -291,6 +291,62 @@
 				{
 					"name": "get",
 					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/image/coca-cola.png",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"image",
+								"coca-cola.png"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0236fc4d-952f-49d0-b695-ce38c25a7fd7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a0397463-b2dc-4d1b-880f-f150b4316964",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "create",
+					"request": {
 						"method": "POST",
 						"header": [
 							{
@@ -302,7 +358,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"filename\": \"coca-cola.png\"\r\n}",
+							"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"5d90c93a2e2acb16ccddeaab\",\n            \"quantity\": 1,\n            \"price\": 1.18\n        },\n        {\n            \"productId\": \"5d90c93a2e2acb16ccddeaac\",\n            \"quantity\": 1,\n            \"price\": 2.79\n        }\n    ],\n    \"paymentMethodNonce\": \"dddd\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -310,7 +366,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/image/",
+							"raw": "http://localhost:8080/api/order",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -318,8 +374,7 @@
 							"port": "8080",
 							"path": [
 								"api",
-								"image",
-								""
+								"order"
 							]
 						}
 					},

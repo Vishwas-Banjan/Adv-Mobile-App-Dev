@@ -22,4 +22,10 @@ export default class BraintreeProvider {
   ): Promise<braintree.ValidatedResponse<braintree.ClientToken>> {
     return await this.gateway.clientToken.generate(request);
   }
+
+  async sale(
+    request: braintree.TransactionRequest,
+  ): Promise<braintree.ValidatedResponse<braintree.Transaction>> {
+    return await this.gateway.transaction.sale(request);
+  }
 }

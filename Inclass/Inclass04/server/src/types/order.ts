@@ -6,10 +6,11 @@ import { Product } from './product';
 interface ProductOrder {
   product: Product;
   quantity: number;
+  price: number;
 }
 
 export interface Order extends Document {
-  owner: User;
+  user: User;
   totalPrice: number;
   products: ProductOrder[];
   created: Date;
