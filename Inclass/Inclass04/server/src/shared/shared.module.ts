@@ -27,6 +27,6 @@ import { PaymentAccountService } from './payment-account.service';
       useClass: LoggingInterceptor,
     },
   ],
-  exports: [UserService],
+  exports: [UserService, PaymentAccountService],
 })
 export class SharedModule {}

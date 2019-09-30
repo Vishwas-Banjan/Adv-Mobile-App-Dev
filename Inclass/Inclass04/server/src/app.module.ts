@@ -11,7 +11,8 @@ import * as braintree from 'braintree';
 import { BraintreeModule } from './braintree';
 import { ProductModule } from './modules/product/product.module';
 import { ImageModule } from './modules/image/image.module';
-import { MulterModule } from '@nestjs/platform-express';
+import { OrderModule } from './modules/order/order.module';
+import { PaymentAccountModule } from './modules/payment-account/payment-account.module';
 
 @Module({
   imports: [
@@ -30,6 +31,8 @@ import { MulterModule } from '@nestjs/platform-express';
     AuthModule,
     ProductModule,
     ImageModule,
+    OrderModule,
+    PaymentAccountModule,
   ],
   controllers: [AppController],
   providers: [AppService],
