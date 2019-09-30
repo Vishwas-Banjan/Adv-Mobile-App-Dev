@@ -15,7 +15,7 @@ export class PaymentAccountController {
     private user: UserService,
   ) {}
 
-  @Post()
+  @Post('creditCard')
   @UseGuards(AuthGuard())
   async addCreditCard(
     @Body() creditCardDTO: CreateCreditCardDTO,
