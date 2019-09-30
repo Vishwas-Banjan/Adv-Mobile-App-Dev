@@ -1,6 +1,6 @@
 import { BraintreeProvider, InjectBraintreeProvider } from './../braintree';
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
-import { CreditCard } from './../types/credit-card';
+import { PaymentMethod } from '../types/payment-method';
 
 @Injectable()
 export class PaymentAccountService {
@@ -36,17 +36,17 @@ export class PaymentAccountService {
     return clientToken;
   }
 
-  async createCreditCard(creditCardDTO): Promise<CreditCard> {
+  async addPayment(creditCardDTO): Promise<PaymentMethod> {
     const {
       success,
-      creditCard,
-    } = await this.braintreeProvider.createCreditCard(creditCardDTO);
+      paymentMethod,
+    } = await this.braintreeProvider.createPayment(creditCardDTO);
     if (!success) {
       throw new HttpException(
-        'Fail to add credit card',
+        'Fail to add new payment',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
-    return creditCard;
+    return paymentMethod;
   }
 }

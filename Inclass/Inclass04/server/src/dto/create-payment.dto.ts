@@ -1,15 +1,9 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 
-export class CreateCreditCardDTO {
+export class CreatePaymentDTO {
   @ApiModelPropertyOptional()
   customerId: string;
 
   @ApiModelProperty()
-  number: string;
-
-  @ApiModelProperty()
-  expirationDate: string;
-
-  @ApiModelProperty()
-  cvv: string;
+  paymentMethodNonce: string;
 }
