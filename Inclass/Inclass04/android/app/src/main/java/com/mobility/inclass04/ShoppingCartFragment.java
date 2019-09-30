@@ -45,6 +45,7 @@ public class ShoppingCartFragment extends Fragment {
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         mAdapter = new ShoppingCartAdapter(cartArraylist, (Context) mListener);
         recyclerView.setAdapter(mAdapter);
+
     }
 
     @Override
@@ -62,7 +63,6 @@ public class ShoppingCartFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         cartArraylist = mListener.getCartItems();
         navController = Navigation.findNavController(view);
-
         setUpRecyclerView(view);
         totalAmount = view.findViewById(R.id.subTotalAmntTextView);
         totalAmountLabel = view.findViewById(R.id.subtotalLabelTextView);
@@ -72,7 +72,6 @@ public class ShoppingCartFragment extends Fragment {
         emptyCartLabel = view.findViewById(R.id.emptyCartTextView);
         emptyCartLabel.setVisibility(View.INVISIBLE);
         setLabelFields();
-
 
         checkOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +101,6 @@ public class ShoppingCartFragment extends Fragment {
             }
             totalAmount.setText("$" + df.format(calcTotalAmount));
             itemCount.setText(cartArraylist.size() + " items");
-
             emptyCartLabel.setVisibility(View.INVISIBLE);
             shopNowBtn.setVisibility(View.INVISIBLE);
             totalAmount.setVisibility(View.VISIBLE);

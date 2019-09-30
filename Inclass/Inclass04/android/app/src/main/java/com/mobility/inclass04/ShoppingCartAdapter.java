@@ -81,7 +81,6 @@ public class ShoppingCartAdapter extends RecyclerView.Adapter<ShoppingCartAdapte
         }
     }
 
-
     public interface OnAdapterInteractionListener {
         void removeFromCart(Product product);
     }

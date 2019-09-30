@@ -173,6 +173,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             addedToCartArrayList.remove(product);
             Log.d(TAG, "removeFromCart: " + addedToCartArrayList.toString());
             Toast.makeText(this, "Removed from Cart!", Toast.LENGTH_SHORT).show();
+
+            NavController navController = Navigation.findNavController(this, finalHost.getId());
+            navController.navigate(R.id.shoppingCartFragment,
+                    null,
+                    new NavOptions.Builder()
+                            .setPopUpTo(navController.getCurrentDestination().getId(), true).build());
         }
     }
 }
