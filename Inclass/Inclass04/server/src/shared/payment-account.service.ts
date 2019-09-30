@@ -37,7 +37,10 @@ export class PaymentAccountService {
   }
 
   async createCreditCard(creditCardDTO): Promise<CreditCard> {
-    const {success, creditCard} = await this.braintreeProvider.createCreditCard(creditCardDTO);
+    const {
+      success,
+      creditCard,
+    } = await this.braintreeProvider.createCreditCard(creditCardDTO);
     if (!success) {
       throw new HttpException(
         'Fail to add credit card',
