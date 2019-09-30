@@ -347,6 +347,16 @@
 				{
 					"name": "create",
 					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1Njk4MDA5NzksImV4cCI6MTU2OTgwNDU3OX0.mtf9qqOwRPwhY13XUCXgzN3emHXVWcwwzLPaoN3FSv4",
+									"type": "string"
+								}
+							]
+						},
 						"method": "POST",
 						"header": [
 							{
@@ -375,6 +385,80 @@
 							"path": [
 								"api",
 								"order"
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0236fc4d-952f-49d0-b695-ce38c25a7fd7",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "a0397463-b2dc-4d1b-880f-f150b4316964",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Payment Account",
+			"item": [
+				{
+					"name": "create credit card",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1Njk4MDc5MTUsImV4cCI6MTU2OTgxMTUxNX0.Wr_9PJm2d9_3YugSXIiuAumms8UwMX53YgTo5SSdoPc",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"customerId\": \"\",\n  \"number\": \"4111111111111111\",\n  \"expirationDate\": \"06/2022\",\n  \"cvv\": \"100\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/paymentAccount",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"paymentAccount"
 							]
 						}
 					},
