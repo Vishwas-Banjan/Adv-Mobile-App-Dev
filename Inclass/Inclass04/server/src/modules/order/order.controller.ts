@@ -18,7 +18,7 @@ export class OrderController {
 
   @Post()
   @UseGuards(AuthGuard())
-  createOrder(@Body() order: CreateOrderDTO, @User() { id }: UserDocument) {
-    return this.orderService.createOrder(order, id);
+  createOrder(@Body() order: CreateOrderDTO, @User() user: UserDocument) {
+    return this.orderService.createOrder(order, user.id);
   }
 }

@@ -42,7 +42,7 @@ export class OrderService {
       const price = product.price * product.quantity;
       return acc + price;
     }, 0);
-    await order.update({ totalPrice });
+    await order.updateOne({ totalPrice });
 
     // start transaction with braintree
     this.braintreeProvider.sale({

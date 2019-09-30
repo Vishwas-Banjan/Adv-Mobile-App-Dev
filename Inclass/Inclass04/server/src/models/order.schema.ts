@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import * as mongooseFloat from 'mongoose-float';
 
 export const OrderSchema = new mongoose.Schema({
   userId: {
@@ -6,7 +7,7 @@ export const OrderSchema = new mongoose.Schema({
     ref: 'users',
   },
   totalPrice: {
-    type: Number,
+    type: mongooseFloat.loadType(mongoose),
     default: 0,
   },
   products: [
@@ -20,7 +21,7 @@ export const OrderSchema = new mongoose.Schema({
         default: 1,
       },
       price: {
-        type: Number,
+        type: mongooseFloat.loadType(mongoose),
         default: 1,
       },
     },

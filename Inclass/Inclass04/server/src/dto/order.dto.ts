@@ -1,8 +1,11 @@
-export interface CreateOrderDTO {
-  products: Array<{
-    productId: string;
-    quantity: number;
-    price: number;
-  }>;
+import { ApiModelProperty } from '@nestjs/swagger';
+import { OrderProduct } from './order-product.dto';
+
+export class CreateOrderDTO {
+
+  @ApiModelProperty({ type: OrderProduct })
+  products: OrderProduct[];
+
+  @ApiModelProperty()
   paymentMethodNonce: string;
 }
