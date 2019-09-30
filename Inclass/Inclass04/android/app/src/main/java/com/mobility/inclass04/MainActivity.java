@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -21,19 +22,24 @@ import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
 import com.google.android.material.navigation.NavigationView;
+import com.mobility.inclass04.Utils.Product;
 import com.mobility.inclass04.Utils.User;
+
+import java.util.ArrayList;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
         LogInFragment.OnFragmentInteractionListener, SignUpFragment.OnFragmentInteractionListener,
         ProfileFragment.OnFragmentInteractionListener, ProductListFragment.OnFragmentInteractionListener,
-        ProductDetailFragment.OnFragmentInteractionListener, ShoppingCartFragment.OnFragmentInteractionListener {
+        ProductDetailFragment.OnFragmentInteractionListener, ShoppingCartFragment.OnFragmentInteractionListener,
+        ShoppingCartAdapter.OnAdapterInteractionListener {
 
     private DrawerLayout drawerLayout;
     SharedPreferences sharedPref;
     ActionBarDrawerToggle toggle;
     NavHostFragment finalHost;
     NavigationView navigationView;
+    ArrayList<Product> addedToCartArrayList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,7 +57,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         drawerLayout.addDrawerListener(toggle);
         toggle.setDrawerIndicatorEnabled(false);
         toggle.syncState();
-
         if (savedInstanceState == null) {
             //Assign NavHost to Fragment Container
             finalHost = NavHostFragment.create(R.navigation.nav_graph);
@@ -145,4 +150,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         sharedPref.edit().clear().commit();
     }
 
+    String TAG = "demo";
+
+    @Override
+    public void addToCart(Product product) {
+        if (!addedToCartArrayList.contains(product)) {
+            Toast.makeText(this, "Added to Cart!", Toast.LENGTH_SHORT).show();
+            addedToCartArrayList.add(product);
+        } else {
+            Toast.makeText(this, "Already Added!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    @Override
+    public ArrayList<Product> getCartItems() {
+        return addedToCartArrayList;
+    }
+
+    @Override
+    public void removeFromCart(Product product) {
+        if (addedToCartArrayList.contains(product)) {
+            addedToCartArrayList.remove(product);
+            Log.d(TAG, "removeFromCart: " + addedToCartArrayList.toString());
+            Toast.makeText(this, "Removed from Cart!", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

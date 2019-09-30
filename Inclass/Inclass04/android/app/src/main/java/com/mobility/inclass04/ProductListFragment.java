@@ -52,6 +52,7 @@ public class ProductListFragment extends Fragment {
     ArrayList<Product> productList = new ArrayList<>();
     String TAG = "demo";
 
+
     public ProductListFragment() {
         // Required empty public constructor
     }
@@ -76,6 +77,7 @@ public class ProductListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: ");
+        navController.navigate(R.id.shoppingCartFragment);
         return super.onOptionsItemSelected(item);
     }
 
@@ -95,6 +97,7 @@ public class ProductListFragment extends Fragment {
         new getProductList().execute();
         mListener.setDrawerLocked(false);
     }
+
 
     private class getProductList extends AsyncTask<Void, Void, ArrayList<Product>> {
         private ProgressDialog progressDialog;
@@ -118,6 +121,7 @@ public class ProductListFragment extends Fragment {
                 progressDialog.dismiss();
             }
             if (productArrayList.size() > 0) {
+                productList.clear();
                 productList.addAll(productArrayList);
                 mAdapter.notifyDataSetChanged();
 
@@ -146,6 +150,7 @@ public class ProductListFragment extends Fragment {
 
                     String json = responseBody.string();
                     JSONArray root = new JSONArray(json);
+                    productArrayList.clear();
                     for (int i = 0; i < root.length(); i++) {
                         JSONObject productJson = root.getJSONObject(i);
                         Product product = new Product();

@@ -2,6 +2,7 @@ package com.mobility.inclass04;
 
 import android.content.res.Resources;
 import android.graphics.Paint;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,7 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.mobility.inclass04.Utils.Product;
@@ -29,7 +29,6 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
     public ProductListAdapter(ArrayList<Product> productArrayList, NavController navController) {
         this.productArrayList = productArrayList;
         this.navController = navController;
-        Log.d(TAG, "ProductListAdapter: " + productArrayList);
     }
 
     @NonNull
@@ -44,9 +43,8 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
 
     @Override
-    public void onBindViewHolder(@NonNull ProductListAdapter.ViewHolder holder, int position) {
-        Product product = productArrayList.get(position);
-
+    public void onBindViewHolder(@NonNull ProductListAdapter.ViewHolder holder, final int position) {
+        final Product product = productArrayList.get(position);
 
         holder.productName.setText(product.getName());
         holder.productRegion.setText(product.getRegion());
@@ -56,24 +54,26 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         holder.productOriginalPrice.setPaintFlags(holder.productOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
         Resources res = holder.itemView.getContext().getResources();
-//        if (!product.getImageUrl().equals("null")) {
-//            Picasso.get().load(res.getString(R.string.getImageURL) + product.getImageUrl()).into(holder.productImage, new Callback() {
-//                @Override
-//                public void onSuccess() {
-//                }
-//
-//                @Override
-//                public void onError(Exception e) {
-//                    //Set default Image
-//                    Log.d("demo", "Picasso onError: Error! " + e.toString());
-//                }
-//            });
-//        }
+        if (!product.getImageUrl().equals("null")) {
+            Picasso.get().load(res.getString(R.string.getImageURL) + product.getImageUrl()).into(holder.productImage, new Callback() {
+                @Override
+                public void onSuccess() {
+                }
+
+                @Override
+                public void onError(Exception e) {
+                    //Set default Image
+                    Log.d("demo", "Picasso onError: Error! " + e.toString());
+                }
+            });
+        }
 
         holder.productName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navController.navigate(R.id.action_productListFragment_to_productDetailFragment);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("selectedItem", product);
+                navController.navigate(R.id.action_productListFragment_to_productDetailFragment, bundle);
             }
         });
     }

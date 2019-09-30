@@ -52,7 +52,6 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
     MaterialButtonToggleGroup genderToggleGroup;
     MaterialButton editBtn, saveBtn;
     SharedPreferences sharedPref;
-    String userID;
     NavController navController;
     private OnFragmentInteractionListener mListener;
 
@@ -226,6 +225,7 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
 
                     String json = responseBody.string();
                     JSONObject root = new JSONObject(json);
+                    user.setUserId(root.getString("_id"));
                     user.setUserFirstName(root.getString("firstName"));
                     user.setUserLastName(root.getString("lastName"));
                     user.setUserEmail(root.getString("email"));

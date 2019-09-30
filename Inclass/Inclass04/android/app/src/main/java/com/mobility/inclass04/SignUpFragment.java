@@ -18,6 +18,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -148,10 +149,11 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
     public interface OnFragmentInteractionListener {
         void setDrawerLocked(boolean shouldLock);
+
         void onFragmentInteraction(Uri uri);
     }
 
-    private class signUpUser extends AsyncTask<Void, Void, String> {
+    private class signUpUser extends AsyncTask<Void, Void, Pair<String, String>> {
         User user;
         private ProgressDialog progressDialog;
 
@@ -169,12 +171,13 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(Pair<String, String> s) {
             super.onPostExecute(s);
             if (s != null) {
                 sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(getString(R.string.userToken), s);
+                editor.putString(getString(R.string.userToken), s.first);
+                editor.putString(getString(R.string.clientToken), s.second);
                 editor.commit();
 
                 if (progressDialog.isShowing()) {
@@ -195,7 +198,8 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
-        protected String doInBackground(Void... voids) {
+        protected Pair<String, String> doInBackground(Void... voids) {
+            Pair<String, String> pair = null;
             final OkHttpClient client = new OkHttpClient();
             RequestBody formBody = new FormBody.Builder()
                     .add("email", user.getUserEmail())
@@ -211,6 +215,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                     .post(formBody)
                     .build();
             String token = null;
+            String clientToken = null;
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful())
                     throw new IOException("Unexpected code " + response.toString());
@@ -219,15 +224,18 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG, "doInBackground: " + root.toString());
                 if (!root.getString("token").equals("")) {
                     token = root.getString("token");
+                    clientToken = root.getString("clientToken");
                     JSONObject userJSON = new JSONObject(root.getString("user"));
                     userId = userJSON.getString("_id");
+                    pair = new Pair<>(token, clientToken);
+
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return token;
+            return pair;
         }
     }
 }

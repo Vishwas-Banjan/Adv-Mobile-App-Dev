@@ -4,7 +4,17 @@ import java.io.Serializable;
 import java.util.Objects;
 
 public class User implements Serializable {
-    String userFirstName, userLastName, userEmail, userPassword, userCity, userGender;
+    String userFirstName, userLastName, userEmail, userPassword, userCity, userGender, userId;
+
+    public User(String userFirstName, String userLastName, String userEmail, String userPassword, String userCity, String userGender, String userId) {
+        this.userFirstName = userFirstName;
+        this.userLastName = userLastName;
+        this.userEmail = userEmail;
+        this.userPassword = userPassword;
+        this.userCity = userCity;
+        this.userGender = userGender;
+        this.userId = userId;
+    }
 
     public User(String userFirstName, String userLastName, String userEmail, String userPassword, String userCity, String userGender) {
         this.userFirstName = userFirstName;
@@ -13,6 +23,14 @@ public class User implements Serializable {
         this.userPassword = userPassword;
         this.userCity = userCity;
         this.userGender = userGender;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 
     public User() {
@@ -35,6 +53,7 @@ public class User implements Serializable {
                 ", userPassword='" + userPassword + '\'' +
                 ", userCity='" + userCity + '\'' +
                 ", userGender='" + userGender + '\'' +
+                ", userId='" + userId + '\'' +
                 '}';
     }
 
