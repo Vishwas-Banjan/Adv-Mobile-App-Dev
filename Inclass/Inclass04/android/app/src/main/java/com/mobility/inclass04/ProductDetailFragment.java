@@ -1,6 +1,7 @@
 package com.mobility.inclass04;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
@@ -25,6 +26,8 @@ import android.widget.Toast;
 import com.google.android.material.button.MaterialButton;
 import com.mobility.inclass04.Utils.Product;
 import com.mobility.inclass04.Utils.User;
+import com.squareup.picasso.Callback;
+import com.squareup.picasso.Picasso;
 
 import java.text.DecimalFormat;
 
@@ -80,6 +83,24 @@ public class ProductDetailFragment extends Fragment {
             productOriginalPrice.setText("$" + product.getPrice());
             productOriginalPrice.setPaintFlags(productOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
             productSavings.setText("Save $" + df.format(discountAmount) + "(" + product.getDiscount() + "%)");
+
+            if (!product.getImageUrl().equals("null")) {
+                Picasso.get().load(getString(R.string.getImageURL) + product.getImageUrl()).into(productImage, new Callback() {
+                    @Override
+                    public void onSuccess() {
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        //Set default Image
+                        Log.d("demo", "Picasso onError: Error! " + e.toString());
+                        productImage.setImageDrawable(getResources().getDrawable(R.drawable.no_image_found));
+                    }
+                });
+            } else {
+                productImage.setImageDrawable(getResources().getDrawable(R.drawable.no_image_found));
+            }
+
         }
 
         addToCartBtn.setOnClickListener(new View.OnClickListener() {

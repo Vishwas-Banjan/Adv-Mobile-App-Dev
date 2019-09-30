@@ -43,7 +43,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
 
 
     @Override
-    public void onBindViewHolder(@NonNull ProductListAdapter.ViewHolder holder, final int position) {
+    public void onBindViewHolder(@NonNull final ProductListAdapter.ViewHolder holder, final int position) {
         final Product product = productArrayList.get(position);
 
         holder.productName.setText(product.getName());
@@ -53,7 +53,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
         holder.productOriginalPrice.setText("$" + product.getPrice());
         holder.productOriginalPrice.setPaintFlags(holder.productOriginalPrice.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
 
-        Resources res = holder.itemView.getContext().getResources();
+        final Resources res = holder.itemView.getContext().getResources();
         if (!product.getImageUrl().equals("null")) {
             Picasso.get().load(res.getString(R.string.getImageURL) + product.getImageUrl()).into(holder.productImage, new Callback() {
                 @Override
@@ -64,8 +64,11 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
                 public void onError(Exception e) {
                     //Set default Image
                     Log.d("demo", "Picasso onError: Error! " + e.toString());
+                    holder.productImage.setImageDrawable(res.getDrawable(R.drawable.no_image_found));
                 }
             });
+        } else {
+            holder.productImage.setImageDrawable(res.getDrawable(R.drawable.no_image_found));
         }
 
         holder.productName.setOnClickListener(new View.OnClickListener() {
