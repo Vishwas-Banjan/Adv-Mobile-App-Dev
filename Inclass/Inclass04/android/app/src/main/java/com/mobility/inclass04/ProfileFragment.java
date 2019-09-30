@@ -213,11 +213,10 @@ public class ProfileFragment extends Fragment implements View.OnClickListener {
         protected User doInBackground(Void... voids) {
             User user = new User();
             sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-            userID = "5d8ea38df2a3790a6c33c48f";
             final OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
                     .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
-                    .url(getString(R.string.userDetailURL) + userID)
+                    .url(getString(R.string.userDetailURL))
                     .build();
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);

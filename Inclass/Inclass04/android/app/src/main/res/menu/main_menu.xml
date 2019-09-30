@@ -4,7 +4,7 @@
 
     <item
         android:id="@+id/logout"
-        android:icon="@drawable/ic_logout"
-        android:title="@string/logout"
+        android:icon="@drawable/ic_cart"
+        android:title="@string/cart"
         app:showAsAction="always" />
 </menu>

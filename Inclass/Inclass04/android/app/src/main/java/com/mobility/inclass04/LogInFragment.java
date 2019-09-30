@@ -194,7 +194,6 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
                 String json = response.body().string();
                 JSONObject root = new JSONObject(json);
-
                 if (!root.getString("token").equals("")) {
                     JSONObject userJSON = new JSONObject(root.getString("user"));
                     userId = userJSON.getString("_id");
