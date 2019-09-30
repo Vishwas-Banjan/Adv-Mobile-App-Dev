@@ -215,7 +215,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/api/user/5d8bc44a6b1581001cf444c1",
+							"raw": "http://localhost:8080/api/user",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -223,8 +223,7 @@
 							"port": "8080",
 							"path": [
 								"api",
-								"user",
-								"5d8bc44a6b1581001cf444c1"
+								"user"
 							]
 						}
 					},
