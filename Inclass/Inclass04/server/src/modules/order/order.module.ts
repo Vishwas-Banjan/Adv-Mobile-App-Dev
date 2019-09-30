@@ -3,7 +3,6 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
-import { SharedModule } from './../../shared/shared.module';
 import { OrderSchema } from './../../models/order.schema';
 import { BraintreeModule } from './../../braintree';
 import { PassportModule } from '@nestjs/passport';
