@@ -32,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LogInFragment.OnFragmentInteractionListener, SignUpFragment.OnFragmentInteractionListener,
         ProfileFragment.OnFragmentInteractionListener, ProductListFragment.OnFragmentInteractionListener,
         ProductDetailFragment.OnFragmentInteractionListener, ShoppingCartFragment.OnFragmentInteractionListener,
-        ShoppingCartAdapter.OnAdapterInteractionListener {
+        ShoppingCartAdapter.OnAdapterInteractionListener, CheckoutFragment.OnFragmentInteractionListener {
 
     private DrawerLayout drawerLayout;
     SharedPreferences sharedPref;

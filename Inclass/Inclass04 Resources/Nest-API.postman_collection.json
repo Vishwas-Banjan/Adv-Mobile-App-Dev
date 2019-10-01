@@ -418,7 +418,7 @@
 			"name": "Payment Account",
 			"item": [
 				{
-					"name": "create credit card",
+					"name": "add",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -441,7 +441,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"customerId\": \"\",\n  \"number\": \"4111111111111111\",\n  \"expirationDate\": \"06/2022\",\n  \"cvv\": \"100\"\n}",
+							"raw": "{\n  \"customerId\": \"\",\n  \"paymentMethodNonce\": \"\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -449,7 +449,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/paymentAccount",
+							"raw": "http://localhost:8080/api/paymentAccount/add",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -457,7 +457,8 @@
 							"port": "8080",
 							"path": [
 								"api",
-								"paymentAccount"
+								"paymentAccount",
+								"add"
 							]
 						}
 					},

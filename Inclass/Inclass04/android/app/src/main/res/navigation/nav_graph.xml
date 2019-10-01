@@ -114,5 +114,18 @@
         android:id="@+id/shoppingCartFragment"
         android:name="com.mobility.inclass04.ShoppingCartFragment"
         android:label="fragment_shopping_cart"
-        tools:layout="@layout/fragment_shopping_cart" />
+        tools:layout="@layout/fragment_shopping_cart">
+        <action
+            android:id="@+id/action_shoppingCartFragment_to_checkoutFragment"
+            app:destination="@id/checkoutFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right" />
+    </fragment>
+    <fragment
+        android:id="@+id/checkoutFragment"
+        android:name="com.mobility.inclass04.CheckoutFragment"
+        android:label="fragment_checkout"
+        tools:layout="@layout/fragment_checkout" />
 </navigation>
