@@ -12,6 +12,9 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
+import androidx.navigation.Navigation;
 
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -54,6 +57,7 @@ public class CheckoutFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     String totalAmount;
+    NavController navController;
 
     public CheckoutFragment() {
         // Required empty public constructor
@@ -90,6 +94,7 @@ public class CheckoutFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        navController = Navigation.findNavController(view);
         sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         clientToken = sharedPref.getString(getString(R.string.clientToken), "");
         itemsCostTextView = view.findViewById(R.id.itemsCostTextView);
@@ -197,6 +202,10 @@ public class CheckoutFragment extends Fragment {
 
                     String responseJson = responseBody.string();
                     Log.d(TAG, "doInBackground: " + responseJson);
+                    mListener.emptyCart();
+                    navigateToShop();
+                    //TODO Saved Cards not showing up
+                    //TODO Handle Errors/Exceptions
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -209,6 +218,15 @@ public class CheckoutFragment extends Fragment {
         }
     }
 
+    public void navigateToShop() {
+        Log.d("demo", "onNavigationItemSelected: Shop");
+        navController
+                .navigate(R.id.productListFragment,
+                        null,
+                        new NavOptions.Builder()
+                                .setPopUpTo(navController.getCurrentDestination().getId(), true).build());
+    }
+
     @Override
     public void onDetach() {
         super.onDetach();
@@ -217,5 +235,7 @@ public class CheckoutFragment extends Fragment {
 
     public interface OnFragmentInteractionListener {
         ArrayList<Product> getCartItems();
+
+        void emptyCart();
     }
 }

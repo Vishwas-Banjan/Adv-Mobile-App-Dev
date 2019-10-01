@@ -168,6 +168,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void emptyCart() {
+        addedToCartArrayList.clear();
+    }
+
+    @Override
     public void removeFromCart(Product product) {
         if (addedToCartArrayList.contains(product)) {
             addedToCartArrayList.remove(product);
