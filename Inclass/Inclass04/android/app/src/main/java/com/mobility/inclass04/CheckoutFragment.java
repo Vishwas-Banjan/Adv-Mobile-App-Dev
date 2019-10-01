@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -25,8 +28,23 @@ import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
+import com.mobility.inclass04.Utils.Product;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
+import okhttp3.FormBody;
+import okhttp3.MediaType;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -82,6 +100,7 @@ public class CheckoutFragment extends Fragment {
         totalBeforeTaxTextView.setText(totalAmount);
         orderTotalTextView.setText(totalAmount);
 
+
         placeOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -108,7 +127,8 @@ public class CheckoutFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 // use the result to update your UI and send the payment method nonce to your server
-                postNonceToServer(result.getPaymentMethodNonce().getNonce());
+//                postNonceToServer();
+                new makeOrderRequest(result.getPaymentMethodNonce().getNonce()).execute();
             } else if (resultCode == RESULT_CANCELED) {
                 // the user canceled
             } else {
@@ -118,26 +138,75 @@ public class CheckoutFragment extends Fragment {
         }
     }
 
-    void postNonceToServer(String nonce) {
-        AsyncHttpClient client = new AsyncHttpClient();
-        RequestParams params = new RequestParams();
-        params.put("payment_method_nonce", nonce);
-        params.put("amount", totalAmount.substring(1));
-        client.post(getString(R.string.apiBaseURL) + "paymentAccount/add", params,
-                new AsyncHttpResponseHandler() {
-                    @Override
-                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-                        Log.d(TAG, "onSuccess: " + headers.toString());
-                        Log.d(TAG, "onSuccess: " + responseBody.toString());
-                    }
+    public class makeOrderRequest extends AsyncTask<Void, Void, Void> {
+        String nonce;
 
-                    @Override
-                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+        public makeOrderRequest(String nonce) {
+            this.nonce = nonce;
+        }
 
-                    }
-                    // Your implementation here
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Log.d(TAG, "onPostExecute: ");
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        protected Void doInBackground(Void... voids) {
+            ArrayList<Product> productArrayList = mListener.getCartItems();
+            JSONArray productsSelected = new JSONArray();
+            for (Product i : productArrayList) {
+                JSONObject productDetail = new JSONObject();
+                try {
+                    productDetail.put("quantity", 1);
+                    productDetail.put("price", i.getPrice());
+                    productDetail.put("productId", i.getId());
+                    productsSelected.put(productDetail);
+                } catch (JSONException e) {
+                    Log.d(TAG, "onViewCreated: " + e.getMessage());
                 }
-        );
+            }
+            final OkHttpClient client = new OkHttpClient();
+            MediaType JSON = MediaType.parse("application/json; charset=utf-8");
+
+            JSONObject json = new JSONObject();
+            try {
+                json.put("paymentMethodNonce", nonce);
+                json.put("products", productsSelected);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d(TAG, "doInBackground: " + json.toString());
+            RequestBody formBody = RequestBody.create(JSON, json.toString());
+            Request request = new Request.Builder()
+                    .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
+                    .url(getString(R.string.apiBaseURL) + "order")
+                    .post(formBody)
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful())
+                        throw new IOException("Unexpected code " + response);
+
+                    String responseJson = responseBody.string();
+                    Log.d(TAG, "doInBackground: " + responseJson);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
     }
 
     @Override
@@ -147,7 +216,6 @@ public class CheckoutFragment extends Fragment {
     }
 
     public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        ArrayList<Product> getCartItems();
     }
 }
