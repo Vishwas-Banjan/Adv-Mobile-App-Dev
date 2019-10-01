@@ -76,7 +76,9 @@ public class ShoppingCartFragment extends Fragment {
         checkOutBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                navController.navigate(R.id.action_shoppingCartFragment_to_checkoutFragment);
+                Bundle bundle = new Bundle();
+                bundle.putString("totalAmount", totalAmount.getText().toString().trim());
+                navController.navigate(R.id.action_shoppingCartFragment_to_checkoutFragment, bundle);
             }
         });
 

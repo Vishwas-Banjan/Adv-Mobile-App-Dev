@@ -127,5 +127,7 @@
         android:id="@+id/checkoutFragment"
         android:name="com.mobility.inclass04.CheckoutFragment"
         android:label="fragment_checkout"
-        tools:layout="@layout/fragment_checkout" />
+        tools:layout="@layout/fragment_checkout" >
+        <argument android:name="totalAmount" />
+    </fragment>
 </navigation>

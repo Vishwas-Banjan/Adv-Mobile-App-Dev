@@ -14,10 +14,13 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.braintreepayments.api.dropin.DropInActivity;
 import com.braintreepayments.api.dropin.DropInRequest;
 import com.braintreepayments.api.dropin.DropInResult;
+import com.google.android.material.button.MaterialButton;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -32,6 +35,7 @@ import static android.app.Activity.RESULT_OK;
 public class CheckoutFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
+    String totalAmount;
 
     public CheckoutFragment() {
         // Required empty public constructor
@@ -46,6 +50,12 @@ public class CheckoutFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        totalAmount = getArguments().getString("totalAmount");
+    }
+
+    @Override
     public void onAttach(Context context) {
         super.onAttach(context);
         if (context instanceof OnFragmentInteractionListener) {
@@ -56,12 +66,28 @@ public class CheckoutFragment extends Fragment {
         }
     }
 
+    TextView totalBeforeTaxTextView, itemsCostTextView, orderTotalTextView;
+    MaterialButton placeOrderBtn;
+
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
         clientToken = sharedPref.getString(getString(R.string.clientToken), "");
-        onBraintreeSubmit(view);
+        itemsCostTextView = view.findViewById(R.id.itemsCostTextView);
+        placeOrderBtn = view.findViewById(R.id.placeOrderBtn);
+        totalBeforeTaxTextView = view.findViewById(R.id.totalBeforeTaxTextView);
+        orderTotalTextView = view.findViewById(R.id.orderTotalTextView);
+        itemsCostTextView.setText(totalAmount);
+        totalBeforeTaxTextView.setText(totalAmount);
+        orderTotalTextView.setText(totalAmount);
+
+        placeOrderBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                onBraintreeSubmit(view);
+            }
+        });
     }
 
 
@@ -69,7 +95,6 @@ public class CheckoutFragment extends Fragment {
         DropInRequest dropInRequest = new DropInRequest()
                 .clientToken(clientToken);
         startActivityForResult(dropInRequest.getIntent(getContext()), REQUEST_CODE);
-        Log.d(TAG, "onBraintreeSubmit: ----------------------");
     }
 
     String clientToken;
@@ -83,7 +108,7 @@ public class CheckoutFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 // use the result to update your UI and send the payment method nonce to your server
-                postNonceToServer(result.toString());
+                postNonceToServer(result.getPaymentMethodNonce().getNonce());
             } else if (resultCode == RESULT_CANCELED) {
                 // the user canceled
             } else {
@@ -97,11 +122,13 @@ public class CheckoutFragment extends Fragment {
         AsyncHttpClient client = new AsyncHttpClient();
         RequestParams params = new RequestParams();
         params.put("payment_method_nonce", nonce);
-        client.post("http://your-server/checkout", params,
+        params.put("amount", totalAmount.substring(1));
+        client.post(getString(R.string.apiBaseURL) + "paymentAccount/add", params,
                 new AsyncHttpResponseHandler() {
                     @Override
                     public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
-
+                        Log.d(TAG, "onSuccess: " + headers.toString());
+                        Log.d(TAG, "onSuccess: " + responseBody.toString());
                     }
 
                     @Override
