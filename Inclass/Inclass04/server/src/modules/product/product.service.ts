@@ -13,9 +13,9 @@ export class ProductService {
     return await this.productModel.find().populate('owner');
   }
 
-  // async findByOwner(userId: string): Promise<Product[]> {
-  //   return await this.productModel.find({ owner: userId }).populate('owner');
-  // }
+  async findByRegion(region: string): Promise<Product[]> {
+    return await this.productModel.where("region", region).populate('owner');
+  }
 
   async findById(id: string): Promise<Product> {
     const product = await this.productModel.findById(id).populate('owner');

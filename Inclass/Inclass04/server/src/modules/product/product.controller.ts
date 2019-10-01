@@ -22,8 +22,14 @@ export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Post()
-  async listAll(): Promise<Product[]> {
-    return await this.productService.findAll();
+  async listAll(
+    @Body() filters: object
+  ): Promise<Product[]> {
+    if (!filters["region"]) {
+      return await this.productService.findAll();
+    }else{
+      return await this.productService.findByRegion(filters["region"]);
+    }
   }
 
   // @Get('/mine')
