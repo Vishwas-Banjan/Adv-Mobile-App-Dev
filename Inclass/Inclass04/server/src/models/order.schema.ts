@@ -2,7 +2,7 @@ import * as mongoose from 'mongoose';
 import * as mongooseFloat from 'mongoose-float';
 
 export const OrderSchema = new mongoose.Schema({
-  userId: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'users',
   },
@@ -12,7 +12,7 @@ export const OrderSchema = new mongoose.Schema({
   },
   products: [
     {
-      productId: {
+      product: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'products',
       },

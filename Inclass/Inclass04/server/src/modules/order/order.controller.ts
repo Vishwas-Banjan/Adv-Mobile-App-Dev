@@ -4,7 +4,7 @@ import { AuthGuard } from '@nestjs/passport';
 import { User as UserDocument } from '../../types/user';
 import { OrderService } from './order.service';
 import { User } from './../../utilities/user.decorator';
-import { CreateOrderDTO } from './../../dto/order.dto';
+import { CreateOrderDTO } from '../../dto/create-order.dto';
 
 @Controller('order')
 export class OrderController {

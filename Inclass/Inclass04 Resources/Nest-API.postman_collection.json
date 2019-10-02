@@ -59,7 +59,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"email\": \"test@test.com\",\n\t\"password\": \"123456\"\n}",
+							"raw": "{\n\t\"email\": \"v@v.com\",\n\t\"password\": \"test123\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -351,7 +351,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJwYXlBY2NJZCI6Ijg3MjQ2NTI1NCIsImlhdCI6MTU2OTk4MDY1OSwiZXhwIjoxNTY5OTg0MjU5fQ.mYWJUKk0EB9S4_Y-hN-_6IVYt2DeJVJ0VSmkG-6bwBQ",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZAdi5jb20iLCJwYXlBY2NJZCI6IjIwODk4NzgzMSIsImlhdCI6MTU3MDAxOTgyMCwiZXhwIjoxNTcwMDIzNDIwfQ.ekxgJSbJseJLy_1xHg_EdA9ZBP_ihTmrNdho8Sc8Cf8",
 									"type": "string"
 								}
 							]
@@ -367,7 +367,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"products\": [\n        {\n            \"productId\": \"5d90c93a2e2acb16ccddeaab\",\n            \"quantity\": 1,\n            \"price\": 1.18\n        },\n        {\n            \"productId\": \"5d90c93a2e2acb16ccddeaac\",\n            \"quantity\": 1,\n            \"price\": 2.79\n        }\n    ],\n    \"paymentMethodNonce\": \"tokencc_bd_m522j2_qdzxx6_38pmdm_w75g6p_t37\"\n}",
+							"raw": "{\n    \"products\": [\n        {\n            \"product\": \"5d90c93a2e2acb16ccddeaab\",\n            \"quantity\": 1,\n            \"price\": 1.18\n        },\n        {\n            \"product\": \"5d90c93a2e2acb16ccddeaac\",\n            \"quantity\": 1,\n            \"price\": 2.79\n        }\n    ],\n    \"paymentMethodNonce\": \"tokencc_bd_m522j2_qdzxx6_38pmdm_w75g6p_t37\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -443,7 +443,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZAdi5jb20iLCJwYXlBY2NJZCI6IjIwODk4NzgzMSIsImlhdCI6MTU3MDAxNjA5OSwiZXhwIjoxNTcwMDE5Njk5fQ.C6ASO8bBs1TrzBz4m9ZySa-Z2zKZkEzOuF3nz3fOQG4",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZAdi5jb20iLCJwYXlBY2NJZCI6IjIwODk4NzgzMSIsImlhdCI6MTU3MDAyNzkxOSwiZXhwIjoxNTcwMDMxNTE5fQ.cpCtt68Sp7sMOb0H8PJm4p8kHrE-gj-WTdOakfP6GtE",
 									"type": "string"
 								}
 							]
