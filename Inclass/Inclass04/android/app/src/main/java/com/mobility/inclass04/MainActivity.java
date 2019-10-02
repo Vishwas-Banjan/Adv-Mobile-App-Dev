@@ -1,8 +1,11 @@
 package com.mobility.inclass04;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,7 +29,16 @@ import com.google.android.material.navigation.NavigationView;
 import com.mobility.inclass04.Utils.Product;
 import com.mobility.inclass04.Utils.User;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
+
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -107,6 +120,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
+    public void updateNavBarFromShop() {
+        new getUserDetailsMainActivity().execute();
+    }
+
+    @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         NavController navController = Navigation.findNavController(this, finalHost.getId());
 
@@ -184,6 +202,61 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     null,
                     new NavOptions.Builder()
                             .setPopUpTo(navController.getCurrentDestination().getId(), true).build());
+        }
+    }
+
+
+    private class getUserDetailsMainActivity extends AsyncTask<Void, Void, User> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        public getUserDetailsMainActivity() {
+        }
+
+        @Override
+        protected void onPostExecute(User user) {
+            super.onPostExecute(user);
+            if (user.getUserFirstName() != null) {
+                setNavBarDetails(user);
+            }
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        protected User doInBackground(Void... voids) {
+            User user = new User();
+            sharedPref = getPreferences(Context.MODE_PRIVATE);
+            final OkHttpClient client = new OkHttpClient();
+            Request request = new Request.Builder()
+                    .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
+                    .url(getString(R.string.userDetailURL))
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful())
+                        throw new IOException("Unexpected code " + response);
+
+                    String json = responseBody.string();
+                    JSONObject root = new JSONObject(json);
+                    user.setUserId(root.getString("_id"));
+                    user.setUserFirstName(root.getString("firstName"));
+                    user.setUserLastName(root.getString("lastName"));
+                    user.setUserEmail(root.getString("email"));
+                    user.setUserCity(root.getString("city"));
+                    user.setUserGender(root.getString("gender"));
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return user;
         }
     }
 }

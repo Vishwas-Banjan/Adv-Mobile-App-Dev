@@ -115,6 +115,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         navController = Navigation.findNavController(view);
         setUpRecyclerView(view);
         new getProductList().execute();
+        mListener.updateNavBarFromShop();
         mListener.setDrawerLocked(false);
     }
 
@@ -235,5 +236,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
 
     public interface OnFragmentInteractionListener {
         void setDrawerLocked(boolean shouldLock);
+
+        void updateNavBarFromShop();
     }
 }
