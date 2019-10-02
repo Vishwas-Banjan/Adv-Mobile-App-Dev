@@ -186,7 +186,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                 Bundle bundle = new Bundle();
                 bundle.putString("userID", userId);
 
-                navController.navigate(R.id.action_signUpFragment_to_profileFragment, bundle);
+                navController.navigate(R.id.action_signUpFragment_to_productListFragment, bundle);
             } else {
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
