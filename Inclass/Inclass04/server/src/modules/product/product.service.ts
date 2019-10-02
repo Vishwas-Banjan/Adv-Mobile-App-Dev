@@ -14,7 +14,7 @@ export class ProductService {
   }
 
   async findByRegion(region: string): Promise<Product[]> {
-    return await this.productModel.where("region", region).populate('owner');
+    return await this.productModel.where('region', region).populate('owner');
   }
 
   async findById(id: string): Promise<Product> {

@@ -27,10 +27,10 @@ export class PaymentAccountController {
 
   @Get('clientToken')
   @UseGuards(AuthGuard())
-  async getClientToken(
-    @User() user: UserDocument,
-  ) {
-    const clientToken = await this.payAccount.getClientToken({customerId: user.payAccId});
-    return {clientToken};
+  async getClientToken(@User() user: UserDocument) {
+    const clientToken = await this.payAccount.getClientToken({
+      customerId: user.payAccId,
+    });
+    return { clientToken };
   }
 }
