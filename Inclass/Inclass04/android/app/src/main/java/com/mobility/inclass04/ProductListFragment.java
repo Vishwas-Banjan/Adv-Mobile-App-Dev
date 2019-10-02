@@ -1,7 +1,10 @@
 package com.mobility.inclass04;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -10,7 +13,9 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -42,7 +47,7 @@ import okhttp3.Response;
 import okhttp3.ResponseBody;
 
 
-public class ProductListFragment extends Fragment {
+public class ProductListFragment extends Fragment implements ProductFilterFragment.OnFragmentInteractionListener {
 
     private OnFragmentInteractionListener mListener;
     NavController navController;
@@ -51,6 +56,8 @@ public class ProductListFragment extends Fragment {
     SharedPreferences sharedPref;
     ArrayList<Product> productList = new ArrayList<>();
     String TAG = "demo";
+    String filter = "";
+    int position;
 
 
     public ProductListFragment() {
@@ -77,8 +84,21 @@ public class ProductListFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         Log.d(TAG, "onOptionsItemSelected: ");
-        navController.navigate(R.id.shoppingCartFragment);
-        return super.onOptionsItemSelected(item);
+        switch (item.getItemId()) {
+            case R.id.cart:
+                navController.navigate(R.id.shoppingCartFragment);
+                return true;
+            case R.id.filter:
+                showFilter();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    private void showFilter() {
+        DialogFragment df = new ProductFilterFragment(position);
+        df.show(getChildFragmentManager(), "dialog");
     }
 
     public void setUpRecyclerView(View view) {
@@ -96,6 +116,18 @@ public class ProductListFragment extends Fragment {
         setUpRecyclerView(view);
         new getProductList().execute();
         mListener.setDrawerLocked(false);
+    }
+
+    @Override
+    public void onSelectItem(String[] list, int position) {
+        String item = list[position];
+        this.position = position;
+        if (item.equals("All")) {
+            filter = "";
+        } else {
+            filter = item.toLowerCase();
+        }
+        new getProductList().execute();
     }
 
 
@@ -136,7 +168,7 @@ public class ProductListFragment extends Fragment {
         protected ArrayList<Product> doInBackground(Void... voids) {
             ArrayList<Product> productArrayList = new ArrayList<>();
             final OkHttpClient client = new OkHttpClient();
-            RequestBody formBody = new FormBody.Builder().build();
+            RequestBody formBody = buidFormBody();
             Request request = new Request.Builder()
                     .header("Content-Type", "application/json")
                     .url(getString(R.string.getProductListURL))
@@ -172,6 +204,14 @@ public class ProductListFragment extends Fragment {
                 e.printStackTrace();
             }
             return productArrayList;
+        }
+
+        private RequestBody buidFormBody() {
+            FormBody.Builder body = new FormBody.Builder();
+            if (!filter.isEmpty()) {
+                body.add("region", filter);
+            }
+            return body.build();
         }
     }
 

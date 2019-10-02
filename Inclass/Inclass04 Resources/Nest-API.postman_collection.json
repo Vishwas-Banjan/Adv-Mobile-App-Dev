@@ -118,7 +118,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/api/auth/test?",
+							"raw": "http://localhost:8080/api/auth/test",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -441,7 +441,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"customerId\": \"\",\n  \"paymentMethodNonce\": \"\"\n}",
+							"raw": "{\n  \"paymentMethodNonce\": \"\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -459,6 +459,44 @@
 								"api",
 								"paymentAccount",
 								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get client token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJwYXlBY2NJZCI6Ijg3MjQ2NTI1NCIsImlhdCI6MTU2OTk2OTY0MywiZXhwIjoxNTY5OTczMjQzfQ.Yn_4ejyM3CSRwbQ4YUa0YjSK7BpIQhk1DimLIXyTvy8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/paymentAccount/clientToken",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"paymentAccount",
+								"clientToken"
 							]
 						}
 					},
@@ -505,7 +543,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/api/user",
+							"raw": "http://localhost:8080/api/product",
 							"protocol": "http",
 							"host": [
 								"localhost"
