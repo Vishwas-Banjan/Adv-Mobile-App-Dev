@@ -26,38 +26,36 @@ export class OrderService {
     return orders;
   }
 
-  async createOrder(orderDTO: CreateOrderDTO, userId: string) {
+  async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
     // save order
     const createOrder = {
       userId,
       products: orderDTO.products,
     };
     const { _id } = await this.orderModel.create(createOrder);
-    let order = await this.orderModel
+    const orderModel = await this.orderModel
       .findById(_id)
       .populate('products.product');
 
     // calculate total
-    const totalPrice = order.products.reduce((acc, product) => {
+    const totalPrice = orderModel.products.reduce((acc, product) => {
       const price = product.price * product.quantity;
       return acc + price;
     }, 0);
-    await order.updateOne({ totalPrice });
+    const updateOrder = orderModel.updateOne({ totalPrice });
 
     // start transaction with braintree
-    this.braintreeProvider.sale({
+    const sale = this.braintreeProvider.sale({
       amount: totalPrice.toString(),
       paymentMethodNonce: orderDTO.paymentMethodNonce,
+      customerId,
       options: {
         submitForSettlement: true,
       },
     });
 
-    // get order to return
-    order = await this.orderModel
-      .findById(_id)
-      .populate('user')
-      .populate('products.product');
-    return order;
+    await Promise.all([updateOrder, sale]);
+
+    return {orderId: orderModel._id};
   }
 }
