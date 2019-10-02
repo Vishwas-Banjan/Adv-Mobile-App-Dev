@@ -18,7 +18,7 @@ export class UserService {
 
   async create(
     userDTO: CreateUserDTO,
-  ): Promise<{ user: User; clientToken: string }> {
+  ): Promise<{ user: User }> {
     // find duplicates
     const { email } = userDTO;
     const foundUser = await this.userModel.findOne({ email });
@@ -30,11 +30,6 @@ export class UserService {
     const payAccId = await this.paymentAccount.createCustomer();
     userDTO.payAccId = payAccId;
 
-    // generate client token
-    const clientToken = await this.paymentAccount.getClientToken({
-      customerId: payAccId,
-    });
-
     let createdUser = new this.userModel(userDTO);
 
     // save user to db
@@ -43,7 +38,7 @@ export class UserService {
     // remove password field
     createdUser = this.sanitizeUser(createdUser);
 
-    return { user: createdUser, clientToken };
+    return { user: createdUser };
   }
 
   async find() {
@@ -63,7 +58,7 @@ export class UserService {
     const { email, password } = userDTO;
     const userModel = await this.userModel
       .findOne({ email })
-      .select('email password');
+      .select('email password payAccId');
     if (!userModel) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
@@ -76,12 +71,7 @@ export class UserService {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
 
-    // get client token
-    const clientToken = await this.paymentAccount.getClientToken({
-      customerId: userModel.payAccId,
-    });
-
-    return { user, clientToken };
+    return { user };
   }
 
   async findByPayload(payload: Payload) {

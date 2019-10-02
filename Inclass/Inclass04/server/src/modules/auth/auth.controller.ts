@@ -16,24 +16,26 @@ export class AuthController {
 
   @Post('login')
   async login(@Body() userDTO: LoginDTO) {
-    const { user, clientToken } = await this.userService.findByLogin(userDTO);
+    const { user } = await this.userService.findByLogin(userDTO);
     const payload: Payload = {
       email: user.email,
+      payAccId: user.payAccId,
     };
     const token = await this.authService.signPayload(payload);
-    return { user, token, clientToken };
+    return { user, token };
   }
 
   @Post('register')
   async register(@Body() userDTO: CreateUserDTO) {
     // console.log(userDTO.username);
-    const { user, clientToken } = await this.userService.create(userDTO);
+    const { user } = await this.userService.create(userDTO);
 
     const payload: Payload = {
       email: user.email,
+      payAccId: user.payAccId,
     };
     const token = await this.authService.signPayload(payload);
-    return { user, token, clientToken };
+    return { user, token };
   }
 
   // This route will require successfully passing our default auth strategy (JWT) in order

@@ -463,85 +463,31 @@
 						}
 					},
 					"response": []
-				}
-			],
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "0236fc4d-952f-49d0-b695-ce38c25a7fd7",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
 				},
 				{
-					"listen": "test",
-					"script": {
-						"id": "a0397463-b2dc-4d1b-880f-f150b4316964",
-						"type": "text/javascript",
-						"exec": [
-							""
-						]
-					}
-				}
-			],
-			"protocolProfileBehavior": {}
-		},
-		{
-			"name": "Product",
-			"item": [
-				{
-					"name": "get all product",
+					"name": "get client token",
 					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "http://localhost:8080/api/user",
-							"protocol": "http",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"api",
-								"product"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "filter product by region",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"name": "Content-Type",
-								"value": "application/json",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"region\": \"produce\"\n}",
-							"options": {
-								"raw": {
-									"language": "json"
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJwYXlBY2NJZCI6Ijg3MjQ2NTI1NCIsImlhdCI6MTU2OTk2OTY0MywiZXhwIjoxNTY5OTczMjQzfQ.Yn_4ejyM3CSRwbQ4YUa0YjSK7BpIQhk1DimLIXyTvy8",
+									"type": "string"
 								}
-							}
+							]
 						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
 						"url": {
-							"raw": "http://localhost:8080/api/product",
+							"raw": "http://localhost:8080/api/paymentAccount/clientToken",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -549,7 +495,8 @@
 							"port": "8080",
 							"path": [
 								"api",
-								"product"
+								"paymentAccount",
+								"clientToken"
 							]
 						}
 					},

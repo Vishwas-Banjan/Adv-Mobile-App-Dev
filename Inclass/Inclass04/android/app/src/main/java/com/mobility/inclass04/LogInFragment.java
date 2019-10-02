@@ -200,7 +200,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                     JSONObject userJSON = new JSONObject(root.getString("user"));
                     userId = userJSON.getString("_id");
                     token = root.getString("token");
-                    clientToken = root.getString("clientToken");
+                    // clientToken = root.getString("clientToken");
                     pair = new Pair<>(token, clientToken);
 
                 }
