@@ -16,9 +16,7 @@ export class UserService {
     private paymentAccount: PaymentAccountService,
   ) {}
 
-  async create(
-    userDTO: CreateUserDTO,
-  ): Promise<{ user: User }> {
+  async create(userDTO: CreateUserDTO): Promise<{ user: User }> {
     // find duplicates
     const { email } = userDTO;
     const foundUser = await this.userModel.findOne({ email });

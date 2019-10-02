@@ -15,10 +15,7 @@ export class OrderService {
   ) {}
 
   async listOrdersByUser(userId: string) {
-    const orders = await this.orderModel
-      .find({ owner: userId })
-      .populate('owner')
-      .populate('products.product');
+    const orders = await this.orderModel.find({ userId });
 
     if (!orders) {
       throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
@@ -27,35 +24,36 @@ export class OrderService {
   }
 
   async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
+    if (!orderDTO.products || orderDTO.products.length === 0) {
+      throw new HttpException('No Item Purchased', HttpStatus.BAD_REQUEST);
+    }
+
+    // calculate total
+    const totalPrice = orderDTO.products.reduce((acc, product) => {
+      const price = product.price * product.quantity;
+      return acc + price;
+    }, 0);
+
+    if (totalPrice > 0) {
+      // start transaction with braintree
+      await this.braintreeProvider.sale({
+        amount: totalPrice.toString(),
+        paymentMethodNonce: orderDTO.paymentMethodNonce,
+        customerId,
+        options: {
+          submitForSettlement: true,
+        },
+      });
+    }
+
     // save order
     const createOrder = {
       userId,
       products: orderDTO.products,
+      totalPrice,
     };
     const { _id } = await this.orderModel.create(createOrder);
-    const orderModel = await this.orderModel
-      .findById(_id)
-      .populate('products.product');
 
-    // calculate total
-    const totalPrice = orderModel.products.reduce((acc, product) => {
-      const price = product.price * product.quantity;
-      return acc + price;
-    }, 0);
-    const updateOrder = orderModel.updateOne({ totalPrice });
-
-    // start transaction with braintree
-    const sale = this.braintreeProvider.sale({
-      amount: totalPrice.toString(),
-      paymentMethodNonce: orderDTO.paymentMethodNonce,
-      customerId,
-      options: {
-        submitForSettlement: true,
-      },
-    });
-
-    await Promise.all([updateOrder, sale]);
-
-    return {orderId: orderModel._id};
+    return { orderId: _id };
   }
 }
