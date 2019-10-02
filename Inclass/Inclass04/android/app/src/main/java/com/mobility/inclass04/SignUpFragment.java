@@ -153,7 +153,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    private class signUpUser extends AsyncTask<Void, Void, Pair<String, String>> {
+    private class signUpUser extends AsyncTask<Void, Void, String> {
         User user;
         private ProgressDialog progressDialog;
 
@@ -171,13 +171,12 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
         }
 
         @Override
-        protected void onPostExecute(Pair<String, String> s) {
+        protected void onPostExecute(String s) {
             super.onPostExecute(s);
             if (s != null) {
                 sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(getString(R.string.userToken), s.first);
-                editor.putString(getString(R.string.clientToken), s.second);
+                editor.putString(getString(R.string.userToken), s);
                 editor.commit();
 
                 if (progressDialog.isShowing()) {
@@ -198,7 +197,7 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
-        protected Pair<String, String> doInBackground(Void... voids) {
+        protected String doInBackground(Void... voids) {
             Pair<String, String> pair = null;
             final OkHttpClient client = new OkHttpClient();
             RequestBody formBody = new FormBody.Builder()
@@ -224,18 +223,15 @@ public class SignUpFragment extends Fragment implements View.OnClickListener {
                 Log.d(TAG, "doInBackground: " + root.toString());
                 if (!root.getString("token").equals("")) {
                     token = root.getString("token");
-                    clientToken = root.getString("clientToken");
                     JSONObject userJSON = new JSONObject(root.getString("user"));
                     userId = userJSON.getString("_id");
-                    pair = new Pair<>(token, clientToken);
-
                 }
             } catch (IOException e) {
                 e.printStackTrace();
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            return pair;
+            return token;
         }
     }
 }

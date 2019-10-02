@@ -7,14 +7,14 @@ import { User } from './../../types/user';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel('Product') private productModel: Model<Product>) {}
+  constructor(@InjectModel('products') private productModel: Model<Product>) {}
 
   async findAll(): Promise<Product[]> {
     return await this.productModel.find().populate('owner');
   }
 
   async findByRegion(region: string): Promise<Product[]> {
-    return await this.productModel.where("region", region).populate('owner');
+    return await this.productModel.where('region', region).populate('owner');
   }
 
   async findById(id: string): Promise<Product> {

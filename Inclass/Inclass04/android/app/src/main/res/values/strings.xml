@@ -16,4 +16,11 @@
     <string name="navigation_drawer_close">close navigation drawer</string>
     <string name="getProductListURL">https://nest-api-253406.appspot.com/api/product/</string>
     <string name="getImageURL">https://nest-api-253406.appspot.com/api/image/</string>
+    <string name="apply">Apply</string>
+    <string-array name="filter_items">
+        <item>All</item>
+        <item>Produce</item>
+        <item>Grocery</item>
+        <item>Lifestyle</item>
+    </string-array>
 </resources>

@@ -1,4 +1,4 @@
-import { Body, Controller, UseGuards, Post } from '@nestjs/common';
+import { Body, Controller, UseGuards, Post, Get } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { User as UserDocument } from '../../types/user';
@@ -21,8 +21,16 @@ export class PaymentAccountController {
     @Body() createPaymentDTO: CreatePaymentDTO,
     @User() user: UserDocument,
   ): Promise<PaymentMethod> {
-    const { payAccId } = await this.user.findFromID(user.id);
-    createPaymentDTO.customerId = payAccId;
+    createPaymentDTO.customerId = user.payAccId;
     return await this.payAccount.addPayment(createPaymentDTO);
+  }
+
+  @Get('clientToken')
+  @UseGuards(AuthGuard())
+  async getClientToken(@User() user: UserDocument) {
+    const clientToken = await this.payAccount.getClientToken({
+      customerId: user.payAccId,
+    });
+    return { clientToken };
   }
 }

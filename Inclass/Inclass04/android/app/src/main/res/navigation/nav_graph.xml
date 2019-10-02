@@ -26,6 +26,15 @@
             app:popExitAnim="@anim/slide_out_right"
             app:popUpTo="@id/logInFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_logInFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/logInFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/signUpFragment"
@@ -44,6 +53,15 @@
         <action
             android:id="@+id/action_signUpFragment_to_profileFragment"
             app:destination="@id/profileFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right"
+            app:popUpTo="@id/logInFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_signUpFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
             app:popEnterAnim="@anim/slide_in_left"
@@ -79,6 +97,11 @@
         <action
             android:id="@+id/action_startUpFragment_to_profileFragment"
             app:destination="@id/profileFragment"
+            app:popUpTo="@id/startUpFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_startUpFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
             app:popUpTo="@id/startUpFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -127,7 +150,7 @@
         android:id="@+id/checkoutFragment"
         android:name="com.mobility.inclass04.CheckoutFragment"
         android:label="fragment_checkout"
-        tools:layout="@layout/fragment_checkout" >
+        tools:layout="@layout/fragment_checkout">
         <argument android:name="totalAmount" />
     </fragment>
 </navigation>

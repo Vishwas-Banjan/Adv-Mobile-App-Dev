@@ -92,7 +92,7 @@ public class StartUpFragment extends Fragment implements View.OnClickListener {
             if (bool == false) {
                 navController.navigate(R.id.action_startUpFragment_to_logInFragment);
             } else {
-                navController.navigate(R.id.action_startUpFragment_to_profileFragment);
+                navController.navigate(R.id.action_startUpFragment_to_productListFragment);
             }
         }
 

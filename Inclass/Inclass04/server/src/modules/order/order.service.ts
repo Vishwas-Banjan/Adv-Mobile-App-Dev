@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Order } from '../../types/order';
-import { CreateOrderDTO } from './../../dto/order.dto';
+import { CreateOrderDTO } from '../../dto/create-order.dto';
 import { InjectBraintreeProvider, BraintreeProvider } from './../../braintree';
 
 @Injectable()
@@ -15,10 +15,7 @@ export class OrderService {
   ) {}
 
   async listOrdersByUser(userId: string) {
-    const orders = await this.orderModel
-      .find({ owner: userId })
-      .populate('owner')
-      .populate('products.product');
+    const orders = await this.orderModel.find({ user: userId }).populate('products.product', {name: 1, photo: 1});
 
     if (!orders) {
       throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
@@ -26,38 +23,37 @@ export class OrderService {
     return orders;
   }
 
-  async createOrder(orderDTO: CreateOrderDTO, userId: string) {
-    // save order
-    const createOrder = {
-      userId,
-      products: orderDTO.products,
-    };
-    const { _id } = await this.orderModel.create(createOrder);
-    let order = await this.orderModel
-      .findById(_id)
-      .populate('products.product');
+  async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
+    if (!orderDTO.products || orderDTO.products.length === 0) {
+      throw new HttpException('No Item Purchased', HttpStatus.BAD_REQUEST);
+    }
 
     // calculate total
-    const totalPrice = order.products.reduce((acc, product) => {
+    const totalPrice = orderDTO.products.reduce((acc, product) => {
       const price = product.price * product.quantity;
       return acc + price;
     }, 0);
-    await order.updateOne({ totalPrice });
 
-    // start transaction with braintree
-    this.braintreeProvider.sale({
-      amount: totalPrice.toString(),
-      paymentMethodNonce: orderDTO.paymentMethodNonce,
-      options: {
-        submitForSettlement: true,
-      },
-    });
+    if (totalPrice > 0) {
+      // start transaction with braintree
+      await this.braintreeProvider.sale({
+        amount: totalPrice.toString(),
+        paymentMethodNonce: orderDTO.paymentMethodNonce,
+        customerId,
+        options: {
+          submitForSettlement: true,
+        },
+      });
+    }
 
-    // get order to return
-    order = await this.orderModel
-      .findById(_id)
-      .populate('user')
-      .populate('products.product');
-    return order;
+    // save order
+    const createOrder = {
+      user: userId,
+      products: orderDTO.products,
+      totalPrice,
+    };
+    const { _id } = await this.orderModel.create(createOrder);
+
+    return { orderId: _id };
   }
 }
