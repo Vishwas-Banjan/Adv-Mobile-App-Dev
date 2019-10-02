@@ -221,7 +221,8 @@ public class CheckoutFragment extends Fragment {
                 JSONObject productDetail = new JSONObject();
                 try {
                     productDetail.put("quantity", 1);
-                    productDetail.put("price", i.getPrice());
+                    Double calculatedPrice = (i.getPrice() - (i.getPrice() * (i.getDiscount() / 100)));
+                    productDetail.put("price", calculatedPrice);
                     productDetail.put("productId", i.getId());
                     productsSelected.put(productDetail);
                 } catch (JSONException e) {

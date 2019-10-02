@@ -164,7 +164,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                 }
                 Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
 
-                navController.navigate(R.id.action_logInFragment_to_profileFragment);
+                navController.navigate(R.id.action_logInFragment_to_productListFragment);
             } else {
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
