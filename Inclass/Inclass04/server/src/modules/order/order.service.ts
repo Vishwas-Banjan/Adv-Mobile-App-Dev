@@ -5,6 +5,7 @@ import { Model } from 'mongoose';
 import { Order } from '../../types/order';
 import { CreateOrderDTO } from '../../dto/create-order.dto';
 import { InjectBraintreeProvider, BraintreeProvider } from './../../braintree';
+import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Injectable()
 export class OrderService {
@@ -26,6 +27,7 @@ export class OrderService {
   }
 
   async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
+    console.log(orderDTO);
     if (!orderDTO.products || orderDTO.products.length === 0) {
       throw new HttpException('No Item Purchased', HttpStatus.BAD_REQUEST);
     }
@@ -37,6 +39,7 @@ export class OrderService {
     }, 0);
 
     if (totalPrice > 0) {
+      console.log('ff');
       // start transaction with braintree
       await this.braintreeProvider.sale({
         amount: totalPrice.toString(),
@@ -46,6 +49,7 @@ export class OrderService {
           submitForSettlement: true,
         },
       });
+      console.log('done');
     }
 
     // save order
