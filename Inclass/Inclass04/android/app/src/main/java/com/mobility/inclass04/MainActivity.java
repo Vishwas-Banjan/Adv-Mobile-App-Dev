@@ -119,10 +119,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    @Override
-    public void updateNavBarFromShop() {
-        new getUserDetailsMainActivity().execute();
-    }
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
@@ -206,57 +202,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    private class getUserDetailsMainActivity extends AsyncTask<Void, Void, User> {
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-        }
-
-        public getUserDetailsMainActivity() {
-        }
-
-        @Override
-        protected void onPostExecute(User user) {
-            super.onPostExecute(user);
-            if (user.getUserFirstName() != null) {
-                setNavBarDetails(user);
-            }
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-        @Override
-        protected User doInBackground(Void... voids) {
-            User user = new User();
-            sharedPref = getPreferences(Context.MODE_PRIVATE);
-            final OkHttpClient client = new OkHttpClient();
-            Request request = new Request.Builder()
-                    .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
-                    .url(getString(R.string.userDetailURL))
-                    .build();
-            try (Response response = client.newCall(request).execute()) {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful())
-                        throw new IOException("Unexpected code " + response);
-
-                    String json = responseBody.string();
-                    JSONObject root = new JSONObject(json);
-                    user.setUserId(root.getString("_id"));
-                    user.setUserFirstName(root.getString("firstName"));
-                    user.setUserLastName(root.getString("lastName"));
-                    user.setUserEmail(root.getString("email"));
-                    user.setUserCity(root.getString("city"));
-                    user.setUserGender(root.getString("gender"));
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return user;
-        }
-    }
 }

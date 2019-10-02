@@ -73,6 +73,11 @@ public class StartUpFragment extends Fragment implements View.OnClickListener {
 
     private class validateTokenAsync extends AsyncTask<Void, Void, Boolean> {
         private ProgressDialog progressDialog;
+        User user;
+
+        public validateTokenAsync() {
+            this.user = new User();
+        }
 
         @Override
         protected void onPreExecute() {
@@ -92,13 +97,17 @@ public class StartUpFragment extends Fragment implements View.OnClickListener {
             if (bool == false) {
                 navController.navigate(R.id.action_startUpFragment_to_logInFragment);
             } else {
-                navController.navigate(R.id.action_startUpFragment_to_productListFragment);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userDetails", this.user);
+                navController.navigate(R.id.action_startUpFragment_to_productListFragment, bundle);
+
             }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
         protected Boolean doInBackground(Void... voids) {
+
             sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
             final OkHttpClient client = new OkHttpClient();
             Request request = new Request.Builder()
@@ -110,9 +119,19 @@ public class StartUpFragment extends Fragment implements View.OnClickListener {
                 if (!response.isSuccessful()) {
                     return false;
                 } else if (response.isSuccessful()) {
+                    String json = response.body().string();
+                    JSONObject root = new JSONObject(json);
+                    this.user.setUserId(root.getString("_id"));
+                    this.user.setUserFirstName(root.getString("firstName"));
+                    this.user.setUserLastName(root.getString("lastName"));
+                    this.user.setUserEmail(root.getString("email"));
+                    this.user.setUserCity(root.getString("city"));
+                    this.user.setUserGender(root.getString("gender"));
                     return true;
                 }
             } catch (IOException e) {
+                e.printStackTrace();
+            } catch (JSONException e) {
                 e.printStackTrace();
             }
             return false;

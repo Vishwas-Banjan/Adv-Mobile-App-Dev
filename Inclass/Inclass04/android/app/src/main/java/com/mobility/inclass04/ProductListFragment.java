@@ -31,6 +31,7 @@ import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.mobility.inclass04.Utils.Product;
+import com.mobility.inclass04.Utils.User;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -58,12 +59,20 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     String TAG = "demo";
     String filter = "";
     int position;
-
+    User user;
 
     public ProductListFragment() {
         // Required empty public constructor
     }
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        user = (User) getArguments().getSerializable("userDetails");
+        if (user != null) {
+            mListener.setNavBarDetails(user);
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -115,7 +124,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         navController = Navigation.findNavController(view);
         setUpRecyclerView(view);
         new getProductList().execute();
-        mListener.updateNavBarFromShop();
+
         mListener.setDrawerLocked(false);
     }
 
@@ -237,6 +246,6 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     public interface OnFragmentInteractionListener {
         void setDrawerLocked(boolean shouldLock);
 
-        void updateNavBarFromShop();
+        void setNavBarDetails(User user);
     }
 }
