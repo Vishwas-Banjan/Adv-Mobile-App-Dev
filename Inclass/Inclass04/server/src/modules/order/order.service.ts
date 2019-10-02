@@ -15,7 +15,9 @@ export class OrderService {
   ) {}
 
   async listOrdersByUser(userId: string) {
-    const orders = await this.orderModel.find({ user: userId }).populate('products.product', {name: 1, photo: 1});
+    const orders = await this.orderModel
+      .find({ user: userId })
+      .populate('products.product', { name: 1, photo: 1 });
 
     if (!orders) {
       throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
