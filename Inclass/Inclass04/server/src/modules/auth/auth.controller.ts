@@ -6,6 +6,8 @@ import { LoginDTO } from './../../dto/login.dto';
 import { Payload } from './../../types/payload';
 import { CreateUserDTO } from './../../dto/create-user.dto';
 import { UserService } from './../../shared/user.service';
+import { User } from './../../utilities/user.decorator';
+import { User as UserDocument } from '../../types/user';
 
 @Controller('auth')
 export class AuthController {
@@ -42,9 +44,7 @@ export class AuthController {
   // to access the route
   @Get('test')
   @UseGuards(AuthGuard())
-  testAuthRoute() {
-    return {
-      message: 'You did it!',
-    };
+  async testAuthRoute(@User() userDocument: UserDocument) {
+    return await this.userService.findFromID(userDocument.id);
   }
 }

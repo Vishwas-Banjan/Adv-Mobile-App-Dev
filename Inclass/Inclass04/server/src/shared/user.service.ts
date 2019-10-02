@@ -48,7 +48,7 @@ export class UserService {
     if (!user) {
       throw new HttpException('user not found', HttpStatus.NOT_FOUND);
     }
-    return user;
+    return this.sanitizeUser(user);
   }
 
   async findByLogin(userDTO: LoginDTO) {
@@ -56,7 +56,7 @@ export class UserService {
     const { email, password } = userDTO;
     const userModel = await this.userModel
       .findOne({ email })
-      .select('email password payAccId');
+      .select('email password payAccId firstName lastName city');
     if (!userModel) {
       throw new HttpException('Invalid credentials', HttpStatus.UNAUTHORIZED);
     }
