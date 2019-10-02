@@ -1,4 +1,4 @@
-import { ApiModelProperty } from '@nestjs/swagger';
+import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { OrderProduct } from './order-product.dto';
 
 export class CreateOrderDTO {
@@ -7,4 +7,7 @@ export class CreateOrderDTO {
 
   @ApiModelProperty()
   paymentMethodNonce: string;
+
+  @ApiModelPropertyOptional()
+  user: string;
 }

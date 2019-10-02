@@ -223,7 +223,7 @@ public class CheckoutFragment extends Fragment {
                     productDetail.put("quantity", 1);
                     Double calculatedPrice = (i.getPrice() - (i.getPrice() * (i.getDiscount() / 100)));
                     productDetail.put("price", calculatedPrice);
-                    productDetail.put("productId", i.getId());
+                    productDetail.put("product", i.getId());
                     productsSelected.put(productDetail);
                 } catch (JSONException e) {
                     Log.d(TAG, "onViewCreated: " + e.getMessage());

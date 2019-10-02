@@ -3,7 +3,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 
 import { Order } from '../../types/order';
-import { CreateOrderDTO } from './../../dto/order.dto';
+import { CreateOrderDTO } from '../../dto/create-order.dto';
 import { InjectBraintreeProvider, BraintreeProvider } from './../../braintree';
 
 @Injectable()
@@ -15,7 +15,7 @@ export class OrderService {
   ) {}
 
   async listOrdersByUser(userId: string) {
-    const orders = await this.orderModel.find({ userId });
+    const orders = await this.orderModel.find({ user: userId }).populate('products.product', {name: 1, photo: 1});
 
     if (!orders) {
       throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
@@ -48,7 +48,7 @@ export class OrderService {
 
     // save order
     const createOrder = {
-      userId,
+      user: userId,
       products: orderDTO.products,
       totalPrice,
     };

@@ -7,7 +7,7 @@ import { User } from './../../types/user';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel('Product') private productModel: Model<Product>) {}
+  constructor(@InjectModel('products') private productModel: Model<Product>) {}
 
   async findAll(): Promise<Product[]> {
     return await this.productModel.find().populate('owner');
