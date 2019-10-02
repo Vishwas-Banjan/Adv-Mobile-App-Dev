@@ -81,6 +81,11 @@
             app:destination="@id/profileFragment"
             app:popUpTo="@id/startUpFragment"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_startUpFragment_to_productListFragment"
+            app:destination="@id/productListFragment"
+            app:popUpTo="@id/startUpFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/productListFragment"
@@ -127,7 +132,7 @@
         android:id="@+id/checkoutFragment"
         android:name="com.mobility.inclass04.CheckoutFragment"
         android:label="fragment_checkout"
-        tools:layout="@layout/fragment_checkout" >
+        tools:layout="@layout/fragment_checkout">
         <argument android:name="totalAmount" />
     </fragment>
 </navigation>

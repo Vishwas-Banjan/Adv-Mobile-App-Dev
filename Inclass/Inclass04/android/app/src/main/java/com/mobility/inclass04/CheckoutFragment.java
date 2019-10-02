@@ -1,5 +1,6 @@
 package com.mobility.inclass04;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -96,7 +97,6 @@ public class CheckoutFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
         sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
-        clientToken = sharedPref.getString(getString(R.string.clientToken), "");
         itemsCostTextView = view.findViewById(R.id.itemsCostTextView);
         placeOrderBtn = view.findViewById(R.id.placeOrderBtn);
         totalBeforeTaxTextView = view.findViewById(R.id.totalBeforeTaxTextView);
@@ -109,19 +109,56 @@ public class CheckoutFragment extends Fragment {
         placeOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                onBraintreeSubmit(view);
+                getClientToken();
+            }
+        });
+    }
+
+    public void getClientToken() {
+        final ProgressDialog progressDialog = new ProgressDialog(getContext());
+        progressDialog.setMessage("Fetching details, please wait...");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.addHeader("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""));
+        client.get(getString(R.string.apiBaseURL) + "paymentAccount/clientToken", new TextHttpResponseHandler() {
+            @Override
+            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
+                Toast.makeText(getContext(), "Oops! Couldn't Card details", Toast.LENGTH_SHORT).show();
+
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                try {
+                    throw throwable;
+                } catch (Throwable e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, String clientToken) {
+                if (progressDialog.isShowing()) {
+                    progressDialog.dismiss();
+                }
+                try {
+                    onBraintreeSubmit(new JSONObject(clientToken).getString("clientToken"));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
             }
         });
     }
 
 
-    public void onBraintreeSubmit(View v) {
+    public void onBraintreeSubmit(String clientToken) {
         DropInRequest dropInRequest = new DropInRequest()
                 .clientToken(clientToken);
         startActivityForResult(dropInRequest.getIntent(getContext()), REQUEST_CODE);
     }
 
-    String clientToken;
+
     SharedPreferences sharedPref;
     int REQUEST_CODE = 123;
     String TAG = "demo";
@@ -132,7 +169,6 @@ public class CheckoutFragment extends Fragment {
             if (resultCode == RESULT_OK) {
                 DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
                 // use the result to update your UI and send the payment method nonce to your server
-//                postNonceToServer();
                 new makeOrderRequest(result.getPaymentMethodNonce().getNonce()).execute();
             } else if (resultCode == RESULT_CANCELED) {
                 // the user canceled
@@ -143,8 +179,9 @@ public class CheckoutFragment extends Fragment {
         }
     }
 
-    public class makeOrderRequest extends AsyncTask<Void, Void, Void> {
+    public class makeOrderRequest extends AsyncTask<Void, Void, Boolean> {
         String nonce;
+        ProgressDialog progressDialog;
 
         public makeOrderRequest(String nonce) {
             this.nonce = nonce;
@@ -153,17 +190,31 @@ public class CheckoutFragment extends Fragment {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setMessage("Fetching details, please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
         }
 
         @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            Log.d(TAG, "onPostExecute: ");
+        protected void onPostExecute(Boolean bool) {
+            super.onPostExecute(bool);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (bool == false) {
+                Toast.makeText(getContext(), "Oops! Could'nt complete transaction!", Toast.LENGTH_SHORT).show();
+
+            } else {
+                Toast.makeText(getContext(), "Transaction Complete! Your order has been placed!", Toast.LENGTH_SHORT).show();
+                mListener.emptyCart();
+                navigateToShop();
+            }
         }
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
-        protected Void doInBackground(Void... voids) {
+        protected Boolean doInBackground(Void... voids) {
             ArrayList<Product> productArrayList = mListener.getCartItems();
             JSONArray productsSelected = new JSONArray();
             for (Product i : productArrayList) {
@@ -202,10 +253,12 @@ public class CheckoutFragment extends Fragment {
 
                     String responseJson = responseBody.string();
                     Log.d(TAG, "doInBackground: " + responseJson);
-                    mListener.emptyCart();
-                    navigateToShop();
-                    //TODO Saved Cards not showing up
-                    //TODO Handle Errors/Exceptions
+
+                    if (!response.isSuccessful()) {
+                        return false;
+                    } else if (response.isSuccessful()) {
+                        return true;
+                    }
 
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -214,7 +267,7 @@ public class CheckoutFragment extends Fragment {
                 e.printStackTrace();
             }
 
-            return null;
+            return false;
         }
     }
 

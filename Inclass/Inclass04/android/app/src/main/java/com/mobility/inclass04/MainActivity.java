@@ -64,7 +64,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .replace(R.id.fragment_container, finalHost)
                     .setPrimaryNavigationFragment(finalHost) // this is the equivalent to app:defaultNavHost="true"
                     .commit();
-            navigationView.setCheckedItem(R.id.nav_profile);
+            navigationView.setCheckedItem(R.id.nav_shop);
         }
     }
 
