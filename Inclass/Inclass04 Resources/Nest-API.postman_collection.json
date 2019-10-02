@@ -77,13 +77,6 @@
 								"api",
 								"auth",
 								"login"
-							],
-							"query": [
-								{
-									"key": "",
-									"value": "",
-									"disabled": true
-								}
 							]
 						}
 					},
@@ -97,7 +90,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1NjkxMDY3MjEsImV4cCI6MTU2OTExMDMyMX0.7ShCnCONIWKGzXx_MNfOTqVDLroJvDWmLh6rzrQyhn8",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZAdi5jb20iLCJwYXlBY2NJZCI6IjIwODk4NzgzMSIsImlhdCI6MTU3MDA0OTE3MywiZXhwIjoxNTcwMDUyNzczfQ.47ubCZLCaz65Ofyx6npWUr__H7_PFjzzNQNUuRgHpog",
 									"type": "string"
 								}
 							]
@@ -200,7 +193,7 @@
 							"bearer": [
 								{
 									"key": "token",
-									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJpYXQiOjE1Njk0NDE0NTgsImV4cCI6MTU2OTQ0NTA1OH0.nM969PpSgxMBZchSM_p-na0Zo95CEqZAgq_HVy96OXw",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZAdi5jb20iLCJwYXlBY2NJZCI6IjIwODk4NzgzMSIsImlhdCI6MTU3MDA0OTE3MywiZXhwIjoxNTcwMDUyNzczfQ.47ubCZLCaz65Ofyx6npWUr__H7_PFjzzNQNUuRgHpog",
 									"type": "string"
 								}
 							]

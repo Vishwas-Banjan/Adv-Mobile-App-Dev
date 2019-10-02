@@ -48,7 +48,7 @@ export class UserService {
     if (!user) {
       throw new HttpException('user not found', HttpStatus.NOT_FOUND);
     }
-    return user;
+    return this.sanitizeUser(user);
   }
 
   async findByLogin(userDTO: LoginDTO) {
