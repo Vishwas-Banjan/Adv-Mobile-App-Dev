@@ -44,7 +44,6 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
     NavController navController;
     SharedPreferences sharedPref;
-    String userId;
     private OnFragmentInteractionListener mListener;
 
     public LogInFragment() {
@@ -133,7 +132,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         void onFragmentInteraction(Uri uri);
     }
 
-    private class logInUser extends AsyncTask<Void, Void, String> {
+    private class logInUser extends AsyncTask<Void, Void, Pair<String, User>> {
         private ProgressDialog progressDialog;
         User user;
 
@@ -151,20 +150,20 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
         }
 
         @Override
-        protected void onPostExecute(String s) {
+        protected void onPostExecute(Pair<String, User> s) {
             super.onPostExecute(s);
             if (s != null) {
                 sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPref.edit();
-                editor.putString(getString(R.string.userToken), s);
-//                editor.putString(getString(R.string.clientToken), s.second);
+                editor.putString(getString(R.string.userToken), s.first);
                 editor.commit();
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
                 }
                 Toast.makeText(getContext(), "Login Successful!", Toast.LENGTH_SHORT).show();
-
-                navController.navigate(R.id.action_logInFragment_to_productListFragment);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("userDetails", s.second);
+                navController.navigate(R.id.action_logInFragment_to_productListFragment, bundle);
             } else {
                 if (progressDialog.isShowing()) {
                     progressDialog.dismiss();
@@ -175,8 +174,8 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
 
         @RequiresApi(api = Build.VERSION_CODES.KITKAT)
         @Override
-        protected String doInBackground(Void... voids) {
-            Pair<String, String> pair = null;
+        protected Pair<String, User> doInBackground(Void... voids) {
+            Pair<String, User> pairTokenUser = null;
             final OkHttpClient client = new OkHttpClient();
             RequestBody formBody = new FormBody.Builder()
                     .add("email", user.getUserEmail())
@@ -188,8 +187,6 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                     .post(formBody)
                     .build();
             String token = null;
-            String clientToken = null;
-
             try (Response response = client.newCall(request).execute()) {
                 if (!response.isSuccessful())
                     throw new IOException("Unexpected code " + response.toString());
@@ -197,16 +194,22 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                 String json = response.body().string();
                 JSONObject root = new JSONObject(json);
                 if (!root.getString("token").equals("")) {
+                    User user = new User();
                     JSONObject userJSON = new JSONObject(root.getString("user"));
-                    userId = userJSON.getString("_id");
                     token = root.getString("token");
+                    user.setUserId(userJSON.getString("_id"));
+                    user.setUserFirstName(userJSON.getString("firstName"));
+                    user.setUserLastName(userJSON.getString("lastName"));
+                    user.setUserEmail(userJSON.getString("email"));
+                    user.setUserCity(userJSON.getString("city"));
+                    pairTokenUser = new Pair<>(token, user);
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return token;
+            return pairTokenUser;
         }
     }
 }
