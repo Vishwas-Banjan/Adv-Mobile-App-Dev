@@ -41,18 +41,23 @@ export class OrderService {
     if (totalPrice > 0) {
       console.log('ff');
       // start transaction with braintree
-      this.braintreeProvider.sale({
-        amount: Number(totalPrice).toFixed(2).toString(),
-        paymentMethodNonce: orderDTO.paymentMethodNonce,
-        customerId,
-        options: {
-          submitForSettlement: true,
-        },
-      }).then(ii => {
-        console.log(ii);
-      }).catch(e => {
-        console.log(e);
-      });
+      this.braintreeProvider
+        .sale({
+          amount: Number(totalPrice)
+            .toFixed(2)
+            .toString(),
+          paymentMethodNonce: orderDTO.paymentMethodNonce,
+          customerId,
+          options: {
+            submitForSettlement: true,
+          },
+        })
+        .then(ii => {
+          console.log(ii);
+        })
+        .catch(e => {
+          console.log(e);
+        });
       console.log('done');
     }
 
