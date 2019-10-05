@@ -1,9 +1,16 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
+import { IsNotEmpty } from 'class-validator';
+
 
 export class CreatePaymentDTO {
-  @ApiModelPropertyOptional()
-  customerId: string;
+
+  @IsNotEmpty()
+  @ApiModelProperty()
+  price: number;
 
   @ApiModelProperty()
-  paymentMethodNonce: string;
+  type: string;
+
+  @ApiModelPropertyOptional()
+  currency: string;
 }

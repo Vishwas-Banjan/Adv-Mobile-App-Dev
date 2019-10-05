@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
+import { StripeModule } from 'nestjs-stripe';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
@@ -17,6 +18,9 @@ import { PaymentAccountModule } from './modules/payment-account/payment-account.
     MongooseModule.forRoot(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+    }),
+    StripeModule.forRoot({
+      apiKey: process.env.STRIPE_API_KEY
     }),
     SharedModule,
     UserModule,
