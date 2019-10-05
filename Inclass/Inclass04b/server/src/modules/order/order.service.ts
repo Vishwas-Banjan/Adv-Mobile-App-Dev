@@ -4,15 +4,11 @@ import { Model } from 'mongoose';
 
 import { Order } from '../../types/order';
 import { CreateOrderDTO } from '../../dto/create-order.dto';
-import { InjectBraintreeProvider, BraintreeProvider } from './../../braintree';
-import { connectableObservableDescriptor } from 'rxjs/internal/observable/ConnectableObservable';
 
 @Injectable()
 export class OrderService {
   constructor(
     @InjectModel('orders') private orderModel: Model<Order>,
-    @InjectBraintreeProvider()
-    private readonly braintreeProvider: BraintreeProvider,
   ) {}
 
   async listOrdersByUser(userId: string) {
@@ -37,29 +33,6 @@ export class OrderService {
       const price = product.price * product.quantity;
       return acc + price;
     }, 0);
-
-    if (totalPrice > 0) {
-      console.log('ff');
-      // start transaction with braintree
-      this.braintreeProvider
-        .sale({
-          amount: Number(totalPrice)
-            .toFixed(2)
-            .toString(),
-          paymentMethodNonce: orderDTO.paymentMethodNonce,
-          customerId,
-          options: {
-            submitForSettlement: true,
-          },
-        })
-        .then(ii => {
-          console.log(ii);
-        })
-        .catch(e => {
-          console.log(e);
-        });
-      console.log('done');
-    }
 
     // save order
     const createOrder = {
