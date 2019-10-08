@@ -172,4 +172,9 @@
             android:name="stripe_sk"
             app:argType="string" />
     </fragment>
+    <fragment
+        android:id="@+id/orderHistoryFragment"
+        android:name="com.mobility.inclass04.OrderHistoryFragment"
+        android:label="fragment_order_history"
+        tools:layout="@layout/fragment_order_history" />
 </navigation>

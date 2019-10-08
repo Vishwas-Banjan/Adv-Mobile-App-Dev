@@ -155,6 +155,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                 new NavOptions.Builder()
                                         .setPopUpTo(navController.getCurrentDestination().getId(), true).build());
                 break;
+            case R.id.nav_orderHistory:
+                setDrawerLocked(false);
+                Log.d("demo", "onNavigationItemSelected: Order History");
+                Navigation.findNavController(this, finalHost.getId())
+                        .navigate(R.id.orderHistoryFragment,
+                                null,
+                                new NavOptions.Builder()
+                                        .setPopUpTo(navController.getCurrentDestination().getId(), true).build());
+                break;
 
         }
         drawerLayout.closeDrawer(GravityCompat.START);

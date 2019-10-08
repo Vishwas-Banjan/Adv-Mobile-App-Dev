@@ -15,6 +15,7 @@
     <string name="navigation_drawer_open">open navigation drawer</string>
     <string name="navigation_drawer_close">close navigation drawer</string>
     <string name="getProductListURL">https://nest-api-253406.appspot.com/api/product/</string>
+    <string name="getOrderHistoryURL">https://nest-api-253406.appspot.com/api/order</string>
     <string name="getImageURL">https://nest-api-253406.appspot.com/api/image/</string>
     <string name="apply">Apply</string>
     <string name="stripe_pk">pk_test_11hcxzw5CJ1r71VT4FQnAhv700j7BhHxeH</string>
