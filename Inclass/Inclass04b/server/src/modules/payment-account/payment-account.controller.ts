@@ -1,48 +1,42 @@
-import { Body, Controller, UseGuards, Post, Get, Req, Header } from '@nestjs/common';
+import { Body, Controller, UseGuards, Post, Get, Req, Header, Headers, HttpException, HttpStatus } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
 import { User as UserDocument } from '../../types/user';
 import { User } from '../../utilities/user.decorator';
 import { CreatePaymentDTO } from '../../dto/create-payment.dto';
 import { PaymentAccountService } from './../../shared/payment-account.service';
-import { PaymentMethod } from './../../types/payment-method';
-import { PaymentValidationDTO } from 'src/dto/payment-validation.dto';
 
 @Controller('paymentAccount')
 export class PaymentAccountController {
   constructor(
-    private payAccount: PaymentAccountService,
-    // private user: UserService,
-  ) {}
+    private payAccount: PaymentAccountService
+  ) { }
 
   @Post()
   @UseGuards(AuthGuard())
-  async createPaymentIntent(@Body() createPaymentDTO: CreatePaymentDTO): Promise<object>{
-    // create order history and send client secret
-    // console.log("hit create payment intent "+ this.payAccount.createPaymentIntent(createPaymentDTO))
-    // this.payAccount = new PaymentAccountService();
-    return this.payAccount.createPaymentIntent(createPaymentDTO);
-    // return await this.payAccount.createPaymentIntent(createPaymentDTO);
+  async createPaymentIntent(@Body() createPaymentDTO: CreatePaymentDTO, @User() user: UserDocument): Promise<object> {
+   if (!createPaymentDTO.products) {
+      throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
+    }
+    return this.payAccount.createPaymentIntent(createPaymentDTO, user);
   }
 
   @Post('validate')
-  @Header("stripe-signature", "string")
   @UseGuards(AuthGuard())
   async validatePayment(
-    @Req() {rawBody},
-    @Body() requestBody,
-    signature: string
-  ): Promise<PaymentMethod> {
-    // create order history and send client secret
-    // createPaymentDTO.customerId = user.payAccId;
-    // return await this.payAccount.validatePayment(createPaymentDTO);
-    // return await this.payAccount.validatePayment({
-    //   stripeSignature
-    //   stripeResponse: rawBody,
-    //   type: requestBody.type,  
-    //   stripeId: requestBody.data.object.id,
-    // });
-    return
+    @Req() {rawBody}, 
+    @Body() body,
+    @Headers('stripe-signature') signature: string
+  ): Promise<void> {
+
+    console.log(body)
+
+    return this.payAccount.validatePayment({
+      stripeSignature: signature,
+      stripeResponse: rawBody,
+      type: body.type,  
+      stripeId: body.data.object.id
+     });
   }
 
   // @Get('clientToken')

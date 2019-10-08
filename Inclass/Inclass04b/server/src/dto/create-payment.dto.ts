@@ -1,16 +1,16 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { OrderProduct } from './order-product.dto';
 
 
 export class CreatePaymentDTO {
-
-  @IsNotEmpty()
-  @ApiModelProperty()
-  price: number;
 
   @ApiModelProperty()
   type: string;
 
   @ApiModelPropertyOptional()
   currency: string;
+
+  @ApiModelProperty({ type: OrderProduct })
+  products: OrderProduct[];
 }

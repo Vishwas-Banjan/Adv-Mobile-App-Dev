@@ -1,17 +1,26 @@
-import { Injectable } from '@nestjs/common';
-import { PaymentMethod } from '../types/payment-method';
+import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import {CreatePaymentDTO} from '../dto/create-payment.dto';
+import { InjectModel } from '@nestjs/mongoose';
 import { InjectStripe } from 'nestjs-stripe';
 // import Stripe from 'stripe';
 import * as Stripe from "stripe";
 import { from } from 'rxjs';
+import { Model } from 'mongoose';
+import { PaymentIntent } from '../types/payment-intent';
+import { PaymentIntentDTO } from '../dto/payment-intent.dto';
+import { User } from '../types/user';
+import { PaymentValidationDTO } from '../dto/payment-validation.dto';
 
 let StripeClient;
 
 @Injectable()
 export class PaymentAccountService {
   
-  public constructor(@InjectStripe() stripeClient: Stripe) {
+  public constructor(
+    @InjectStripe() stripeClient: Stripe,
+    @InjectModel('users') private userModel: Model<User>,
+    @InjectModel('ordersDB') private paymentDataModel: Model<PaymentIntent>
+  ) {
     // console.info('Stripe client was loaded', this.stripeClient);
     StripeClient = stripeClient;
     // stripeClient = stripeClient.Stripe('sk_test_n9IezcfVX93Ymqds37cbIvOY00ubOw3Ytt')
@@ -24,13 +33,28 @@ export class PaymentAccountService {
     });
   }
 
-  async createPaymentIntent(paymentIntentInfo: CreatePaymentDTO): Promise<object>{
-    // console.log("started create payment service");
-    return await StripeClient.paymentIntents.create({
-      amount: Math.round(paymentIntentInfo.price*100),  // The price extracted from the endpoint parameters => 15€
+  async createPaymentIntent(paymentIntentInfo: CreatePaymentDTO, user: User): Promise<object>{
+    // save it to the database
+
+    const price = paymentIntentInfo.products.reduce((acc, product) => {
+      const price = product.price * product.quantity;
+      return acc + price;
+    }, 0);
+
+    const stripeIntent =  await StripeClient.paymentIntents.create({
+      amount: Math.round(price*100),  
       currency: paymentIntentInfo.currency,
-      payment_method_types: [paymentIntentInfo.type], // The type extracted from the endpoint parameters => credit card
+      payment_method_types: [paymentIntentInfo.type],
     });
+
+
+    
+    await this.paymentDataModel.create(new PaymentIntentDTO(stripeIntent.id, user.id, stripeIntent.created, paymentIntentInfo.products, false));
+    console.log(stripeIntent)
+    return {
+      "client_secret": stripeIntent.client_secret,
+      "created": stripeIntent.created
+    };
   }
 
   // use webhooks if 
@@ -53,28 +77,27 @@ export class PaymentAccountService {
   }
 
   async validatePayment(
-    
-  ): Promise<string>{
-    return await Stripe.checkout.sessions.create({
-      payment_method_types: ['card'],
-      line_items: [{
-        name: 'T-shirt',
-        description: 'Comfortable cotton t-shirt',
-        images: ['https://example.com/t-shirt.png'],
-        amount: 500,
-        currency: 'usd',
-        quantity: 1,
-      }],
-      success_url: 'https://example.com/success?session_id={CHECKOUT_SESSION_ID}',
-      cancel_url: 'https://example.com/cancel',
-    });
+    paymentValidationToken: PaymentValidationDTO
+  ): Promise<void>{
+    try {
+      const {stripeId, type} = paymentValidationToken;
+      if (
+        paymentValidationToken.type === "charge_succeeded" ||
+        paymentValidationToken.type === "payment_failed"
+      ) {
+        await this.updateOrderDBs(
+          (type === "charge_succeeded")? true: false,
+          stripeId,
+        );
+      }
+    } catch (error) {
+      throw new Error(error);
+    }
   }
 
-  async getClientToken(customerId): Promise<string> {
-    return null;
-  }
-
-  async addPayment(creditCardDTO): Promise<PaymentMethod> {
-    return null;
+  async updateOrderDBs(status, id): Promise<void>{
+    // update status on db
+    await this.paymentDataModel.updateOne( {"paymentID" : { $eq: id }},{ $set: { status: status }} );
+    return;
   }
 }

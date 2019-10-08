@@ -1,9 +1,6 @@
-import { Req } from "@nestjs/common";
-
-
 export class PaymentValidationDTO {
-    // stripeSignature
-    // stripeResponse: Request,
-    // type: requestBody.type,  
-    // stripeId: requestBody.data.object.id,
+    stripeSignature: string;
+    stripeResponse: any;
+    type: any;  
+    stripeId: any;
   }
