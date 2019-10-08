@@ -2,9 +2,7 @@ package com.mobility.inclass04;
 
 import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,15 +22,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.braintreepayments.api.dropin.DropInActivity;
-import com.braintreepayments.api.dropin.DropInRequest;
-import com.braintreepayments.api.dropin.DropInResult;
 import com.google.android.material.button.MaterialButton;
 import com.loopj.android.http.AsyncHttpClient;
-import com.loopj.android.http.AsyncHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
 import com.loopj.android.http.TextHttpResponseHandler;
 import com.mobility.inclass04.Utils.Product;
+import com.stripe.android.PaymentConfiguration;
+import com.stripe.android.Stripe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -42,7 +38,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import cz.msebera.android.httpclient.Header;
-import okhttp3.FormBody;
 import okhttp3.MediaType;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -50,15 +45,16 @@ import okhttp3.RequestBody;
 import okhttp3.Response;
 import okhttp3.ResponseBody;
 
-import static android.app.Activity.RESULT_CANCELED;
-import static android.app.Activity.RESULT_OK;
-
 
 public class CheckoutFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     String totalAmount;
     NavController navController;
+    private Stripe mStripe;
+    SharedPreferences sharedPref;
+    int REQUEST_CODE = 123;
+    String TAG = "demo";
 
     public CheckoutFragment() {
         // Required empty public constructor
@@ -105,86 +101,21 @@ public class CheckoutFragment extends Fragment {
         totalBeforeTaxTextView.setText(totalAmount);
         orderTotalTextView.setText(totalAmount);
 
-
         placeOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                getClientToken();
+
+                new makeOrderRequest().execute();
             }
         });
     }
 
-    public void getClientToken() {
-        final ProgressDialog progressDialog = new ProgressDialog(getContext());
-        progressDialog.setMessage("Fetching details, please wait...");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
-
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.addHeader("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""));
-        client.get(getString(R.string.apiBaseURL) + "paymentAccount/clientToken", new TextHttpResponseHandler() {
-            @Override
-            public void onFailure(int statusCode, Header[] headers, String responseString, Throwable throwable) {
-                Toast.makeText(getContext(), "Oops! Couldn't Card details", Toast.LENGTH_SHORT).show();
-
-                if (progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                try {
-                    throw throwable;
-                } catch (Throwable e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, String clientToken) {
-                if (progressDialog.isShowing()) {
-                    progressDialog.dismiss();
-                }
-                try {
-                    onBraintreeSubmit(new JSONObject(clientToken).getString("clientToken"));
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
-
-
-    public void onBraintreeSubmit(String clientToken) {
-        DropInRequest dropInRequest = new DropInRequest()
-                .clientToken(clientToken);
-        startActivityForResult(dropInRequest.getIntent(getContext()), REQUEST_CODE);
-    }
-
-
-    SharedPreferences sharedPref;
-    int REQUEST_CODE = 123;
-    String TAG = "demo";
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        if (requestCode == REQUEST_CODE) {
-            if (resultCode == RESULT_OK) {
-                DropInResult result = data.getParcelableExtra(DropInResult.EXTRA_DROP_IN_RESULT);
-                // use the result to update your UI and send the payment method nonce to your server
-                new makeOrderRequest(result.getPaymentMethodNonce().getNonce()).execute();
-            } else if (resultCode == RESULT_CANCELED) {
-                // the user canceled
-            } else {
-                // handle errors here, an exception may be available in
-                Exception error = (Exception) data.getSerializableExtra(DropInActivity.EXTRA_ERROR);
-            }
-        }
-    }
+    String stripe_sk;
 
     public class makeOrderRequest extends AsyncTask<Void, Void, Boolean> {
-        String nonce;
         ProgressDialog progressDialog;
 
-        public makeOrderRequest(String nonce) {
-            this.nonce = nonce;
+        public makeOrderRequest() {
         }
 
         @Override
@@ -203,12 +134,14 @@ public class CheckoutFragment extends Fragment {
                 progressDialog.dismiss();
             }
             if (bool == false) {
-                Toast.makeText(getContext(), "Oops! Could'nt complete transaction!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Oops! Couldn't complete transaction!", Toast.LENGTH_SHORT).show();
 
             } else {
-                Toast.makeText(getContext(), "Transaction Complete! Your order has been placed!", Toast.LENGTH_SHORT).show();
-                mListener.emptyCart();
-                navigateToShop();
+                if (!stripe_sk.equals("")) {
+                    Bundle bundle = new Bundle();
+                    bundle.putString("stripe_sk", stripe_sk);
+                    navController.navigate(R.id.action_checkoutFragment_to_collectCardFragment, bundle);
+                }
             }
         }
 
@@ -234,7 +167,8 @@ public class CheckoutFragment extends Fragment {
 
             JSONObject json = new JSONObject();
             try {
-                json.put("paymentMethodNonce", nonce);
+                json.put("currency", "usd");
+                json.put("type", "card");
                 json.put("products", productsSelected);
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -243,7 +177,7 @@ public class CheckoutFragment extends Fragment {
             RequestBody formBody = RequestBody.create(JSON, json.toString());
             Request request = new Request.Builder()
                     .header("Authorization", "Bearer " + sharedPref.getString(getString(R.string.userToken), ""))
-                    .url(getString(R.string.apiBaseURL) + "order")
+                    .url(getString(R.string.apiBaseURL) + "paymentAccount")
                     .post(formBody)
                     .build();
             try (Response response = client.newCall(request).execute()) {
@@ -254,14 +188,17 @@ public class CheckoutFragment extends Fragment {
 
                     String responseJson = responseBody.string();
                     Log.d(TAG, "doInBackground: " + responseJson);
-
                     if (!response.isSuccessful()) {
                         return false;
                     } else if (response.isSuccessful()) {
+                        JSONObject jsonObject = new JSONObject(responseJson);
+                        stripe_sk = jsonObject.getString("client_secret");
                         return true;
                     }
 
                 } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
                     e.printStackTrace();
                 }
             } catch (IOException e) {
@@ -270,15 +207,6 @@ public class CheckoutFragment extends Fragment {
 
             return false;
         }
-    }
-
-    public void navigateToShop() {
-        Log.d("demo", "onNavigationItemSelected: Shop");
-        navController
-                .navigate(R.id.productListFragment,
-                        null,
-                        new NavOptions.Builder()
-                                .setPopUpTo(navController.getCurrentDestination().getId(), true).build());
     }
 
     @Override

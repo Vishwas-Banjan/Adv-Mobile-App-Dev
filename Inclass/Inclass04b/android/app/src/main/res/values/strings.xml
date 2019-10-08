@@ -17,6 +17,7 @@
     <string name="getProductListURL">https://nest-api-253406.appspot.com/api/product/</string>
     <string name="getImageURL">https://nest-api-253406.appspot.com/api/image/</string>
     <string name="apply">Apply</string>
+    <string name="stripe_pk">pk_test_11hcxzw5CJ1r71VT4FQnAhv700j7BhHxeH</string>
     <string-array name="filter_items">
         <item>All</item>
         <item>Produce</item>
