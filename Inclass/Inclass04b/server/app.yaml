@@ -4,6 +4,7 @@ env_variables:
   PORT: 8080
   SECRET_KEY: 'secret'
   MONGO_URI: 'mongodb+srv://Mobility:Password1@mobility-dvxsj.mongodb.net/mobility?retryWrites=true&w=majority'
+  STRIPE_API_KEY:   'sk_test_n9IezcfVX93Ymqds37cbIvOY00ubOw3Ytt'
   UPLOAD_LOCATION: './upload'
   MAX_FILE_SIZE: '1000000'
 

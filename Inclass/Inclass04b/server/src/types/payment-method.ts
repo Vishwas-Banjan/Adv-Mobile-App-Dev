@@ -1,4 +1,4 @@
 export interface PaymentMethod {
-  customerId: string;
+  clientSecret: string;
   createdAt: Date;
 }

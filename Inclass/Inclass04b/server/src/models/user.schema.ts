@@ -1,6 +1,6 @@
 import * as bcrypt from 'bcrypt';
 import * as mongoose from 'mongoose';
-import { User } from 'src/types/user';
+import { User } from '../types/user';
 
 export const UserSchema = new mongoose.Schema({
   password: {
