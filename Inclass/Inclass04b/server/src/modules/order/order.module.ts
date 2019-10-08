@@ -3,12 +3,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 
 import { OrderController } from './order.controller';
 import { OrderService } from './order.service';
-import { OrderSchema } from './../../models/order.schema';
 import { PassportModule } from '@nestjs/passport';
+import { PaymentIntentSchema } from '../../models/payment.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'orders', schema: OrderSchema }]),
+    MongooseModule.forFeature([{ name: 'ordersDB', schema: PaymentIntentSchema }]),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
   ],
   controllers: [OrderController],

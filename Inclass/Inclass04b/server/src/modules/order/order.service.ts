@@ -4,15 +4,16 @@ import { Model } from 'mongoose';
 
 import { Order } from '../../types/order';
 import { CreateOrderDTO } from '../../dto/create-order.dto';
+import { PaymentIntent } from '../../types/payment-intent';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel('orders') private orderModel: Model<Order>,
+    @InjectModel('ordersDB') private paymentDataModel: Model<PaymentIntent>
   ) {}
 
   async listOrdersByUser(userId: string) {
-    const orders = await this.orderModel
+    const orders = await this.paymentDataModel
       .find({ user: userId })
       .populate('products.product', { name: 1, photo: 1 });
 
@@ -22,26 +23,26 @@ export class OrderService {
     return orders;
   }
 
-  async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
-    console.log(orderDTO);
-    if (!orderDTO.products || orderDTO.products.length === 0) {
-      throw new HttpException('No Item Purchased', HttpStatus.BAD_REQUEST);
-    }
+  // async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
+  //   console.log(orderDTO);
+  //   if (!orderDTO.products || orderDTO.products.length === 0) {
+  //     throw new HttpException('No Item Purchased', HttpStatus.BAD_REQUEST);
+  //   }
 
-    // calculate total
-    const totalPrice = orderDTO.products.reduce((acc, product) => {
-      const price = product.price * product.quantity;
-      return acc + price;
-    }, 0);
+  //   // calculate total
+  //   const totalPrice = orderDTO.products.reduce((acc, product) => {
+  //     const price = product.price * product.quantity;
+  //     return acc + price;
+  //   }, 0);
 
-    // save order
-    const createOrder = {
-      user: userId,
-      products: orderDTO.products,
-      totalPrice,
-    };
-    const { _id } = await this.orderModel.create(createOrder);
+  //   // save order
+  //   const createOrder = {
+  //     user: userId,
+  //     products: orderDTO.products,
+  //     totalPrice,
+  //   };
+  //   const { _id } = await this.orderModel.create(createOrder);
 
-    return { orderId: _id };
-  }
+  //   return { orderId: _id };
+  // }
 }

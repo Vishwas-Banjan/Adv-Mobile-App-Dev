@@ -8,10 +8,12 @@ import { LoggingInterceptor } from './logging.interceptor';
 import { UserService } from './user.service';
 
 import { PaymentAccountService } from './payment-account.service';
+import { PaymentIntentSchema } from '../models/payment.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'users', schema: UserSchema }])
+    MongooseModule.forFeature([{ name: 'users', schema: UserSchema }]),
+    MongooseModule.forFeature([{ name: 'ordersDB', schema: PaymentIntentSchema }])
   ],
   providers: [
     UserService,
