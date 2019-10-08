@@ -35,26 +35,32 @@ export class PaymentAccountService {
 
   async createPaymentIntent(paymentIntentInfo: CreatePaymentDTO, user: User): Promise<object>{
     // save it to the database
+    try {
+      let price = paymentIntentInfo.products.reduce((acc, product) => {
+        const price = product.price * product.quantity;
+        return acc + price;
+      }, 0);
+      price = Number((price*100).toFixed(0));
+      // console.log(typeof(price))
 
-    const price = paymentIntentInfo.products.reduce((acc, product) => {
-      const price = product.price * product.quantity;
-      return acc + price;
-    }, 0);
-
-    const stripeIntent =  await StripeClient.paymentIntents.create({
-      amount: Math.round(price*100),  
-      currency: paymentIntentInfo.currency,
-      payment_method_types: [paymentIntentInfo.type],
-    });
-
-
-    
-    await this.paymentDataModel.create(new PaymentIntentDTO(stripeIntent.id, user.id, stripeIntent.created, paymentIntentInfo.products, false));
-    console.log(stripeIntent)
-    return {
-      "client_secret": stripeIntent.client_secret,
-      "created": stripeIntent.created
-    };
+      const stripeIntent =  await StripeClient.paymentIntents.create({
+        amount: price,  
+        currency: paymentIntentInfo.currency,
+        payment_method_types: [paymentIntentInfo.type],
+      });
+  
+  
+      
+      await this.paymentDataModel.create(
+        new PaymentIntentDTO(stripeIntent.id, user.id, stripeIntent.created, paymentIntentInfo.products, false, price));
+      console.log(stripeIntent)
+      return {
+        "client_secret": stripeIntent.client_secret,
+        "created": stripeIntent.created
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   // use webhooks if 
@@ -77,27 +83,41 @@ export class PaymentAccountService {
   }
 
   async validatePayment(
+    rawBody: any,
     paymentValidationToken: PaymentValidationDTO
-  ): Promise<void>{
+  ): Promise<any>{
+    // return StripeClient.webhooks.constructEvent(
+    //   rawBody,
+    //   paymentValidationToken.stripeSignature,
+    //   process.env.STRIPE_WEBHOOK_KEY,
+    // ).then();
+    return await this.savePaymentData(paymentValidationToken)
+  }
+
+  async savePaymentData(paymentValidationToken: PaymentValidationDTO){
     try {
+      // console.log(paymentValidationToken);
       const {stripeId, type} = paymentValidationToken;
+      console.log(type)
       if (
-        paymentValidationToken.type === "charge_succeeded" ||
-        paymentValidationToken.type === "payment_failed"
+        type === "charge.succeeded" ||
+        type === "charge.failed"
       ) {
-        await this.updateOrderDBs(
+        return await this.updateOrderDBs(
           (type === "charge_succeeded")? true: false,
           stripeId,
         );
       }
     } catch (error) {
-      throw new Error(error);
+      console.log("error: "+error)
+      throw error;
     }
   }
 
-  async updateOrderDBs(status, id): Promise<void>{
+  async updateOrderDBs(status, id): Promise<any>{
     // update status on db
     await this.paymentDataModel.updateOne( {"paymentID" : { $eq: id }},{ $set: { status: status }} );
-    return;
+    console.log("payment successful");
+    return {"webhook":"done"};
   }
 }

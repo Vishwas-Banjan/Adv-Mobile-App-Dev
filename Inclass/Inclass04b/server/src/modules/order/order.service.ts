@@ -1,10 +1,8 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-
-import { Order } from '../../types/order';
-import { CreateOrderDTO } from '../../dto/create-order.dto';
 import { PaymentIntent } from '../../types/payment-intent';
+import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class OrderService {
@@ -14,14 +12,27 @@ export class OrderService {
 
   async listOrdersByUser(userId: string) {
     const orders = await this.paymentDataModel
-      .find({ user: userId })
-      .populate('products.product', { name: 1, photo: 1 });
+      .find({ personID: {$eq: userId}});
 
-    if (!orders) {
+    if (!orders || orders.length==0) {
       throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
     }
-    return orders;
+
+    let result: Array<object> = [];
+    orders.map((order)=>{
+      const productData: Array<object> = []
+      result.push({
+        paymentID: order._id,
+        created: order.created,
+        products: order.products,
+        successful: order.successful,
+        price: order.price
+      });
+      return result
+    });
+    return result;
   }
+
 
   // async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
   //   console.log(orderDTO);

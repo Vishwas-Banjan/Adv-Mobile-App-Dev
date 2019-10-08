@@ -7,5 +7,6 @@ export class PaymentIntentDTO {
          public personID: string, 
          public created: Date, 
          public products: OrderProduct[],
-         public successful: boolean){}
+         public successful: boolean,
+         public price: number){}
 }
