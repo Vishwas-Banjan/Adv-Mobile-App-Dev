@@ -45,7 +45,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LogInFragment.OnFragmentInteractionListener, SignUpFragment.OnFragmentInteractionListener,
         ProfileFragment.OnFragmentInteractionListener, ProductListFragment.OnFragmentInteractionListener,
         ProductDetailFragment.OnFragmentInteractionListener, ShoppingCartFragment.OnFragmentInteractionListener,
-        ShoppingCartAdapter.OnAdapterInteractionListener, CheckoutFragment.OnFragmentInteractionListener {
+        ShoppingCartAdapter.OnAdapterInteractionListener, CheckoutFragment.OnFragmentInteractionListener,
+        CollectCardFragment.OnFragmentInteractionListener, OrderHistoryFragment.OnFragmentInteractionListener {
 
     private DrawerLayout drawerLayout;
     SharedPreferences sharedPref;
@@ -146,9 +147,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             case R.id.nav_logout:
                 Log.d("demo", "onNavigationItemSelected: Logout");
                 clearSharedPref();
+                emptyCart();
                 setDrawerLocked(true);
                 Navigation.findNavController(this, finalHost.getId())
                         .navigate(R.id.logInFragment,
+                                null,
+                                new NavOptions.Builder()
+                                        .setPopUpTo(navController.getCurrentDestination().getId(), true).build());
+                break;
+            case R.id.nav_orderHistory:
+                setDrawerLocked(false);
+                Log.d("demo", "onNavigationItemSelected: Order History");
+                Navigation.findNavController(this, finalHost.getId())
+                        .navigate(R.id.orderHistoryFragment,
                                 null,
                                 new NavOptions.Builder()
                                         .setPopUpTo(navController.getCurrentDestination().getId(), true).build());

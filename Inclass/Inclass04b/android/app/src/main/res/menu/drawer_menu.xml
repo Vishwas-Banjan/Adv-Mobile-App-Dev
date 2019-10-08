@@ -8,6 +8,10 @@
             android:icon="@drawable/ic_shop"
             android:title="Shop" />
         <item
+            android:id="@+id/nav_orderHistory"
+            android:icon="@drawable/ic_order_history"
+            android:title="Your Orders" />
+        <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/ic_profile"
             android:title="Profile" />
