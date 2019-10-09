@@ -7,6 +7,7 @@ export const PaymentIntentSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+  personID: String,
   products: [
     {
       product: {
@@ -21,7 +22,11 @@ export const PaymentIntentSchema = new mongoose.Schema({
         type: mongooseFloat.loadType(mongoose),
         default: 1,
       },
+      name: {
+        type: String,
+      },
     },
   ],
-  successful: Boolean
+  successful: Boolean,
+  price: Number,
 });

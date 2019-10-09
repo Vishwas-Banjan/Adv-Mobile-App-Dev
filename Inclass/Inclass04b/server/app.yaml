@@ -5,6 +5,7 @@ env_variables:
   SECRET_KEY: 'secret'
   MONGO_URI: 'mongodb+srv://Mobility:Password1@mobility-dvxsj.mongodb.net/mobility?retryWrites=true&w=majority'
   STRIPE_API_KEY:   'sk_test_n9IezcfVX93Ymqds37cbIvOY00ubOw3Ytt'
+  STRIPE_WEBHOOK_KEY: 'whsec_t6VL5wh4wO8Uaxk4Cahm38JQS62MvhXV'
   UPLOAD_LOCATION: './upload'
   MAX_FILE_SIZE: '1000000'
 

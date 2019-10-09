@@ -9,11 +9,14 @@ import { UserService } from './user.service';
 
 import { PaymentAccountService } from './payment-account.service';
 import { PaymentIntentSchema } from '../models/payment.schema';
+import { ProductService } from '../modules/product/product.service';
 
 @Module({
   imports: [
     MongooseModule.forFeature([{ name: 'users', schema: UserSchema }]),
-    MongooseModule.forFeature([{ name: 'ordersDB', schema: PaymentIntentSchema }])
+    MongooseModule.forFeature([
+      { name: 'ordersDB', schema: PaymentIntentSchema },
+    ]),
   ],
   providers: [
     UserService,
