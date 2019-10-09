@@ -126,6 +126,11 @@ public class OrderHistoryFragment extends Fragment {
             if (orderArrayList.size() > 0) {
                 orderHistoryList.clear();
                 orderHistoryList.addAll(orderArrayList);
+                for (Order o : orderArrayList) {
+                    if (o.getStatus() == "false") {
+                        orderHistoryList.remove(o);
+                    }
+                }
                 mAdapter.notifyDataSetChanged();
             } else {
                 Toast.makeText(getContext(), "Oops! Something went wrong", Toast.LENGTH_SHORT).show();
@@ -147,34 +152,6 @@ public class OrderHistoryFragment extends Fragment {
                 try (ResponseBody responseBody = response.body()) {
                     if (!response.isSuccessful())
                         throw new IOException("Unexpected code " + response);
-/*
-{
-        "paymentID": "5d9cf5c2044ae5001cf8467c",
-        "created": "1970-01-19T04:16:07.618Z",
-        "products": [
-            {
-                "quantity": 1,
-                "price": 1.77,
-                "_id": "5d9cf5c2044ae5001cf8467f",
-                "product": "5d90c93a2e2acb16ccddeaad"
-            },
-            {
-                "quantity": 1,
-                "price": 1.11,
-                "_id": "5d9cf5c2044ae5001cf8467e",
-                "product": "5d90c93a2e2acb16ccddeab5"
-            },
-            {
-                "quantity": 1,
-                "price": 5.94,
-                "_id": "5d9cf5c2044ae5001cf8467d",
-                "product": "5d90c93a2e2acb16ccddeab2"
-            }
-        ],
-        "successful": false,
-        "price": 882
-    }
-* */
 
                     String json = responseBody.string();
                     JSONArray root = new JSONArray(json);
@@ -185,6 +162,7 @@ public class OrderHistoryFragment extends Fragment {
                         order.setOrderId(orderJson.getString("paymentID"));
                         order.setOrderTime(orderJson.getString("created"));
                         order.setOrderTotal(orderJson.getString("price"));
+                        order.setStatus(orderJson.getString("successful"));
 
                         String productJson = orderJson.getString("products");
                         JSONArray rootProductJson = new JSONArray(productJson);
