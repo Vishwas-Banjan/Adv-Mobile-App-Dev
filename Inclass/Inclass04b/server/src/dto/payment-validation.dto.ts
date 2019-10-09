@@ -1,5 +1,5 @@
 export class PaymentValidationDTO {
-    stripeSignature: string;
+    paymentIntent: string;
     stripeResponse: any;
     type: any;  
     stripeId: any;

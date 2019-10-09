@@ -30,17 +30,15 @@ export class PaymentAccountController {
     @Headers('stripe-signature') signature: string
   ): Promise<void> {
 
-    // console.log(signature)
+    console.log(body.data.object.id)
     return this.payAccount.validatePayment(
-      rawBody,
       {
-        stripeSignature: signature,
+        paymentIntent: body.object.payment_intent,
         stripeResponse: rawBody,
         type: body.type,  
         stripeId: body.data.object.id
       }
     );
-    return;
   }
 
   // @Get('clientToken')

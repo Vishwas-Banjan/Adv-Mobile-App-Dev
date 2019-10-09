@@ -83,29 +83,31 @@ export class PaymentAccountService {
   }
 
   async validatePayment(
-    rawBody: any,
     paymentValidationToken: PaymentValidationDTO
   ): Promise<any>{
-    // return StripeClient.webhooks.constructEvent(
-    //   rawBody,
-    //   paymentValidationToken.stripeSignature,
-    //   process.env.STRIPE_WEBHOOK_KEY,
-    // ).then();
-    return await this.savePaymentData(paymentValidationToken)
+    // check if the api request is made by stripe
+    if(StripeClient.webhooks.constructEvent(
+      paymentValidationToken.stripeResponse,
+      paymentValidationToken.stripeId,
+      process.env.STRIPE_WEBHOOK_KEY
+    )){
+      return await this.savePaymentData(paymentValidationToken.type, paymentValidationToken.paymentIntent)
+    }else{
+      throw new HttpException('No Orders Found', HttpStatus.CONFLICT);
+    }
+    
   }
 
-  async savePaymentData(paymentValidationToken: PaymentValidationDTO){
+  async savePaymentData(type, paymentIntent){
     try {
-      // console.log(paymentValidationToken);
-      const {stripeId, type} = paymentValidationToken;
       console.log(type)
       if (
         type === "charge.succeeded" ||
         type === "charge.failed"
       ) {
         return await this.updateOrderDBs(
-          (type === "charge_succeeded")? true: false,
-          stripeId,
+          (type === "charge.succeeded")? true: false,
+          paymentIntent
         );
       }
     } catch (error) {
@@ -116,8 +118,10 @@ export class PaymentAccountService {
 
   async updateOrderDBs(status, id): Promise<any>{
     // update status on db
-    await this.paymentDataModel.updateOne( {"paymentID" : { $eq: id }},{ $set: { status: status }} );
-    console.log("payment successful");
-    return {"webhook":"done"};
+    await this.paymentDataModel.findOne({paymentID: id}).update({successful: status}, ()=>{
+      return {"webhook":"done"};
+    })
+    // console.log("payment successful");
+    
   }
 }
