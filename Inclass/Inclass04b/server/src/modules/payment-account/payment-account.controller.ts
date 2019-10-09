@@ -43,15 +43,16 @@ export class PaymentAccountController {
     @User() user,
     @Headers('stripe-signature') signature: string,
   ): Promise<void> {
-    console.log(JSON.stringify(body));
-    return this.payAccount.validatePayment({
-      paymentIntent: body.object.payment_intent,
-      stripeResponse: rawBody,
-      type: body.type,
-      stripeId: body.data.object.id,
-      paymentMethod: body.object.payment_method,
-      customerId: user.payAccId,
-    });
+
+    console.log(body.data.object.id)
+    return this.payAccount.validatePayment(
+      {
+        paymentIntent: body.data.object.payment_intent,
+        stripeResponse: rawBody,
+        type: body.type,  
+        stripeId: body.data.object.id
+      }
+    );
   }
 
   // @Get('clientToken')

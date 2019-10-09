@@ -118,20 +118,26 @@ export class PaymentAccountService {
   }
 
   async validatePayment(
-    paymentValidationToken: PaymentValidationDTO,
-  ): Promise<any> {
-    // check if the api request is made by stripe
-    if (
-      StripeClient.webhooks.constructEvent(
-        paymentValidationToken.stripeResponse,
-        paymentValidationToken.stripeId,
-        process.env.STRIPE_WEBHOOK_KEY,
-      )
-    ) {
-      return await this.savePaymentData(paymentValidationToken);
-    } else {
-      throw new HttpException('No Orders Found', HttpStatus.CONFLICT);
-    }
+    paymentValidationToken: PaymentValidationDTO
+  ): Promise<any>{
+    // try{
+    //   // check if the api request is made by stripe
+    //   if(StripeClient.webhooks.constructEvent(
+    //     paymentValidationToken.stripeResponse,
+    //     paymentValidationToken.stripeId,
+    //     process.env.STRIPE_WEBHOOK_KEY
+    //   )){
+    //     return await this.savePaymentData(paymentValidationToken.type, paymentValidationToken.paymentIntent)
+    //   }else{
+    //     throw new HttpException('No Orders Found', HttpStatus.CONFLICT);
+    //   }
+    // }catch(error){
+    //   throw error;
+      
+    // }
+
+    return await this.savePaymentData(paymentValidationToken.type, paymentValidationToken.paymentIntent)
+    
   }
 
   async savePaymentData(token: PaymentValidationDTO) {
