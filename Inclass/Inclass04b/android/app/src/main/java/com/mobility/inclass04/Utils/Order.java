@@ -3,15 +3,9 @@ package com.mobility.inclass04.Utils;
 import java.util.ArrayList;
 
 public class Order {
-    String orderId, orderTotal, orderTime;
+    String orderId, orderTotal, orderTime, status;
     ArrayList<Product> itemsOrdered;
 
-    public Order(String orderId, String orderTotal, String orderTime, ArrayList<Product> itemsOrdered) {
-        this.orderId = orderId;
-        this.orderTotal = orderTotal;
-        this.orderTime = orderTime;
-        this.itemsOrdered = itemsOrdered;
-    }
 
     @Override
     public String toString() {
@@ -19,6 +13,7 @@ public class Order {
                 "orderId='" + orderId + '\'' +
                 ", orderTotal='" + orderTotal + '\'' +
                 ", orderTime='" + orderTime + '\'' +
+                ", status='" + status + '\'' +
                 ", itemsOrdered=" + itemsOrdered +
                 '}';
     }
@@ -52,6 +47,14 @@ public class Order {
 
     public ArrayList<Product> getItemsOrdered() {
         return itemsOrdered;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 
     public void setItemsOrdered(ArrayList<Product> itemsOrdered) {

@@ -43,4 +43,5 @@ dependencies {
     implementation 'com.braintreepayments.api:drop-in:3.7.1'
     implementation 'com.loopj.android:android-async-http:1.4.9'
     implementation 'com.stripe:stripe-android:11.2.0'
+    implementation 'org.ocpsoft.prettytime:prettytime:4.0.2.Final'
 }
