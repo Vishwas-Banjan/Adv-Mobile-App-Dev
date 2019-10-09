@@ -5,6 +5,9 @@ export class OrderProduct {
   product: string;
 
   @ApiModelProperty()
+  name: string;
+
+  @ApiModelProperty()
   quantity: number;
 
   @ApiModelProperty()

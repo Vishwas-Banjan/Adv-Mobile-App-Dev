@@ -11,8 +11,9 @@ export class OrderController {
 
   @Get()
   @UseGuards(AuthGuard())
-  listOrders(@User() { id }: UserDocument) {
-    return this.orderService.listOrdersByUser(id);
+  listOrders(@User() user: UserDocument) {
+    console.log(user.email);
+    return this.orderService.listOrdersByUser(user.id);
   }
 
   // @Post()

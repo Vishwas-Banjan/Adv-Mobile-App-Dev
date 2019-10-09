@@ -21,22 +21,24 @@ export class PaymentAccountController {
     return this.payAccount.createPaymentIntent(createPaymentDTO, user);
   }
 
+  // url: http://localhost:8080/api/paymentAccount/validate
+
   @Post('validate')
-  @UseGuards(AuthGuard())
   async validatePayment(
-    @Req() {rawBody}, 
+    @Req() rawBody, 
     @Body() body,
     @Headers('stripe-signature') signature: string
   ): Promise<void> {
 
-    console.log(body)
-
-    return this.payAccount.validatePayment({
-      stripeSignature: signature,
-      stripeResponse: rawBody,
-      type: body.type,  
-      stripeId: body.data.object.id
-     });
+    console.log(body.data.object.id)
+    return this.payAccount.validatePayment(
+      {
+        paymentIntent: body.object.payment_intent,
+        stripeResponse: rawBody,
+        type: body.type,  
+        stripeId: body.data.object.id
+      }
+    );
   }
 
   // @Get('clientToken')
