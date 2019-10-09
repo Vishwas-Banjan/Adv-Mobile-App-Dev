@@ -49,6 +49,7 @@ export class PaymentAccountService {
         amount: price,
         currency: paymentIntentInfo.currency,
         payment_method_types: [paymentIntentInfo.type],
+        setup_future_usage: 'off_session',
       });
 
       await this.paymentDataModel.create(
