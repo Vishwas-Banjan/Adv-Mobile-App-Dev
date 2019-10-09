@@ -126,11 +126,6 @@ public class OrderHistoryFragment extends Fragment {
             if (orderArrayList.size() > 0) {
                 orderHistoryList.clear();
                 orderHistoryList.addAll(orderArrayList);
-                for (Order o : orderArrayList) {
-                    if (o.getStatus() == "false") {
-                        orderHistoryList.remove(o);
-                    }
-                }
                 mAdapter.notifyDataSetChanged();
             } else {
                 Toast.makeText(getContext(), "Oops! Something went wrong", Toast.LENGTH_SHORT).show();
