@@ -20,7 +20,7 @@ import { PaymentAccountModule } from './modules/payment-account/payment-account.
       useUnifiedTopology: true,
     }),
     StripeModule.forRoot({
-      apiKey: process.env.STRIPE_API_KEY
+      apiKey: process.env.STRIPE_API_KEY,
     }),
     SharedModule,
     UserModule,

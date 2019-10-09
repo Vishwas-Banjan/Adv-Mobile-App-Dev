@@ -23,10 +23,10 @@ export const PaymentIntentSchema = new mongoose.Schema({
         default: 1,
       },
       name: {
-        type: String
-      }
+        type: String,
+      },
     },
   ],
   successful: Boolean,
-  price: Number
+  price: Number,
 });

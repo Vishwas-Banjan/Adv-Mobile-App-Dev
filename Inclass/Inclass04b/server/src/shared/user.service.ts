@@ -36,8 +36,6 @@ export class UserService {
     // remove password field
     createdUser = this.sanitizeUser(createdUser);
 
-    this.paymentAccount.createCustomer(createdUser.email);
-
     return { user: createdUser };
   }
 

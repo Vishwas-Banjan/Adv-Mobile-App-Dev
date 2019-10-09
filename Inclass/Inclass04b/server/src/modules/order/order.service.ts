@@ -7,32 +7,32 @@ import { ProductService } from '../product/product.service';
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel('ordersDB') private paymentDataModel: Model<PaymentIntent>
+    @InjectModel('ordersDB') private paymentDataModel: Model<PaymentIntent>,
   ) {}
 
   async listOrdersByUser(userId: string) {
-    const orders = await this.paymentDataModel
-      .find({ personID: {$eq: userId}});
+    const orders = await this.paymentDataModel.find({
+      personID: { $eq: userId },
+    });
 
-    if (!orders || orders.length==0) {
+    if (!orders || orders.length == 0) {
       throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
     }
 
     let result: Array<object> = [];
-    orders.map((order)=>{
-      const productData: Array<object> = []
+    orders.map(order => {
+      const productData: Array<object> = [];
       result.push({
         paymentID: order._id,
         created: order.created,
         products: order.products,
         successful: order.successful,
-        price: order.price
+        price: order.price,
       });
-      return result
+      return result;
     });
     return result;
   }
-
 
   // async createOrder(orderDTO: CreateOrderDTO, userId: string, customerId) {
   //   console.log(orderDTO);
