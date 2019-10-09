@@ -11,7 +11,9 @@ import { ProductSchema } from '../../models/product.schema';
 
 @Module({
   imports: [
-    MongooseModule.forFeature([{ name: 'ordersDB', schema: PaymentIntentSchema }]),
+    MongooseModule.forFeature([
+      { name: 'ordersDB', schema: PaymentIntentSchema },
+    ]),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     MongooseModule.forFeature([{ name: 'products', schema: ProductSchema }]),
     SharedModule,

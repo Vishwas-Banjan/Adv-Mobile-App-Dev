@@ -2,6 +2,7 @@ package com.mobility.inclass04;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -104,7 +105,8 @@ public class CheckoutFragment extends Fragment {
         placeOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
+//                Intent intent = new Intent(getContext(), PaymentActivity.class);
+//                startActivity(intent);
                 new makeOrderRequest().execute();
             }
         });

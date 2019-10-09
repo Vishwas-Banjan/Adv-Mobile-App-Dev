@@ -62,19 +62,18 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="TextView"
                 android:textStyle="italic"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/itemsOrderedLabelTextView" />
+                app:layout_constraintStart_toEndOf="@+id/itemsOrderedLabelTextView"
+                app:layout_constraintTop_toTopOf="@+id/itemsOrderedLabelTextView" />
 
             <TextView
                 android:id="@+id/orderTotalTextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
+                android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
                 android:text="Order Total"
                 android:textSize="14sp"
@@ -94,6 +93,16 @@
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/orderTotalTextView"
                 app:layout_constraintTop_toTopOf="@+id/orderTotalTextView" />
+
+            <TextView
+                android:id="@+id/orderTimeTextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="TextView"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/itemsOrderedLabelTextView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
