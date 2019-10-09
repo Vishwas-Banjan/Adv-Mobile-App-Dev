@@ -27,9 +27,10 @@ export class PaymentAccountService {
 
   async createCustomer(email: string): Promise<string> {
     // return customer id
-    return await Stripe.customers.create({
-      email: email,
+    const customer = await StripeClient.customers.create({
+      email,
     });
+    return customer.id;
   }
 
   async createPaymentIntent(
@@ -45,12 +46,23 @@ export class PaymentAccountService {
       price = Number((price * 100).toFixed(0));
       // console.log(typeof(price))
 
-      const stripeIntent = await StripeClient.paymentIntents.create({
-        amount: price,
-        currency: paymentIntentInfo.currency,
-        payment_method_types: [paymentIntentInfo.type],
-        setup_future_usage: 'off_session',
-      });
+      const paymentMethod = await this.getPaymentMethod(user.payAccId);
+      let stripeIntent = null;
+      if (paymentMethod) {
+        stripeIntent = await StripeClient.paymentIntents.create({
+          amount: price,
+          currency: paymentIntentInfo.currency,
+          payment_method_types: [paymentIntentInfo.type],
+          customer: user.payAccId,
+          payment_method: paymentMethod,
+        });
+      } else {
+        stripeIntent = await StripeClient.paymentIntents.create({
+          amount: price,
+          currency: paymentIntentInfo.currency,
+          payment_method_types: [paymentIntentInfo.type],
+        });
+      }
 
       await this.paymentDataModel.create(
         new PaymentIntentDTO(
@@ -62,7 +74,7 @@ export class PaymentAccountService {
           price,
         ),
       );
-      console.log(stripeIntent);
+      // console.log(stripeIntent);
       return {
         client_secret: stripeIntent.client_secret,
         created: stripeIntent.created,
@@ -78,6 +90,15 @@ export class PaymentAccountService {
     const intent = await Stripe.paymentIntents.retrieve(stripePaymentToken);
     const charges = intent.charges.data;
     return null;
+  }
+
+  async getPaymentMethod(customerId) {
+    const paymentMethod = await StripeClient.paymentMethods.list({
+      customer: customerId,
+      type: 'card',
+    });
+
+    return paymentMethod.data.length > 0 ? paymentMethod.data[0].id : null;
   }
 
   async createEphemeralKey(
@@ -132,7 +153,7 @@ export class PaymentAccountService {
 
   async savePaymentMethod(customerID, paymentMethod) {
     try {
-      return await Stripe.paymentMethods.attach(paymentMethod, {
+      return await StripeClient.paymentMethods.attach(paymentMethod, {
         customer: customerID,
       });
     } catch (error) {
