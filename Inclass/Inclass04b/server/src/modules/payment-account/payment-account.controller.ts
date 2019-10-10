@@ -40,17 +40,14 @@ export class PaymentAccountController {
   async validatePayment(
     @Req() rawBody,
     @Body() body,
-    @User() user,
     @Headers('stripe-signature') signature: string,
   ): Promise<void> {
     console.log(JSON.stringify(body));
     return this.payAccount.validatePayment({
-      paymentIntent: body.object.payment_intent,
+      paymentIntent: body.data.object.payment_intent,
       stripeResponse: rawBody,
       type: body.type,
       stripeId: body.data.object.id,
-      paymentMethod: body.object.payment_method,
-      customerId: user.payAccId,
     });
   }
 

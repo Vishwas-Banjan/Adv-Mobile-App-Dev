@@ -27,9 +27,10 @@ export class PaymentAccountService {
 
   async createCustomer(email: string): Promise<string> {
     // return customer id
-    return await Stripe.customers.create({
-      email: email,
+    const customer = await StripeClient.customers.create({
+      email,
     });
+    return customer.id;
   }
 
   async createPaymentIntent(
@@ -45,24 +46,35 @@ export class PaymentAccountService {
       price = Number((price * 100).toFixed(0));
       // console.log(typeof(price))
 
-      const stripeIntent = await StripeClient.paymentIntents.create({
-        amount: price,
-        currency: paymentIntentInfo.currency,
-        payment_method_types: [paymentIntentInfo.type],
-        setup_future_usage: 'off_session',
-      });
+      const paymentMethod = await this.getPaymentMethod(user.payAccId);
+      let stripeIntent = null;
+      if (paymentMethod) {
+        stripeIntent = await StripeClient.paymentIntents.create({
+          amount: price,
+          currency: paymentIntentInfo.currency,
+          payment_method_types: [paymentIntentInfo.type],
+          customer: user.payAccId,
+          payment_method: paymentMethod,
+        });
+      } else {
+        stripeIntent = await StripeClient.paymentIntents.create({
+          amount: price,
+          currency: paymentIntentInfo.currency,
+          payment_method_types: [paymentIntentInfo.type],
+        });
+      }
 
       await this.paymentDataModel.create(
         new PaymentIntentDTO(
           stripeIntent.id,
           user.id,
-          stripeIntent.created,
+          new Date(stripeIntent.created),
           paymentIntentInfo.products,
           false,
           price,
         ),
       );
-      console.log(stripeIntent);
+      // console.log(stripeIntent);
       return {
         client_secret: stripeIntent.client_secret,
         created: stripeIntent.created,
@@ -78,6 +90,15 @@ export class PaymentAccountService {
     const intent = await Stripe.paymentIntents.retrieve(stripePaymentToken);
     const charges = intent.charges.data;
     return null;
+  }
+
+  async getPaymentMethod(customerId) {
+    const paymentMethod = await StripeClient.paymentMethods.list({
+      customer: customerId,
+      type: 'card',
+    });
+
+    return paymentMethod.data.length > 0 ? paymentMethod.data[0].id : null;
   }
 
   async createEphemeralKey(
@@ -100,25 +121,24 @@ export class PaymentAccountService {
     paymentValidationToken: PaymentValidationDTO,
   ): Promise<any> {
     // check if the api request is made by stripe
-    if (
-      StripeClient.webhooks.constructEvent(
-        paymentValidationToken.stripeResponse,
-        paymentValidationToken.stripeId,
-        process.env.STRIPE_WEBHOOK_KEY,
-      )
-    ) {
-      return await this.savePaymentData(paymentValidationToken);
-    } else {
-      throw new HttpException('No Orders Found', HttpStatus.CONFLICT);
-    }
+    // if (
+    //   StripeClient.webhooks.constructEvent(
+    //     paymentValidationToken.stripeResponse,
+    //     paymentValidationToken.stripeId,
+    //     process.env.STRIPE_WEBHOOK_KEY,
+    //   )
+    // ) {
+    //   console.log('save payment');
+    return await this.savePaymentData(paymentValidationToken);
+    // } else {
+    //   throw new HttpException('No Orders Found', HttpStatus.CONFLICT);
+    // }
   }
 
   async savePaymentData(token: PaymentValidationDTO) {
     try {
       console.log(token.type);
       if (token.type === 'charge.succeeded' || token.type === 'charge.failed') {
-        // attach payment method to customer
-        await this.savePaymentMethod(token.customerId, token.paymentMethod);
         return await this.updateOrderDBs(
           token.type === 'charge.succeeded' ? true : false,
           token.paymentIntent,
@@ -132,7 +152,7 @@ export class PaymentAccountService {
 
   async savePaymentMethod(customerID, paymentMethod) {
     try {
-      return await Stripe.paymentMethods.attach(paymentMethod, {
+      return await StripeClient.paymentMethods.attach(paymentMethod, {
         customer: customerID,
       });
     } catch (error) {
@@ -142,12 +162,10 @@ export class PaymentAccountService {
   }
 
   async updateOrderDBs(status, id): Promise<any> {
+    console.log('id' + id);
     // update status on db
-    await this.paymentDataModel
-      .findOne({ paymentID: id })
-      .update({ successful: status }, () => {
-        return { webhook: 'done' };
-      });
-    // console.log("payment successful");
+    const payModel = await this.paymentDataModel.findOne({ paymentID: id });
+    await payModel.updateOne({ successful: status });
+    return { webhook: 'done' };
   }
 }
