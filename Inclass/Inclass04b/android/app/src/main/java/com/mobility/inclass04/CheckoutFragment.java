@@ -105,8 +105,6 @@ public class CheckoutFragment extends Fragment {
         placeOrderBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                Intent intent = new Intent(getContext(), PaymentActivity.class);
-//                startActivity(intent);
                 new makeOrderRequest().execute();
             }
         });
