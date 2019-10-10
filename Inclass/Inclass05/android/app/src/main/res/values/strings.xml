@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Mobility Store</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="userToken">userToken</string>
+    <string name="clientToken">clientToken</string>
+    <string name="userId">userId</string>
+    <string name="cart">Cart</string>
+    <string name="apiBaseURL">https://nest-api-253406.appspot.com/api/</string>
+    <string name="logInURL">https://nest-api-253406.appspot.com/api/auth/login</string>
+    <string name="signUpURL">https://nest-api-253406.appspot.com/api/auth/register</string>
+    <string name="userDetailURL">https://nest-api-253406.appspot.com/api/user/</string>
+    <string name="validateToken">https://nest-api-253406.appspot.com/api/auth/test</string>
+    <string name="navigation_drawer_open">open navigation drawer</string>
+    <string name="navigation_drawer_close">close navigation drawer</string>
+    <string name="getProductListURL">https://nest-api-253406.appspot.com/api/product/</string>
+    <string name="getOrderHistoryURL">https://nest-api-253406.appspot.com/api/order</string>
+    <string name="getImageURL">https://nest-api-253406.appspot.com/api/image/</string>
+    <string name="apply">Apply</string>
+    <string name="stripe_pk">pk_test_11hcxzw5CJ1r71VT4FQnAhv700j7BhHxeH</string>
+    <string-array name="filter_items">
+        <item>All</item>
+        <item>Produce</item>
+        <item>Grocery</item>
+        <item>Lifestyle</item>
+    </string-array>
+</resources>
