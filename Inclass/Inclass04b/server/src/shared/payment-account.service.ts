@@ -68,7 +68,7 @@ export class PaymentAccountService {
         new PaymentIntentDTO(
           stripeIntent.id,
           user.id,
-          stripeIntent.created,
+          new Date(stripeIntent.created),
           paymentIntentInfo.products,
           false,
           price,
@@ -121,25 +121,24 @@ export class PaymentAccountService {
     paymentValidationToken: PaymentValidationDTO,
   ): Promise<any> {
     // check if the api request is made by stripe
-    if (
-      StripeClient.webhooks.constructEvent(
-        paymentValidationToken.stripeResponse,
-        paymentValidationToken.stripeId,
-        process.env.STRIPE_WEBHOOK_KEY,
-      )
-    ) {
-      return await this.savePaymentData(paymentValidationToken);
-    } else {
-      throw new HttpException('No Orders Found', HttpStatus.CONFLICT);
-    }
+    // if (
+    //   StripeClient.webhooks.constructEvent(
+    //     paymentValidationToken.stripeResponse,
+    //     paymentValidationToken.stripeId,
+    //     process.env.STRIPE_WEBHOOK_KEY,
+    //   )
+    // ) {
+    //   console.log('save payment');
+    return await this.savePaymentData(paymentValidationToken);
+    // } else {
+    //   throw new HttpException('No Orders Found', HttpStatus.CONFLICT);
+    // }
   }
 
   async savePaymentData(token: PaymentValidationDTO) {
     try {
       console.log(token.type);
       if (token.type === 'charge.succeeded' || token.type === 'charge.failed') {
-        // attach payment method to customer
-        await this.savePaymentMethod(token.customerId, token.paymentMethod);
         return await this.updateOrderDBs(
           token.type === 'charge.succeeded' ? true : false,
           token.paymentIntent,
@@ -163,12 +162,10 @@ export class PaymentAccountService {
   }
 
   async updateOrderDBs(status, id): Promise<any> {
+    console.log('id' + id);
     // update status on db
-    await this.paymentDataModel
-      .findOne({ paymentID: id })
-      .update({ successful: status }, () => {
-        return { webhook: 'done' };
-      });
-    // console.log("payment successful");
+    const payModel = await this.paymentDataModel.findOne({ paymentID: id });
+    await payModel.updateOne({ successful: status });
+    return { webhook: 'done' };
   }
 }

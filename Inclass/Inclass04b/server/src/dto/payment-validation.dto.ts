@@ -3,6 +3,4 @@ export class PaymentValidationDTO {
   stripeResponse: any;
   type: any;
   stripeId: any;
-  paymentMethod: string;
-  customerId: string;
 }
