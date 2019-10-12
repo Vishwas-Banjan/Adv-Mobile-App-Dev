@@ -8,6 +8,7 @@ import { PaymentIntentSchema } from '../../models/payment.schema';
 import { ProductService } from '../../modules/product/product.service';
 import { SharedModule } from '../../shared/shared.module';
 import { ProductSchema } from '../../models/product.schema';
+import { FilterSchema } from '../../models/filter.shcema';
 
 @Module({
   imports: [
@@ -16,6 +17,9 @@ import { ProductSchema } from '../../models/product.schema';
     ]),
     PassportModule.register({ defaultStrategy: 'jwt', session: false }),
     MongooseModule.forFeature([{ name: 'products', schema: ProductSchema }]),
+    MongooseModule.forFeature([
+      { name: 'beacon_region_map', schema: FilterSchema },
+    ]),
     SharedModule,
   ],
   controllers: [OrderController],

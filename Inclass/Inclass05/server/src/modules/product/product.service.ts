@@ -2,15 +2,31 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Product } from './../../types/product';
-// import { CreateProductDTO, UpdateProductDTO } from './../../dto/product.dto';
-import { User } from './../../types/user';
+import { FilterDTO } from '../../dto/filter.dto';
+import { Filter } from '../../types/filter';
 
 @Injectable()
 export class ProductService {
-  constructor(@InjectModel('products') private productModel: Model<Product>) {}
+  constructor(
+    @InjectModel('products') private productModel: Model<Product>,
+    @InjectModel('beacon_region_map') private filterModel: Model<Filter>,
+  ) {}
 
   async findAll(): Promise<Product[]> {
     return await this.productModel.find().populate('owner');
+  }
+
+  async filterProducts(filters: FilterDTO): Promise<object> {
+    const filterInfo = await this.filterModel.find({
+      minor: filters.minor,
+      major: filters.major,
+    });
+    if (!filterInfo) {
+      throw new HttpException('Invalid catrgory', HttpStatus.BAD_REQUEST);
+    }
+    return await this.productModel
+      .where('region', filterInfo[0].region)
+      .populate('owner');
   }
 
   async findByRegion(region: string): Promise<Product[]> {
