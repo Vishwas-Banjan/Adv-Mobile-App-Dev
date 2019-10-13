@@ -1,11 +1,8 @@
 package com.mobility.inclass04;
 
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -14,7 +11,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -25,20 +21,20 @@ import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
+import com.estimote.coresdk.observation.region.beacon.BeaconRegion;
+import com.estimote.coresdk.recognition.packets.Beacon;
+import com.estimote.coresdk.service.BeaconManager;
 import com.google.android.material.navigation.NavigationView;
 import com.mobility.inclass04.Utils.Product;
 import com.mobility.inclass04.Utils.User;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
 import java.util.ArrayList;
-
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -54,6 +50,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     NavHostFragment finalHost;
     NavigationView navigationView;
     ArrayList<Product> addedToCartArrayList = new ArrayList<>();
+    private BeaconManager beaconManager;
+    private BeaconRegion region;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,6 +78,90 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     .commit();
             navigationView.setCheckedItem(R.id.nav_shop);
         }
+
+        initiateBeaconRanging();
+        setBeaconRangingListener();
+    }
+
+    public void initiateBeaconRanging() {
+        beaconManager = new BeaconManager(this);
+        region = new BeaconRegion("ranged region",
+                UUID.fromString("b9407f30-f5f8-466e-aff9-25556b57fe6d"), null, null);
+    }
+
+    public void setBeaconRangingListener() {
+        final Map<String, Integer> firstBeaconCount = new HashMap<>();
+        final Map<String, Integer> secondBeaconCount = new HashMap<>();
+        firstBeaconCount.put("12606:47861", 0);
+        secondBeaconCount.put("37360:34328", 0);
+        final int[] sum1 = {0};
+        final int[] sum2 = {0};
+        final String[] winner = {""};
+        beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
+            @Override
+            public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
+                if (!list.isEmpty()) {
+                    Beacon nearestBeacon = list.get(0);
+                    if (firstBeaconCount.containsKey(nearestBeacon.getMajor() + ":" + nearestBeacon.getMinor())) {
+                        firstBeaconCount.put("12606:47861", firstBeaconCount.get("12606:47861") + 1);
+                        sum1[0] += nearestBeacon.getRssi();
+                    } else if (secondBeaconCount.containsKey(nearestBeacon.getMajor() + ":" + nearestBeacon.getMinor())) {
+                        secondBeaconCount.put("37360:34328", secondBeaconCount.get("37360:34328") + 1);
+                        sum2[0] += nearestBeacon.getRssi();
+                    } else {
+                        Log.d(TAG, "onBeaconsDiscovered: NOTHING");
+                    }
+                    if (firstBeaconCount.get("12606:47861") + secondBeaconCount.get("37360:34328") == 5) {
+                        firstBeaconCount.put("12606:47861", 0);
+                        secondBeaconCount.put("37360:34328", 0);
+                        Log.d(TAG, "onBeaconsDiscovered: " + sum1[0] + " " + sum2[0]);
+                        if (sum1[0] < sum2[0]) {
+                            if (winner[0] != "Beacon 1") {
+                                winner[0] = "Beacon 1";
+                                Log.d(TAG, "onBeaconsDiscovered: BEACON 1 WINS");
+                            }
+                        } else {
+                            if (winner[0] != "Beacon 2") {
+                                winner[0] = "Beacon 2";
+                                Log.d(TAG, "onBeaconsDiscovered: BEACON 2 WINS");
+                            }
+                        }
+                        sum1[0] = 0;
+                        sum2[0] = 0;
+                    }
+
+                } else {
+                    Log.d(TAG, "No Beacons detected!: ");
+                }
+            }
+        });
+    }
+
+
+    public void startBeaconRanging() {
+        beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+            @Override
+            public void onServiceReady() {
+                beaconManager.startRanging(region);
+            }
+        });
+    }
+
+    public void stopBeaconRanging() {
+        beaconManager.stopRanging(region);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        SystemRequirementsChecker.checkWithDefaultDialogs(this);
+        startBeaconRanging();
+    }
+
+    @Override
+    protected void onPause() {
+        stopBeaconRanging();
+        super.onPause();
     }
 
     @Override
