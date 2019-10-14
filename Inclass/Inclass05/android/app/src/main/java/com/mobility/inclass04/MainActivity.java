@@ -1,8 +1,11 @@
 package com.mobility.inclass04;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -11,6 +14,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -20,6 +24,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.estimote.coresdk.common.requirements.SystemRequirementsChecker;
 import com.estimote.coresdk.observation.region.beacon.BeaconRegion;
@@ -29,12 +34,24 @@ import com.google.android.material.navigation.NavigationView;
 import com.mobility.inclass04.Utils.Product;
 import com.mobility.inclass04.Utils.User;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+
+import okhttp3.FormBody;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
+import okhttp3.ResponseBody;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
@@ -79,17 +96,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             navigationView.setCheckedItem(R.id.nav_shop);
         }
 
-        initiateBeaconRanging();
-        setBeaconRangingListener();
     }
 
     public void initiateBeaconRanging() {
+        Log.d(TAG, "initiateBeaconRanging: ");
         beaconManager = new BeaconManager(this);
         region = new BeaconRegion("ranged region",
                 UUID.fromString("b9407f30-f5f8-466e-aff9-25556b57fe6d"), null, null);
     }
 
     public void setBeaconRangingListener() {
+        Log.d(TAG, "setBeaconRangingListener: ");
         final Map<String, Integer> firstBeaconCount = new HashMap<>();
         final Map<String, Integer> secondBeaconCount = new HashMap<>();
         firstBeaconCount.put("12606:47861", 0);
@@ -119,11 +136,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             if (winner[0] != "Beacon 1") {
                                 winner[0] = "Beacon 1";
                                 Log.d(TAG, "onBeaconsDiscovered: BEACON 1 WINS");
+                                filter = "produce";
+
+                                getProductListAsync(filter, mAdapter);
                             }
                         } else {
                             if (winner[0] != "Beacon 2") {
                                 winner[0] = "Beacon 2";
                                 Log.d(TAG, "onBeaconsDiscovered: BEACON 2 WINS");
+                                filter = "grocery";
+                                getProductListAsync(filter, mAdapter);
                             }
                         }
                         sum1[0] = 0;
@@ -155,12 +177,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onResume() {
         super.onResume();
         SystemRequirementsChecker.checkWithDefaultDialogs(this);
-        startBeaconRanging();
     }
 
     @Override
     protected void onPause() {
-        stopBeaconRanging();
         super.onPause();
     }
 
@@ -294,5 +314,105 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
+    String filter;
+    RecyclerView.Adapter mAdapter;
+    ArrayList<Product> productList = new ArrayList<>();
+
+    @Override
+    public void getProductListAsync(String productFilter, RecyclerView.Adapter productListAdapter) {
+        filter = productFilter;
+        mAdapter = productListAdapter;
+        new getProductList().execute();
+    }
+
+    @Override
+    public ArrayList<Product> getProductListArray() {
+        return productList;
+    }
+
+
+    private class getProductList extends AsyncTask<Void, Void, ArrayList<Product>> {
+        private ProgressDialog progressDialog;
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            progressDialog.setMessage("Fetching details, please wait...");
+            progressDialog.setCancelable(false);
+            progressDialog.show();
+        }
+
+        public getProductList() {
+            progressDialog = new ProgressDialog(MainActivity.this);
+        }
+
+        @Override
+        protected void onPostExecute(ArrayList<Product> productArrayList) {
+            super.onPostExecute(productArrayList);
+            if (progressDialog.isShowing()) {
+                progressDialog.dismiss();
+            }
+            if (productArrayList.size() > 0) {
+                productList.clear();
+                productList.addAll(productArrayList);
+                mAdapter.notifyDataSetChanged();
+
+            } else {
+                Toast.makeText(MainActivity.this, "Oops! Something went wrong", Toast.LENGTH_SHORT).show();
+                //TODO Something went wrong, Navigate ?
+            }
+        }
+
+        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+        @Override
+        protected ArrayList<Product> doInBackground(Void... voids) {
+            ArrayList<Product> productArrayList = new ArrayList<>();
+            final OkHttpClient client = new OkHttpClient();
+            RequestBody formBody = buidFormBody();
+            Request request = new Request.Builder()
+                    .header("Content-Type", "application/json")
+                    .url(getString(R.string.getProductListURL))
+                    .post(formBody)
+                    .build();
+            try (Response response = client.newCall(request).execute()) {
+                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
+                try (ResponseBody responseBody = response.body()) {
+                    if (!response.isSuccessful())
+                        throw new IOException("Unexpected code " + response);
+
+                    String json = responseBody.string();
+                    JSONArray root = new JSONArray(json);
+                    productArrayList.clear();
+                    for (int i = 0; i < root.length(); i++) {
+                        JSONObject productJson = root.getJSONObject(i);
+                        Product product = new Product();
+                        product.setName(productJson.getString("name"));
+                        product.setId(productJson.getString("_id"));
+                        product.setDiscount(Double.parseDouble(productJson.getString("discount")));
+                        product.setPrice(Double.parseDouble(productJson.getString("price")));
+                        product.setImageUrl(productJson.getString("photo"));
+                        product.setRegion(productJson.getString("region"));
+                        productArrayList.add(product);
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return productArrayList;
+        }
+
+        private RequestBody buidFormBody() {
+            FormBody.Builder body = new FormBody.Builder();
+            if (!filter.isEmpty()) {
+                body.add("region", filter);
+            }
+            return body.build();
+        }
+    }
 
 }

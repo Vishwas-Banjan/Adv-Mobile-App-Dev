@@ -54,8 +54,6 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     NavController navController;
     private RecyclerView recyclerView;
     private RecyclerView.Adapter mAdapter;
-    SharedPreferences sharedPref;
-    ArrayList<Product> productList = new ArrayList<>();
     String TAG = "demo";
     String filter = "";
     int position;
@@ -81,6 +79,8 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_product_list, container, false);
         setHasOptionsMenu(true);
+        mListener.initiateBeaconRanging();
+        mListener.setBeaconRangingListener();
         return view;
     }
 
@@ -92,7 +92,6 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        Log.d(TAG, "onOptionsItemSelected: ");
         switch (item.getItemId()) {
             case R.id.cart:
                 navController.navigate(R.id.shoppingCartFragment);
@@ -110,11 +109,23 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         df.show(getChildFragmentManager(), "dialog");
     }
 
+    @Override
+    public void onPause() {
+        mListener.stopBeaconRanging();
+        super.onPause();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mListener.startBeaconRanging();
+    }
+
     public void setUpRecyclerView(View view) {
         recyclerView = view.findViewById(R.id.productListRecyclerView);
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        mAdapter = new ProductListAdapter(productList, navController);
+        mAdapter = new ProductListAdapter(mListener.getProductListArray(), navController);
         recyclerView.setAdapter(mAdapter);
     }
 
@@ -123,9 +134,9 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
         setUpRecyclerView(view);
-        new getProductList().execute();
-
+        mListener.getProductListAsync(filter, mAdapter);
         mListener.setDrawerLocked(false);
+
     }
 
     @Override
@@ -137,92 +148,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         } else {
             filter = item.toLowerCase();
         }
-        new getProductList().execute();
-    }
-
-
-    private class getProductList extends AsyncTask<Void, Void, ArrayList<Product>> {
-        private ProgressDialog progressDialog;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            progressDialog.setMessage("Fetching details, please wait...");
-            progressDialog.setCancelable(false);
-            progressDialog.show();
-        }
-
-        public getProductList() {
-            progressDialog = new ProgressDialog(getContext());
-        }
-
-        @Override
-        protected void onPostExecute(ArrayList<Product> productArrayList) {
-            super.onPostExecute(productArrayList);
-            if (progressDialog.isShowing()) {
-                progressDialog.dismiss();
-            }
-            if (productArrayList.size() > 0) {
-                productList.clear();
-                productList.addAll(productArrayList);
-                mAdapter.notifyDataSetChanged();
-
-            } else {
-                Toast.makeText(getContext(), "Oops! Something went wrong", Toast.LENGTH_SHORT).show();
-                //TODO Something went wrong, Navigate ?
-            }
-        }
-
-        @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-        @Override
-        protected ArrayList<Product> doInBackground(Void... voids) {
-            ArrayList<Product> productArrayList = new ArrayList<>();
-            final OkHttpClient client = new OkHttpClient();
-            RequestBody formBody = buidFormBody();
-            Request request = new Request.Builder()
-                    .header("Content-Type", "application/json")
-                    .url(getString(R.string.getProductListURL))
-                    .post(formBody)
-                    .build();
-            try (Response response = client.newCall(request).execute()) {
-                if (!response.isSuccessful()) throw new IOException("Unexpected code " + response);
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful())
-                        throw new IOException("Unexpected code " + response);
-
-                    String json = responseBody.string();
-                    JSONArray root = new JSONArray(json);
-                    productArrayList.clear();
-                    for (int i = 0; i < root.length(); i++) {
-                        JSONObject productJson = root.getJSONObject(i);
-                        Product product = new Product();
-                        product.setName(productJson.getString("name"));
-                        product.setId(productJson.getString("_id"));
-                        product.setDiscount(Double.parseDouble(productJson.getString("discount")));
-                        product.setPrice(Double.parseDouble(productJson.getString("price")));
-                        product.setImageUrl(productJson.getString("photo"));
-                        product.setRegion(productJson.getString("region"));
-                        productArrayList.add(product);
-                    }
-
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return productArrayList;
-        }
-
-        private RequestBody buidFormBody() {
-            FormBody.Builder body = new FormBody.Builder();
-            if (!filter.isEmpty()) {
-                body.add("region", filter);
-            }
-            return body.build();
-        }
+        mListener.getProductListAsync(filter, mAdapter);
     }
 
 
@@ -245,6 +171,18 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
 
     public interface OnFragmentInteractionListener {
         void setDrawerLocked(boolean shouldLock);
+
+        void getProductListAsync(String filter, RecyclerView.Adapter mAdapter);
+
+        ArrayList<Product> getProductListArray();
+
+        void initiateBeaconRanging();
+
+        void startBeaconRanging();
+
+        void stopBeaconRanging();
+
+        void setBeaconRangingListener();
 
         void setNavBarDetails(User user);
     }
