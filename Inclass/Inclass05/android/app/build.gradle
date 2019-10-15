@@ -44,4 +44,6 @@ dependencies {
     implementation 'com.loopj.android:android-async-http:1.4.9'
     implementation 'com.stripe:stripe-android:11.2.0'
     implementation 'org.ocpsoft.prettytime:prettytime:4.0.2.Final'
+    implementation 'com.estimote:sdk:1.0.12'
+
 }

@@ -1,0 +1,29 @@
+<RelativeLayout xmlns:android = "http://schemas.android.com/apk/res/android"
+    android:layout_width = "wrap_content"
+    android:layout_height = "wrap_content">
+    <!-- The Title Bar -->
+    <LinearLayout
+        android:id = "@+id/dialog_titlebar"
+        android:orientation = "horizontal"
+        android:layout_width = "fill_parent"
+        android:layout_height = "wrap_content"
+        android:layout_marginLeft="15dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginBottom="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_alignParentTop = "true">
+
+        <com.google.android.material.switchmaterial.SwitchMaterial
+            android:id="@+id/smart_switch"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="@string/smart_filter" />
+    </LinearLayout>
+      <ListView
+          android:id = "@+id/dialog_listView"
+        android:layout_width = "wrap_content"
+        android:layout_height = "wrap_content"
+        android:layout_below = "@+id/dialog_titlebar">
+      </ListView>
+
+</RelativeLayout>

@@ -337,6 +337,98 @@
 			"name": "Order",
 			"item": [
 				{
+					"name": "create",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZAdi5jb20iLCJwYXlBY2NJZCI6IjIwODk4NzgzMSIsImlhdCI6MTU3MDAxOTgyMCwiZXhwIjoxNTcwMDIzNDIwfQ.ekxgJSbJseJLy_1xHg_EdA9ZBP_ihTmrNdho8Sc8Cf8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"products\": [\n        {\n            \"product\": \"5d90c93a2e2acb16ccddeaab\",\n            \"quantity\": 1,\n            \"price\": 1.18\n        },\n        {\n            \"product\": \"5d90c93a2e2acb16ccddeaac\",\n            \"quantity\": 1,\n            \"price\": 2.79\n        }\n    ],\n    \"paymentMethodNonce\": \"tokencc_bd_m522j2_qdzxx6_38pmdm_w75g6p_t37\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "create w/ no items",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InZAdi5jb20iLCJwYXlBY2NJZCI6IjIwODk4NzgzMSIsImlhdCI6MTU3MDAxNjA5OSwiZXhwIjoxNTcwMDE5Njk5fQ.C6ASO8bBs1TrzBz4m9ZySa-Z2zKZkEzOuF3nz3fOQG4",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"paymentMethodNonce\": \"tokencc_bd_m522j2_qdzxx6_38pmdm_w75g6p_t37\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/order",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"order"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "view",
 					"request": {
 						"auth": {
@@ -402,7 +494,7 @@
 			"name": "Payment Account",
 			"item": [
 				{
-					"name": "",
+					"name": "add",
 					"request": {
 						"auth": {
 							"type": "bearer",
@@ -425,7 +517,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{ \n\"price\":2232.34, \n\"type\": \"card\", \n\"currency\":\"usd\" \n}",
+							"raw": "{\n  \"paymentMethodNonce\": \"\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -433,7 +525,7 @@
 							}
 						},
 						"url": {
-							"raw": "http://localhost:8080/api/paymentAccount/",
+							"raw": "http://localhost:8080/api/paymentAccount/add",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -441,7 +533,46 @@
 							"port": "8080",
 							"path": [
 								"api",
-								"paymentAccount"
+								"paymentAccount",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "get client token",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6InRlc3RAdGVzdC5jb20iLCJwYXlBY2NJZCI6Ijg3MjQ2NTI1NCIsImlhdCI6MTU2OTk2OTY0MywiZXhwIjoxNTY5OTczMjQzfQ.Yn_4ejyM3CSRwbQ4YUa0YjSK7BpIQhk1DimLIXyTvy8",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:8080/api/paymentAccount/clientToken",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"paymentAccount",
+								"clientToken"
 							]
 						}
 					},
@@ -516,7 +647,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n{\"minor\":\"31506\",\"major\":\"15212\",\"uuid\":\"B9407F30-F5F8-466E-AFF9-25556B57FE6D\"}\n}",
+							"raw": "{\n\t\"region\": \"produce\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
