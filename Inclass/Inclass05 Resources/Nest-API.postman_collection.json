@@ -647,7 +647,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"region\": \"produce\"\n}",
+							"raw": "{\"minor\":\"31506\",\"major\":\"15212\",\"uuid\":\"B9407F30-F5F8-466E-AFF9-25556B57FE6D\"}",
 							"options": {
 								"raw": {
 									"language": "json"
