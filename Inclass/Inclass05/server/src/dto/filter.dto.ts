@@ -1,11 +1,12 @@
 import { ApiModelProperty, ApiModelPropertyOptional } from '@nestjs/swagger';
-import { OrderProduct } from './order-product.dto';
 
 export class FilterDTO {
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   minor: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   major: string;
-  @ApiModelProperty()
+  @ApiModelPropertyOptional()
   uuid: string;
+  @ApiModelPropertyOptional()
+  region: string;
 }
