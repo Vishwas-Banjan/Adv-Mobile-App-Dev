@@ -17,16 +17,21 @@ export class ProductService {
   }
 
   async filterProducts(filters: FilterDTO): Promise<object> {
-    const filterInfo = await this.filterModel.find({
+    const filterInfo = await this.filterModel.findOne({
       minor: filters.minor,
       major: filters.major,
     });
     if (!filterInfo) {
-      throw new HttpException('Invalid catrgory', HttpStatus.BAD_REQUEST);
+      // major and minor are empty
+      if (filters.region) {
+        // filter by region
+        return await this.findByRegion(filters.region);
+      } else {
+        // return all
+        return await this.findAll();
+      }
     }
-    return await this.productModel
-      .where('region', filterInfo[0].region)
-      .populate('owner');
+    return await this.findByRegion(filterInfo.region);
   }
 
   async findByRegion(region: string): Promise<Product[]> {

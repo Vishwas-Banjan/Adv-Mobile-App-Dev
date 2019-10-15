@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -126,7 +127,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     public void setUpRecyclerView(View view) {
         recyclerView = view.findViewById(R.id.productListRecyclerView);
         recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mAdapter = new ProductListAdapter(mListener.getProductListArray(), navController);
         recyclerView.setAdapter(mAdapter);
     }
