@@ -156,6 +156,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     @Override
     public void onToggleSmartFilter(boolean applySmartFilter) {
         mListener.applySmartFilter(applySmartFilter);
+        this.smartFilter = applySmartFilter;
     }
 
 
