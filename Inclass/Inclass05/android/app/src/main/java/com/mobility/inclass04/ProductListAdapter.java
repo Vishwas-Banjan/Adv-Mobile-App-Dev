@@ -71,7 +71,7 @@ public class ProductListAdapter extends RecyclerView.Adapter<ProductListAdapter.
             holder.productImage.setImageDrawable(res.getDrawable(R.drawable.no_image_found));
         }
 
-        holder.productName.setOnClickListener(new View.OnClickListener() {
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Bundle bundle = new Bundle();
