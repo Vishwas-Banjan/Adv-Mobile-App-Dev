@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "ee81771e-175a-4645-97fe-a99ba7370cae",
+		"_postman_id": "fbb2ea6e-e99c-4b40-ae4f-44ec8ff6a75b",
 		"name": "Nest-API",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -111,7 +111,7 @@
 							}
 						],
 						"url": {
-							"raw": "http://localhost:8080/api/auth/test",
+							"raw": "http://localhost:8080/api/auth/test?",
 							"protocol": "http",
 							"host": [
 								"localhost"
@@ -647,7 +647,79 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"minor\":\"31506\",\"major\":\"15212\",\"uuid\":\"B9407F30-F5F8-466E-AFF9-25556B57FE6D\"}",
+							"raw": "{\n    \"region\": \"grocery\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/product",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "filter product by beacons",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minor\": \"31506\",\n    \"major\": \"15212\",\n    \"uuid\": \"B9407F30-F5F8-466E-AFF9-25556B57FE6D\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:8080/api/product",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"api",
+								"product"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "filter product by wrong beacons",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"minor\": \"31506\",\n    \"major\": \"15212\",\n    \"uuid\": \"B9407F30-F5F8-466E-AFF9-25556B57FE6D\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
