@@ -42,8 +42,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.UUID;
 
 import okhttp3.FormBody;
@@ -108,51 +110,74 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     public void setBeaconRangingListener() {
         Log.d(TAG, "setBeaconRangingListener: ");
-        final Map<String, Integer> firstBeaconCount = new HashMap<>();
-        final Map<String, Integer> secondBeaconCount = new HashMap<>();
-        firstBeaconCount.put("12606:47861", 0);
-        secondBeaconCount.put("37360:34328", 0);
-        final int[] sum1 = {0};
-        final int[] sum2 = {0};
+        final String firstBeaconMap = "12606:47861";
+        final String secondBeaconMap = "37360:34328";
+        final Queue<Integer> firstBeaconQueue = new LinkedList<>();
+        final Queue<Integer> secondBeaconQueue = new LinkedList<>();
+        //TODO Add 3rd Beacon MAP and Avg
+        final Integer[] avg = {0, 0};
         final String[] winner = {""};
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
             public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
+                int lifeCycleWindow = 5;
+                int numberOfBeacons = 2;
                 if (!list.isEmpty() && smartFilter) {
-                    Beacon nearestBeacon = list.get(0);
-                    if (firstBeaconCount.containsKey(nearestBeacon.getMajor() + ":" + nearestBeacon.getMinor())) {
-                        firstBeaconCount.put("12606:47861", firstBeaconCount.get("12606:47861") + 1);
-                        sum1[0] += nearestBeacon.getRssi();
-                    } else if (secondBeaconCount.containsKey(nearestBeacon.getMajor() + ":" + nearestBeacon.getMinor())) {
-                        secondBeaconCount.put("37360:34328", secondBeaconCount.get("37360:34328") + 1);
-                        sum2[0] += nearestBeacon.getRssi();
-                    } else {
-                        Log.d(TAG, "onBeaconsDiscovered: NOTHING");
-                    }
-                    if (firstBeaconCount.get("12606:47861") + secondBeaconCount.get("37360:34328") == 5) {
-                        firstBeaconCount.put("12606:47861", 0);
-                        secondBeaconCount.put("37360:34328", 0);
-                        Log.d(TAG, "onBeaconsDiscovered: " + sum1[0] + " " + sum2[0]);
-                        if (sum1[0] < sum2[0]) {
-                            if (winner[0] != "Beacon 1") {
-                                winner[0] = "Beacon 1";
-                                Log.d(TAG, "onBeaconsDiscovered: BEACON 1 WINS");
-                                filter = "produce";
-
-                                getProductListAsync(filter, mAdapter);
+                    for (Beacon beacon : list) {
+                        if (firstBeaconMap.equals(beacon.getMajor() + ":" + beacon.getMinor())) {
+                            if (firstBeaconQueue.size() == lifeCycleWindow) {
+                                int remove = firstBeaconQueue.remove();
+                                firstBeaconQueue.add(beacon.getRssi());
+                                avg[0] = avg[0] + (beacon.getRssi() / lifeCycleWindow) - (remove / lifeCycleWindow);
+                            } else {
+                                firstBeaconQueue.add(beacon.getRssi());
+                                avg[0] += avg[0] + beacon.getRssi() / lifeCycleWindow;
+                            }
+                        } else if (secondBeaconMap.equals(beacon.getMajor() + ":" + beacon.getMinor())) {
+                            if (secondBeaconQueue.size() == lifeCycleWindow) {
+                                int remove = secondBeaconQueue.remove();
+                                secondBeaconQueue.add(beacon.getRssi());
+                                avg[1] = avg[1] + (beacon.getRssi() / lifeCycleWindow) - (remove / lifeCycleWindow);
+                            } else {
+                                secondBeaconQueue.add(beacon.getRssi());
+                                avg[1] += avg[1] + beacon.getRssi() / lifeCycleWindow;
                             }
                         } else {
-                            if (winner[0] != "Beacon 2") {
-                                winner[0] = "Beacon 2";
-                                Log.d(TAG, "onBeaconsDiscovered: BEACON 2 WINS");
-                                filter = "grocery";
-                                getProductListAsync(filter, mAdapter);
+                            Log.d(TAG, "onBeaconsDiscovered: Not Ours");
+                        }
+                        if (firstBeaconQueue.size() + secondBeaconQueue.size() == lifeCycleWindow * numberOfBeacons) { //TODO Add 3rd Beacon Size
+                            Log.d(TAG, "onBeaconsDiscovered: " + avg[0] / firstBeaconQueue.size() + " " + avg[1] / secondBeaconQueue.size());
+                            int max = avg[0];
+                            int index = 0;
+                            for (int i = 0; i < avg.length; i++) {
+                                if (max < avg[i]) {
+                                    max = avg[i];
+                                    index = i;
+                                }
+                            }
+                            switch (index) {
+                                case 0:
+                                    if (winner[0] != "Beacon 1") {
+                                        winner[0] = "Beacon 1";
+                                        Log.d(TAG, "onBeaconsDiscovered: BEACON 1 WINS");
+                                        filter = "produce";
+                                        getProductListAsync(filter, mAdapter);
+                                    }
+                                    break;
+                                case 1:
+                                    if (winner[0] != "Beacon 2") {
+                                        winner[0] = "Beacon 2";
+                                        Log.d(TAG, "onBeaconsDiscovered: BEACON 2 WINS");
+                                        filter = "grocery";
+                                        getProductListAsync(filter, mAdapter);
+                                    }
+                                    break;
+                                case 2:
+                                    //TODO Add 3rd Beacon
+                                    break;
                             }
                         }
-                        sum1[0] = 0;
-                        sum2[0] = 0;
                     }
-
                 } else {
                     Log.d(TAG, "No Beacons detected!: ");
                 }
