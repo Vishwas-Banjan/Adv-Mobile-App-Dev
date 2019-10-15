@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     ArrayList<Product> addedToCartArrayList = new ArrayList<>();
     private BeaconManager beaconManager;
     private BeaconRegion region;
+    boolean smartFilter = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,7 +118,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
             public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
-                if (!list.isEmpty()) {
+                if (!list.isEmpty() && smartFilter) {
                     Beacon nearestBeacon = list.get(0);
                     if (firstBeaconCount.containsKey(nearestBeacon.getMajor() + ":" + nearestBeacon.getMinor())) {
                         firstBeaconCount.put("12606:47861", firstBeaconCount.get("12606:47861") + 1);
@@ -208,6 +209,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navUserName.setText(user.getUserFirstName() + " " + user.getUserLastName());
         navUserEmail.setText(user.getUserEmail());
         navUserCity.setText(user.getUserCity());
+    }
+
+    @Override
+    public void applySmartFilter(boolean smartFilter) {
+        this.smartFilter = smartFilter;
+    }
+
+    @Override
+    public boolean getSmartFilter() {
+        return smartFilter;
     }
 
     @Override
