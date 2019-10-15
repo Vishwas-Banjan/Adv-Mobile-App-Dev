@@ -58,6 +58,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     String filter = "";
     int position;
     User user;
+    boolean smartFilter;
 
     public ProductListFragment() {
         // Required empty public constructor
@@ -70,6 +71,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         if (user != null) {
             mListener.setNavBarDetails(user);
         }
+        smartFilter = mListener.getSmartFilter();
     }
 
     @Override
@@ -105,8 +107,8 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     }
 
     private void showFilter() {
-        DialogFragment df = new ProductFilterFragment(position);
-        df.show(getChildFragmentManager(), "dialog");
+        DialogFragment df = new ProductFilterFragment(position, smartFilter);
+        df.show(getChildFragmentManager(), "filter_dialog");
     }
 
     @Override
@@ -151,6 +153,11 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         mListener.getProductListAsync(filter, mAdapter);
     }
 
+    @Override
+    public void onToggleSmartFilter(boolean applySmartFilter) {
+        mListener.applySmartFilter(applySmartFilter);
+    }
+
 
     @Override
     public void onAttach(Context context) {
@@ -185,5 +192,9 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         void setBeaconRangingListener();
 
         void setNavBarDetails(User user);
+
+        void applySmartFilter(boolean smartFilter);
+
+        boolean getSmartFilter();
     }
 }
