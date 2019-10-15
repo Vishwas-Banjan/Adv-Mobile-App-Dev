@@ -10,23 +10,21 @@ import {
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 
-import { User as UserDocument } from '../../types/user';
 import { ProductService } from './product.service';
 import { Product } from './../../types/product';
-import { SellerGuard } from './../../guards/seller.guard';
-import { User } from './../../utilities/user.decorator';
-import { CreateProductDTO, UpdateProductDTO } from './../../dto/product.dto';
+import { FilterDTO } from 'src/dto/filter.dto';
 
 @Controller('product')
 export class ProductController {
   constructor(private productService: ProductService) {}
 
   @Post()
-  async listAll(@Body() filters: object): Promise<Product[]> {
-    if (!filters['region']) {
+  async listAll(@Body() filters: FilterDTO): Promise<object> {
+    if (!filters) {
       return await this.productService.findAll();
     } else {
-      return await this.productService.findByRegion(filters['region']);
+      // console.log(filters.major)
+      return await this.productService.filterProducts(filters);
     }
   }
 
