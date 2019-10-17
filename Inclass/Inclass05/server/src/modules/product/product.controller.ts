@@ -12,7 +12,7 @@ import { AuthGuard } from '@nestjs/passport';
 
 import { ProductService } from './product.service';
 import { Product } from './../../types/product';
-import { FilterDTO } from 'src/dto/filter.dto';
+import { FilterDTO } from './../../dto/filter.dto';
 
 @Controller('product')
 export class ProductController {
