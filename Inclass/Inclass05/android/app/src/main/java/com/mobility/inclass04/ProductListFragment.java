@@ -31,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Toast;
 
+import com.mobility.inclass04.Utils.Filter;
 import com.mobility.inclass04.Utils.Product;
 import com.mobility.inclass04.Utils.User;
 
@@ -40,6 +41,7 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
@@ -130,6 +132,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         mAdapter = new ProductListAdapter(mListener.getProductListArray(), navController);
         recyclerView.setAdapter(mAdapter);
+        mListener.setRecyclerViewAdapter(mAdapter);
     }
 
     @Override
@@ -137,7 +140,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         super.onViewCreated(view, savedInstanceState);
         navController = Navigation.findNavController(view);
         setUpRecyclerView(view);
-        mListener.getProductListAsync(filter, mAdapter);
+        mListener.getProductListAsync(buildRegionFilter(filter));
         mListener.setDrawerLocked(false);
 
     }
@@ -151,13 +154,19 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         } else {
             filter = item.toLowerCase();
         }
-        mListener.getProductListAsync(filter, mAdapter);
+        mListener.getProductListAsync(buildRegionFilter(filter));
     }
 
     @Override
     public void onToggleSmartFilter(boolean applySmartFilter) {
         mListener.applySmartFilter(applySmartFilter);
         this.smartFilter = applySmartFilter;
+    }
+
+    private List<Filter> buildRegionFilter(String region) {
+        List<Filter> filters = new ArrayList<>();
+        filters.add(new Filter("region", region));
+        return filters;
     }
 
 
@@ -181,7 +190,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
     public interface OnFragmentInteractionListener {
         void setDrawerLocked(boolean shouldLock);
 
-        void getProductListAsync(String filter, RecyclerView.Adapter mAdapter);
+        void getProductListAsync(List<Filter> filters);
 
         ArrayList<Product> getProductListArray();
 
@@ -198,5 +207,7 @@ public class ProductListFragment extends Fragment implements ProductFilterFragme
         void applySmartFilter(boolean smartFilter);
 
         boolean getSmartFilter();
+
+        void setRecyclerViewAdapter(RecyclerView.Adapter mAdapter);
     }
 }

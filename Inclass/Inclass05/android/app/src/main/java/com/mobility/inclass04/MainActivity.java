@@ -31,6 +31,8 @@ import com.estimote.coresdk.observation.region.beacon.BeaconRegion;
 import com.estimote.coresdk.recognition.packets.Beacon;
 import com.estimote.coresdk.service.BeaconManager;
 import com.google.android.material.navigation.NavigationView;
+import com.mobility.inclass04.Utils.Filter;
+import com.mobility.inclass04.Utils.LimitedSizeQueue;
 import com.mobility.inclass04.Utils.Product;
 import com.mobility.inclass04.Utils.User;
 
@@ -41,7 +43,9 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -72,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private BeaconManager beaconManager;
     private BeaconRegion region;
     boolean smartFilter = true;
+    private RecyclerView.Adapter mAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -108,81 +113,152 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 UUID.fromString("b9407f30-f5f8-466e-aff9-25556b57fe6d"), null, null);
     }
 
+//    public void setBeaconRangingListener() {
+//        Log.d(TAG, "setBeaconRangingListener: ");
+//        final String firstBeaconMap = "12606:47861";
+//        final String secondBeaconMap = "37360:34328";
+//        final Queue<Integer> firstBeaconQueue = new LinkedList<>();
+//        final Queue<Integer> secondBeaconQueue = new LinkedList<>();
+//        //TODO Add 3rd Beacon MAP and Avg
+//        final Integer[] avg = {0, 0};
+//        final String[] winner = {""};
+//        beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
+//            @Override
+//            public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
+//                int lifeCycleWindow = 5;
+//                int numberOfBeacons = 2;
+//                if (!list.isEmpty() && smartFilter) {
+//                    for (Beacon beacon : list) {
+//                        if (firstBeaconMap.equals(beacon.getMajor() + ":" + beacon.getMinor())) {
+//                            if (firstBeaconQueue.size() == lifeCycleWindow) {
+//                                int remove = firstBeaconQueue.remove();
+//                                firstBeaconQueue.add(beacon.getRssi());
+//                                avg[0] = avg[0] + (beacon.getRssi() / lifeCycleWindow) - (remove / lifeCycleWindow);
+//                            } else {
+//                                firstBeaconQueue.add(beacon.getRssi());
+//                                avg[0] += avg[0] + beacon.getRssi() / lifeCycleWindow;
+//                            }
+//                        } else if (secondBeaconMap.equals(beacon.getMajor() + ":" + beacon.getMinor())) {
+//                            if (secondBeaconQueue.size() == lifeCycleWindow) {
+//                                int remove = secondBeaconQueue.remove();
+//                                secondBeaconQueue.add(beacon.getRssi());
+//                                avg[1] = avg[1] + (beacon.getRssi() / lifeCycleWindow) - (remove / lifeCycleWindow);
+//                            } else {
+//                                secondBeaconQueue.add(beacon.getRssi());
+//                                avg[1] += avg[1] + beacon.getRssi() / lifeCycleWindow;
+//                            }
+//                        } else {
+//                            Log.d(TAG, "onBeaconsDiscovered: Not Ours");
+//                        }
+//                        if (firstBeaconQueue.size() + secondBeaconQueue.size() == lifeCycleWindow * numberOfBeacons) { //TODO Add 3rd Beacon Size
+//                            Log.d(TAG, "onBeaconsDiscovered: " + avg[0] / firstBeaconQueue.size() + " " + avg[1] / secondBeaconQueue.size());
+//                            int max = avg[0];
+//                            int index = 0;
+//                            for (int i = 0; i < avg.length; i++) {
+//                                if (max < avg[i]) {
+//                                    max = avg[i];
+//                                    index = i;
+//                                }
+//                            }
+//                            switch (index) {
+//                                case 0:
+//                                    if (winner[0] != "Beacon 1") {
+//                                        winner[0] = "Beacon 1";
+//                                        Log.d(TAG, "onBeaconsDiscovered: BEACON 1 WINS");
+//                                        filter = "produce";
+//                                        getProductListAsync(filter, mAdapter);
+//                                    }
+//                                    break;
+//                                case 1:
+//                                    if (winner[0] != "Beacon 2") {
+//                                        winner[0] = "Beacon 2";
+//                                        Log.d(TAG, "onBeaconsDiscovered: BEACON 2 WINS");
+//                                        filter = "grocery";
+//                                        getProductListAsync(filter, mAdapter);
+//                                    }
+//                                    break;
+//                                case 2:
+//                                    //TODO Add 3rd Beacon
+//                                    break;
+//                            }
+//                        }
+//                    }
+//                } else {
+//                    Log.d(TAG, "No Beacons detected!: ");
+//                }
+//            }
+//        });
+//    }
+
     public void setBeaconRangingListener() {
         Log.d(TAG, "setBeaconRangingListener: ");
-        final String firstBeaconMap = "12606:47861";
-        final String secondBeaconMap = "37360:34328";
-        final Queue<Integer> firstBeaconQueue = new LinkedList<>();
-        final Queue<Integer> secondBeaconQueue = new LinkedList<>();
-        //TODO Add 3rd Beacon MAP and Avg
-        final Integer[] avg = {0, 0};
-        final String[] winner = {""};
+        final String[] king = {""};
+        final int queueSize = 5;
+        final int threshold = 3;
+        final LimitedSizeQueue<Beacon> queue = new LimitedSizeQueue<>(queueSize);
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
             public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
-                int lifeCycleWindow = 5;
-                int numberOfBeacons = 2;
                 if (!list.isEmpty() && smartFilter) {
-                    for (Beacon beacon : list) {
-                        if (firstBeaconMap.equals(beacon.getMajor() + ":" + beacon.getMinor())) {
-                            if (firstBeaconQueue.size() == lifeCycleWindow) {
-                                int remove = firstBeaconQueue.remove();
-                                firstBeaconQueue.add(beacon.getRssi());
-                                avg[0] = avg[0] + (beacon.getRssi() / lifeCycleWindow) - (remove / lifeCycleWindow);
-                            } else {
-                                firstBeaconQueue.add(beacon.getRssi());
-                                avg[0] += avg[0] + beacon.getRssi() / lifeCycleWindow;
-                            }
-                        } else if (secondBeaconMap.equals(beacon.getMajor() + ":" + beacon.getMinor())) {
-                            if (secondBeaconQueue.size() == lifeCycleWindow) {
-                                int remove = secondBeaconQueue.remove();
-                                secondBeaconQueue.add(beacon.getRssi());
-                                avg[1] = avg[1] + (beacon.getRssi() / lifeCycleWindow) - (remove / lifeCycleWindow);
-                            } else {
-                                secondBeaconQueue.add(beacon.getRssi());
-                                avg[1] += avg[1] + beacon.getRssi() / lifeCycleWindow;
-                            }
-                        } else {
-                            Log.d(TAG, "onBeaconsDiscovered: Not Ours");
-                        }
-                        if (firstBeaconQueue.size() + secondBeaconQueue.size() == lifeCycleWindow * numberOfBeacons) { //TODO Add 3rd Beacon Size
-                            Log.d(TAG, "onBeaconsDiscovered: " + avg[0] / firstBeaconQueue.size() + " " + avg[1] / secondBeaconQueue.size());
-                            int max = avg[0];
-                            int index = 0;
-                            for (int i = 0; i < avg.length; i++) {
-                                if (max < avg[i]) {
-                                    max = avg[i];
-                                    index = i;
-                                }
-                            }
-                            switch (index) {
-                                case 0:
-                                    if (winner[0] != "Beacon 1") {
-                                        winner[0] = "Beacon 1";
-                                        Log.d(TAG, "onBeaconsDiscovered: BEACON 1 WINS");
-                                        filter = "produce";
-                                        getProductListAsync(filter, mAdapter);
-                                    }
-                                    break;
-                                case 1:
-                                    if (winner[0] != "Beacon 2") {
-                                        winner[0] = "Beacon 2";
-                                        Log.d(TAG, "onBeaconsDiscovered: BEACON 2 WINS");
-                                        filter = "grocery";
-                                        getProductListAsync(filter, mAdapter);
-                                    }
-                                    break;
-                                case 2:
-                                    //TODO Add 3rd Beacon
-                                    break;
-                            }
-                        }
+                    queue.add(list.get(0));
+                    String newKing = selectKing(queue, threshold);
+                    if (newKing != null) {
+                        king[0] = newKing;
+                        getProductListAsync(buildBeaconFilter(newKing));
                     }
-                } else {
-                    Log.d(TAG, "No Beacons detected!: ");
+                } else{
+                        Log.d(TAG, "No Beacons detected!: ");
                 }
             }
+
+            private String selectKing(LimitedSizeQueue<Beacon> queue, int threshold) {
+                Map<String, Integer> hm = sortByFrequencies(queue, threshold);
+                Map.Entry<String, Integer> entry = hm.entrySet().iterator().next();
+                if (entry.getValue() > 1) {
+                    if (king[0].equals(entry.getKey())) {
+                        return entry.getKey();
+                    }
+                }
+                return null;
+            }
         });
+    }
+
+    private String getBeaconName(Beacon beacon) {
+        return String.format("%d:%d", beacon.getMajor(), beacon.getMinor());
+    }
+
+    public Map<String, Integer> sortByFrequencies(LimitedSizeQueue<Beacon> queue, int threshold) {
+
+        if (queue.size() < threshold) {
+            threshold = queue.size();
+        }
+
+        Map<String, Integer> hm = new HashMap<>();
+
+        for (Beacon o : queue.subList(queue.size() - threshold, queue.size() - 1)) {
+            Integer j = hm.get(getBeaconName(o));
+            hm.put(getBeaconName(o), (j == null) ? 1 : j + 1);
+        }
+
+        List<Map.Entry<String, Integer> > list =
+                new LinkedList<>(hm.entrySet());
+
+        // Sort the list
+        Collections.sort(list, new Comparator<Map.Entry<String, Integer> >() {
+            public int compare(Map.Entry<String, Integer> o1,
+                               Map.Entry<String, Integer> o2)
+            {
+                return (o1.getValue()).compareTo(o2.getValue());
+            }
+        });
+
+        // put data from sorted list to hashmap
+        HashMap<String, Integer> temp = new LinkedHashMap<String, Integer>();
+        for (Map.Entry<String, Integer> aa : list) {
+            temp.put(aa.getKey(), aa.getValue());
+        }
+        return temp;
     }
 
 
@@ -244,6 +320,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public boolean getSmartFilter() {
         return smartFilter;
+    }
+
+    @Override
+    public void setRecyclerViewAdapter(RecyclerView.Adapter adapter) {
+        mAdapter = adapter;
     }
 
     @Override
@@ -350,15 +431,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         }
     }
 
-    String filter;
-    RecyclerView.Adapter mAdapter;
+    // String filter;
+    // RecyclerView.Adapter mAdapter;
     ArrayList<Product> productList = new ArrayList<>();
 
     @Override
-    public void getProductListAsync(String productFilter, RecyclerView.Adapter productListAdapter) {
-        filter = productFilter;
-        mAdapter = productListAdapter;
-        new getProductList().execute();
+    public void getProductListAsync(List<Filter> productFilter) {
+        new getProductList(productFilter).execute();
+    }
+
+    private List<Filter> buildBeaconFilter(String beacon) {
+        List<Filter> filters = new ArrayList<>();
+        String[] arr = beacon.split(":");
+        filters.add(new Filter("major", arr[0]));
+        filters.add(new Filter("minor", arr[1]));
+        return filters;
     }
 
     @Override
@@ -369,6 +456,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private class getProductList extends AsyncTask<Void, Void, ArrayList<Product>> {
         private ProgressDialog progressDialog;
+        private List<Filter> filters;
 
         @Override
         protected void onPreExecute() {
@@ -378,7 +466,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             progressDialog.show();
         }
 
-        public getProductList() {
+        public getProductList(List<Filter> productFilter) {
+            filters = productFilter;
             progressDialog = new ProgressDialog(MainActivity.this);
         }
 
@@ -444,8 +533,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         private RequestBody buidFormBody() {
             FormBody.Builder body = new FormBody.Builder();
-            if (!filter.isEmpty()) {
-                body.add("region", filter);
+            if (filters.size() > 0) {
+                for (Filter filter : filters) {
+                    body.add(filter.getKey(), filter.getValue());
+                }
             }
             return body.build();
         }
