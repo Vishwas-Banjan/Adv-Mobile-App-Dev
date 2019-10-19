@@ -7,6 +7,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.ArraySet;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -50,6 +51,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Queue;
+import java.util.Set;
 import java.util.UUID;
 
 import okhttp3.FormBody;
@@ -106,11 +108,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
+    final String uuid = "b9407f30-f5f8-466e-aff9-25556b57fe6d";
+
     public void initiateBeaconRanging() {
         Log.d(TAG, "initiateBeaconRanging: ");
         beaconManager = new BeaconManager(this);
         region = new BeaconRegion("ranged region",
-                UUID.fromString("b9407f30-f5f8-466e-aff9-25556b57fe6d"), null, null);
+                UUID.fromString(uuid), null, null);
     }
 
 //    public void setBeaconRangingListener() {
@@ -209,6 +213,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 } else{
                         Log.d(TAG, "No Beacons detected!: ");
                 }
+
+//                if (listOfBeaconOnTop.size()==windowSize){
+//                    // choose winner and remove all elements of beacon
+//                    // setting 1st beacon as winner
+//                    Map.Entry<Beacon, Integer> firstElement = listOfBeaconOnTop.entrySet().iterator().next();
+//                    Beacon max = firstElement.getKey(); int countMax = firstElement.getValue();
+//                    for (Map.Entry<Beacon, Integer> beacon: listOfBeaconOnTop.entrySet()) {
+//                        if (beacon.getValue()>countMax){
+//                            // change max beacon and count
+//                            max = beacon.getKey();
+//                            countMax = beacon.getValue();
+//                        }
+//                    }
+//                    // now max and countMax are your current winner
+//                    getProductListAsync(filter, mAdapter);
+//                }
             }
 
             private String selectKing(LimitedSizeQueue<Beacon> queue, int threshold) {
