@@ -203,6 +203,7 @@ public class LogInFragment extends Fragment implements View.OnClickListener {
                     user.setUserEmail(userJSON.getString("email"));
                     user.setUserCity(userJSON.getString("city"));
                     pairTokenUser = new Pair<>(token, user);
+                    Log.d(TAG, "doInBackground: "+user.getUserCity());
                 }
             } catch (JSONException e) {
                 e.printStackTrace();
