@@ -82,6 +82,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     boolean smartFilter = true;
     private RecyclerView.Adapter mAdapter;
     final String TAG = "MainActivityTAG";
+    Beacon currentTop;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -123,17 +124,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 UUID.fromString("b9407f30-f5f8-466e-aff9-25556b57fe6d"), null, null);
     }
     // beacon1, beacon2, beacon3
-    Beacon king;
     int count = 0;
 
     public void setBeaconRangingListener() {
-        Log.d(TAG, "setBeaconRangingListener: ");
         // beacon identity minor:major
+        // TODO change the beacon major and minor to the ones given by professor
         final String beacon1 = "61548:47152";
         final String beacon2 = "44931:41072";
         final String beacon3 = "61348:47152";
-        final int windowSize = 5;
-        beaconManager.setBackgroundScanPeriod(1, 20);
+        final int windowSize = 3;
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
             public void onBeaconsDiscovered(BeaconRegion region, List<Beacon> list) {
@@ -151,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }else{
                             listOfCountOfTopBeacons.put(beacon, 1);
                         }
-                        Log.d(TAG, "onBeaconsDiscovered: count: "+count);
+                        Log.d(TAG, "onBeaconsDiscovered: top beacon: "+beacon.getMinor());
                         break;
                     }
                 }
@@ -160,7 +159,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 if (count == windowSize) {
                     // choose winner and remove all elements of beacon
                     // setting 1st beacon as winner
-//                    listOfTopBeacons.removeAll(listOfTopBeacons);
                     count = 0;
                     Map.Entry<Beacon, Integer> firstElement = listOfCountOfTopBeacons.entrySet().iterator().next();
                     Beacon max = firstElement.getKey(); int countMax = firstElement.getValue();
@@ -172,15 +170,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         }
                     }
 
+                    Log.d(TAG, "onBeaconsDiscovered: current top: "+((currentTop!=null)?currentTop.getMinor()+"":"null"));
+                    // TODO get data and update UI
+                    if (currentTop==null){
+                        currentTop = max;
+                        sendDataAndUpdateUI(max);
+                    }else{
+                        if (currentTop.getMinor()!=max.getMinor()){
+                            currentTop = max;
+                            sendDataAndUpdateUI(max);
+                        }
+                    }
+                    listOfCountOfTopBeacons.clear();
                     Log.d(TAG, "onBeaconsDiscovered: King: "+max.getMinor());
-                    // now max and countMax are your current winner
-//                    Log.d(TAG, "onBeaconsDiscovered: Winner is: "+ Arrays.asList(countOfBeaconOnTop).indexOf(max));
-                    // TODO Update UI
+                    // now max current winner
+
                 }
             }
         });
     }
-
 
     public void startBeaconRanging() {
         beaconManager.connect(new BeaconManager.ServiceReadyCallback() {
@@ -353,17 +361,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     // RecyclerView.Adapter mAdapter;
     ArrayList<Product> productList = new ArrayList<>();
 
+
+    void sendDataAndUpdateUI(Beacon beacon) {
+        List<Filter> filters = new ArrayList<>();
+        filters.add(new Filter("major", beacon.getMajor() + ""));
+        filters.add(new Filter("minor", beacon.getMinor() + ""));
+        getProductListAsync(filters);
+    }
+
     @Override
     public void getProductListAsync(List<Filter> productFilter) {
         new getProductList(productFilter).execute();
-    }
-
-    private List<Filter> buildBeaconFilter(String beacon) {
-        List<Filter> filters = new ArrayList<>();
-        String[] arr = beacon.split(":");
-        filters.add(new Filter("major", arr[0]));
-        filters.add(new Filter("minor", arr[1]));
-        return filters;
     }
 
     @Override
