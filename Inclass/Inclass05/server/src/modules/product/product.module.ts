@@ -9,7 +9,7 @@ import { FilterSchema } from '../../models/filter.shcema';
   imports: [
     MongooseModule.forFeature([{ name: 'products', schema: ProductSchema }]),
     MongooseModule.forFeature([
-      { name: 'beacon_region_map', schema: FilterSchema },
+      { name: 'beacon_region_maps', schema: FilterSchema },
     ]),
     SharedModule,
   ],

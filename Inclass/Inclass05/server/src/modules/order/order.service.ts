@@ -2,12 +2,11 @@ import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { PaymentIntent } from '../../types/payment-intent';
-import { ProductService } from '../product/product.service';
 
 @Injectable()
 export class OrderService {
   constructor(
-    @InjectModel('ordersDB') private paymentDataModel: Model<PaymentIntent>,
+    @InjectModel('ordersdbs') private paymentDataModel: Model<PaymentIntent>,
   ) {}
 
   async listOrdersByUser(userId: string) {
@@ -15,7 +14,7 @@ export class OrderService {
       personID: { $eq: userId },
     });
 
-    if (!orders || orders.length == 0) {
+    if (!orders || orders.length === 0) {
       throw new HttpException('No Orders Found', HttpStatus.NO_CONTENT);
     }
 
