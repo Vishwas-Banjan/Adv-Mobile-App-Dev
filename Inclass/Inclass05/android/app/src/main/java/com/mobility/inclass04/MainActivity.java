@@ -131,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // TODO change the beacon major and minor to the ones given by professor
         final String beacon1 = "61548:47152";
         final String beacon2 = "44931:41072";
-        final String beacon3 = "61348:47152";
+        final String beacon3 = "56751:15326";
         final int windowSize = 3;
         beaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
