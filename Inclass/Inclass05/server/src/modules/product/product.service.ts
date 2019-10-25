@@ -9,7 +9,7 @@ import { Filter } from '../../types/filter';
 export class ProductService {
   constructor(
     @InjectModel('products') private productModel: Model<Product>,
-    @InjectModel('beacon_region_map') private filterModel: Model<Filter>,
+    @InjectModel('beacon_region_maps') private filterModel: Model<Filter>,
   ) {}
 
   async findAll(): Promise<Product[]> {

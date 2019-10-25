@@ -4,6 +4,6 @@ export const FilterSchema = new mongoose.Schema({
   minor: String,
   major: String,
   region: String,
-  filter: String,
+  beaconColor: String,
   uuid: String,
 });
