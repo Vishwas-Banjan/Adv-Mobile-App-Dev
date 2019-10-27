@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="me.prashantpandey.bluetoothexp">
+    package="com.mobility.ble">
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
@@ -18,11 +18,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <service
-            android:name=".BluetoothService"
+            android:name="com.mobility.com.mobility.ble.BluetoothService"
             android:enabled="true"
             android:exported="true"></service>
 
-        <activity android:name=".MainActivity">
+        <activity android:name="com.mobility.com.mobility.ble.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
