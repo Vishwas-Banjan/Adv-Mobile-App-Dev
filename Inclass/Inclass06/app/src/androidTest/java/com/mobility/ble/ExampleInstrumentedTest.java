@@ -1,4 +1,4 @@
-package me.prashantpandey.bluetoothexp;
+package com.mobility.ble;
 
 import android.content.Context;
 
