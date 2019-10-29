@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">BluetoothExp</string>
+    <string name="bulb_label">Bulb</string>
+    <string name="beep_button_label">Toggle Beep</string>
+    <string name="ble_not_supported">Ble Not Supported</string>
+    <string name="error_bluetooth_not_supported">Bluetooth Not Supported</string>
+    <string name="bulb_service">ffff</string>
+    <string name="scanning_text">Scanning...</string>
 </resources>
