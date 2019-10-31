@@ -1,2 +1,2 @@
 include ':app'
-rootProject.name='BluetoothExp'
+rootProject.name='BluetoothDemo'

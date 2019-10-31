@@ -1,4 +1,4 @@
-package me.prashantpandey.bluetoothexp;
+package com.vbanjan.bluetoothdemo;
 
 import org.junit.Test;
 

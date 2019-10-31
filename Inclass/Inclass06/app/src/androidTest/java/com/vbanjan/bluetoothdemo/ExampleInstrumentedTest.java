@@ -1,4 +1,4 @@
-package me.prashantpandey.bluetoothexp;
+package com.vbanjan.bluetoothdemo;
 
 import android.content.Context;
 
@@ -22,6 +22,6 @@ public class ExampleInstrumentedTest {
         // Context of the app under test.
         Context appContext = InstrumentationRegistry.getInstrumentation().getTargetContext();
 
-        assertEquals("me.prashantpandey.bluetoothexp", appContext.getPackageName());
+        assertEquals("com.vbanjan.bluetoothdemo", appContext.getPackageName());
     }
 }
