@@ -14,6 +14,9 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
+import android.os.MessageQueue;
 import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
@@ -50,7 +53,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tempTextView;
     int disconnectCount = 0;
     private static final String DEVICE_ADDRESS = "A8:3E:0E:B4:70:23";
-//        UUID BULB_SERVICE_UUID = UUID.fromString("df178e19-c76d-06fa-8cd7-22c7728c0d6a"); //Nokia
+    //        UUID BULB_SERVICE_UUID = UUID.fromString("df178e19-c76d-06fa-8cd7-22c7728c0d6a"); //Nokia
 //    UUID BULB_SERVICE_UUID = UUID.fromString("df3ba82c-96c6-ca1b-6667-15a1387df982"); // OP 5
 //    UUID BULB_SERVICE_UUID = UUID.fromString("df88904f-f92f-5543-3a01-f475e8b59ca9"); // sukalp
 //    UUID BULB_SERVICE_UUID = UUID.fromString("dffb0d6d-2abc-8234-c92e-fec37fd2fa90"); // chester
@@ -68,6 +71,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Button bulbON, bulbOFF, beepON, connect;
 
     BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
+
     ScanSettings settings = new ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_BALANCED)
 //            .setCallbackType(ScanSettings.CALLBACK_TYPE_ALL_MATCHES)
@@ -79,7 +83,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     ScanFilter scanFilter = new ScanFilter.Builder()
             .setServiceUuid(new ParcelUuid(BULB_SERVICE_UUID)).build();
 
-
+    Handler bleHandler;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,6 +98,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         connect = findViewById(R.id.connect);
         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
+
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//            bleRquestQueue = bleHandler.getLooper().getQueue();
+//        }else{
+//            bleRquestQueue = Looper.myQueue();
+//        }
 
         //Arrays.asList(scanFilter), settings,
         scanner.startScan(Arrays.asList(scanFilter), settings, mScanCallback);
@@ -113,10 +123,37 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     Runnable discoverServicesRunnable;
-    Handler bleHandler = new Handler();
     BluetoothGatt mGatt, workingGatt;
     BluetoothDevice myDevice;
     BluetoothGattCharacteristic switch_characteristic, beep_characteristic;
+    // read write characterstics runnables
+    Runnable readSwitch= new Runnable() {
+        @Override
+        public void run() {
+            mGatt.readCharacteristic(switch_characteristic);
+        }
+    };
+
+    Runnable writeSwitch= new Runnable() {
+        @Override
+        public void run() {
+            mGatt.writeCharacteristic(switch_characteristic);
+        }
+    };
+
+    Runnable readBeep = new Runnable() {
+        @Override
+        public void run() {
+            mGatt.readCharacteristic(beep_characteristic);
+        }
+    };
+    Runnable writeBeep = new Runnable() {
+        @Override
+        public void run() {
+            mGatt.readCharacteristic(beep_characteristic);
+        }
+    };
+
     BluetoothGattCallback mGattCallback = new BluetoothGattCallback() {
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
@@ -172,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             Log.i(TAG, String.format(Locale.ENGLISH, "discovered %d services for '%s'", services.size(), myDevice.getAddress()));
 
             // Get the TEMP characteristic
-            BluetoothGattCharacteristic temp_characteristic = gatt
+            final BluetoothGattCharacteristic temp_characteristic = gatt
                     .getService(BULB_SERVICE_UUID)
                     .getCharacteristic(BULB_TEMP_CHAR_UUID);
             BULB_TEMP_DESCRIPTOR_UUID = UUID.fromString(String.valueOf(temp_characteristic.getDescriptors().get(0).getUuid()));
@@ -187,12 +224,29 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             workingGatt = gatt;
 
-            // Enable notifications for this characteristic locally
-            gatt.setCharacteristicNotification(temp_characteristic, true);
-
             BluetoothGattDescriptor temp_descriptor =
                     temp_characteristic.getDescriptor(BULB_TEMP_DESCRIPTOR_UUID);
             temp_descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+
+            // setting up notifications
+            bleHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    gatt.setCharacteristicNotification(temp_characteristic, true);
+                }
+            });
+
+//            // Enable notifications for this characteristic locally
+//            gatt.setCharacteristicNotification(temp_characteristic, true);
+
+            bleHandler.post(readSwitch);
+            bleHandler.post(readBeep);
+
+
+//            BluetoothGattDescriptor temp_descriptor =
+//                    temp_characteristic.getDescriptor(BULB_TEMP_DESCRIPTOR_UUID);
+//            temp_descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+
 
 //            gatt.writeDescriptor(temp_descriptor); //START NOTIFICATION
 
@@ -286,13 +340,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void toggleBulb(int bulbState){
         Log.d(TAG, "toggleBulb: BulbState:"+bulbState);
         switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(bulbState).array()); //WRITE BULB OFF
-        workingGatt.writeCharacteristic(switch_characteristic);
+        bleHandler.post(writeSwitch);
         uiElementsEnable(true);
     }
 
     private void toggleBeep(String beepState){
         beep_characteristic.setValue(beepState.getBytes()); //WRITE SOUND ON
-        mGatt.writeCharacteristic(beep_characteristic);
+        bleHandler.post(writeBeep);
         uiElementsEnable(true);
     }
 
