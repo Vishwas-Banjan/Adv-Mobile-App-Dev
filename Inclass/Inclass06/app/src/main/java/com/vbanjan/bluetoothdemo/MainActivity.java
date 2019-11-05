@@ -89,6 +89,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        bleHandler = new Handler();
         enableBluetooth();
         textView = findViewById(R.id.TestTextView);
         tempTextView = findViewById(R.id.tempTextView);
@@ -140,7 +141,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             mGatt.writeCharacteristic(switch_characteristic);
         }
     };
-
     Runnable readBeep = new Runnable() {
         @Override
         public void run() {
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     Runnable writeBeep = new Runnable() {
         @Override
         public void run() {
-            mGatt.readCharacteristic(beep_characteristic);
+            mGatt.writeCharacteristic(beep_characteristic);
         }
     };
 
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            Log.d(TAG, "onCharacteristicWrite: ");
+            bleHandler.post(readSwitch);
             writeCharacteristics(characteristic);
         }
 
@@ -417,10 +417,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (v.getId()){
             case R.id.bulbON:{
                 toggleBulb(1);
+                Log.d(TAG, "onClick: bulb is on");
                 break;
             }
             case R.id.bulbOFF:{
                 toggleBulb(0);
+                Log.d(TAG, "onClick: bulb is off");
                 break;
             }
             case R.id.BeepON:{
