@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -214,6 +215,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             final List<BluetoothGattService> services = gatt.getServices();
             Log.i(TAG, String.format(Locale.ENGLISH, "discovered %d services for '%s'", services.size(), myDevice.getAddress()));
 
+            Iterator<BluetoothGattService> it = services.iterator();
+            while (it.hasNext()){
+                BluetoothGattService at = it.next();
+                Log.i(TAG, String.format(Locale.ENGLISH, "onServicesDiscovered: for %s service with name: %s",at.describeContents(), at.getUuid()));
+            }
             // Get the TEMP characteristic
             final BluetoothGattCharacteristic temp_characteristic = gatt
                     .getService(BULB_SERVICE_UUID)
@@ -241,9 +247,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            gatt.setCharacteristicNotification(temp_characteristic, true);
 
             // adding command to the queue
-//            bleReqQueue.add(readSwitch);
-//            bleReqQueue.add(readBeep);
-//            executeNextBleRequest();
+            synchronized (bleReqQueue){
+                bleReqQueue.add(readSwitch);
+                bleReqQueue.add(readBeep);
+                executeNextBleRequest();
+            }
+
 
 //            BluetoothGattDescriptor temp_descriptor =
 //                    temp_characteristic.getDescriptor(BULB_TEMP_DESCRIPTOR_UUID);
@@ -256,11 +265,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //            gatt.readCharacteristic(beep_characteristic); //READ BEEP STATUS
 
-            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(1).array()); //WRITE BULB OFF
-            gatt.writeCharacteristic(switch_characteristic);
+//            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(0).array()); //WRITE BULB OFF
+//            gatt.writeCharacteristic(switch_characteristic);
 
 //            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(1).array()); //WRITE BULB ON
 //            gatt.writeCharacteristic(switch_characteristic);
+//            Log.i(TAG, "onServicesDiscovered: sent bulb on");
 
 //            beep_characteristic.setValue("Beeping".getBytes()); //WRITE SOUND ON
 //            gatt.writeCharacteristic(beep_characteristic);
@@ -273,8 +283,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
             Log.d(TAG, "onCharacteristicWrite: "+ characteristic.getUuid());
-//            writeCharacteristics(characteristic);
-//            completedBleCommand();
+            writeCharacteristics(characteristic);
+            completedBleCommand();
         }
 
         @Override
@@ -293,8 +303,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic, int status) {
             Log.d(TAG, "onCharacteristicRead: "+ Arrays.toString(characteristic.getValue()));
-//            readCharacteristics(characteristic);
-//            completedBleCommand();
+            readCharacteristics(characteristic);
+            completedBleCommand();
         }
 
         private void readCharacteristics(BluetoothGattCharacteristic
@@ -374,6 +384,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     void executeNextBleRequest(){
+
         if (bleQueueRunning){
             Log.d(TAG, "executeNextBleRequest: ble running");
             return;
@@ -386,10 +397,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             return;
         }
 
+        if (bleReqQueue.size()<=0){
+            Log.d(TAG, "executeNextBleRequest: no element found in queue.");
+            return;
+        }
+
+        Log.i(TAG, "executeNextBleRequest: executing next request, size:"+bleReqQueue.size());
+
         if (bleReqQueue.size()>0){
-            Log.d(TAG, "executeNextBleRequest: executing program");
+            Log.d(TAG, "executeNextBleRequest: executing current queue task");
             // run the command in queue
-            bleHandler.post(bleReqQueue.poll());
+            bleHandler.post(bleReqQueue.peek());
             bleQueueRunning = true;
             noOfTries = 0;
         }
@@ -400,6 +418,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     void completedBleCommand(){
         bleQueueRunning = false;
         bleReqQueue.poll();
+        System.out.println("queue 1st element is removed");
         executeNextBleRequest();
     }
 
