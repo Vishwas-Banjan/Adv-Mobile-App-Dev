@@ -2,5 +2,10 @@
 <resources>
     <color name="colorPrimary">#008577</color>
     <color name="colorPrimaryDark">#00574B</color>
-    <color name="colorAccent">#D81B60</color>
+    <color name="colorAccent">#D50D4641</color>
+    <color name="textColor">#f0f0f0</color>
+    <color name="connectBtnColor">#FF9800</color>
+    <color name="bulbON">#8CC415</color>
+    <color name="bulbOFF">#03A9F4</color>
+    <color name="beepON">#F44336</color>
 </resources>
