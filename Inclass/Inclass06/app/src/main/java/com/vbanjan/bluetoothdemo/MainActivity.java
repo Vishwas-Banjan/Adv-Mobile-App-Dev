@@ -30,6 +30,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.PriorityQueue;
@@ -84,6 +85,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             .setServiceUuid(new ParcelUuid(BULB_SERVICE_UUID)).build();
 
     Handler bleHandler;
+    Queue<Runnable> bleReqQueue;
+    boolean bleQueueRunning = false;
+    int noOfTries = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,6 +103,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         connect = findViewById(R.id.connect);
         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
+
+        bleReqQueue=new LinkedList<>();
 
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
 //            bleRquestQueue = bleHandler.getLooper().getQueue();
@@ -229,19 +235,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             temp_descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 
             // setting up notifications
-            bleHandler.post(new Runnable() {
-                @Override
-                public void run() {
-                    gatt.setCharacteristicNotification(temp_characteristic, true);
-                }
-            });
+//            gatt.setCharacteristicNotification(temp_characteristic, true);
 
 //            // Enable notifications for this characteristic locally
 //            gatt.setCharacteristicNotification(temp_characteristic, true);
 
-            bleHandler.post(readSwitch);
-            bleHandler.post(readBeep);
-
+            // adding command to the queue
+//            bleReqQueue.add(readSwitch);
+//            bleReqQueue.add(readBeep);
+//            executeNextBleRequest();
 
 //            BluetoothGattDescriptor temp_descriptor =
 //                    temp_characteristic.getDescriptor(BULB_TEMP_DESCRIPTOR_UUID);
@@ -254,8 +256,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //            gatt.readCharacteristic(beep_characteristic); //READ BEEP STATUS
 
-//            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(0).array()); //WRITE BULB OFF
-//            gatt.writeCharacteristic(switch_characteristic);
+            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(1).array()); //WRITE BULB OFF
+            gatt.writeCharacteristic(switch_characteristic);
 
 //            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(1).array()); //WRITE BULB ON
 //            gatt.writeCharacteristic(switch_characteristic);
@@ -270,8 +272,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         public void onCharacteristicWrite(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic, int status) {
-            bleHandler.post(readSwitch);
-            writeCharacteristics(characteristic);
+            Log.d(TAG, "onCharacteristicWrite: "+ characteristic.getUuid());
+//            writeCharacteristics(characteristic);
+//            completedBleCommand();
         }
 
         @Override
@@ -289,7 +292,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onCharacteristicRead(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic, int status) {
-            readCharacteristics(characteristic);
+            Log.d(TAG, "onCharacteristicRead: "+ Arrays.toString(characteristic.getValue()));
+//            readCharacteristics(characteristic);
+//            completedBleCommand();
         }
 
         private void readCharacteristics(BluetoothGattCharacteristic
@@ -297,6 +302,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             if (BULB_TEMP_CHAR_UUID.equals(characteristic.getUuid())) {
                 Log.d(TAG, "readCharacteristics: Updating Temp");
                 final byte[] data = characteristic.getValue();
+                // data manipulation
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -333,20 +339,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic) {
-            readCharacteristics(characteristic);
+//            readCharacteristics(characteristic);
+//            completedBleCommand();
         }
+
+
     };
 
     private void toggleBulb(int bulbState){
         Log.d(TAG, "toggleBulb: BulbState:"+bulbState);
         switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(bulbState).array()); //WRITE BULB OFF
-        bleHandler.post(writeSwitch);
+        bleReqQueue.add(writeSwitch);
+        // execute next command
+        executeNextBleRequest();
         uiElementsEnable(true);
     }
 
     private void toggleBeep(String beepState){
         beep_characteristic.setValue(beepState.getBytes()); //WRITE SOUND ON
-        bleHandler.post(writeBeep);
+        bleReqQueue.add(writeBeep);
+        executeNextBleRequest();
         uiElementsEnable(true);
     }
 
@@ -359,6 +371,36 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void toggleConnectBtn(boolean enable){
 //        connect.setEnabled(enable);
+    }
+
+    void executeNextBleRequest(){
+        if (bleQueueRunning){
+            Log.d(TAG, "executeNextBleRequest: ble running");
+            return;
+        }
+
+        if (mGatt==null){
+            Log.d(TAG, "executeNextBleRequest: invalid gatt");
+            bleReqQueue.clear();
+            bleQueueRunning = false;
+            return;
+        }
+
+        if (bleReqQueue.size()>0){
+            Log.d(TAG, "executeNextBleRequest: executing program");
+            // run the command in queue
+            bleHandler.post(bleReqQueue.poll());
+            bleQueueRunning = true;
+            noOfTries = 0;
+        }
+
+
+    }
+
+    void completedBleCommand(){
+        bleQueueRunning = false;
+        bleReqQueue.poll();
+        executeNextBleRequest();
     }
 
 
