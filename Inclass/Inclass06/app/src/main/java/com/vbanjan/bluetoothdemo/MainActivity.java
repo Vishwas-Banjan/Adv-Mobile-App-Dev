@@ -21,6 +21,7 @@ import android.os.ParcelUuid;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -55,11 +56,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     TextView tempTextView;
     int disconnectCount = 0;
     private static final String DEVICE_ADDRESS = "A8:3E:0E:B4:70:23";
-    //        UUID BULB_SERVICE_UUID = UUID.fromString("df178e19-c76d-06fa-8cd7-22c7728c0d6a"); //Nokia
-//    UUID BULB_SERVICE_UUID = UUID.fromString("df3ba82c-96c6-ca1b-6667-15a1387df982"); // OP 5
-//    UUID BULB_SERVICE_UUID = UUID.fromString("df88904f-f92f-5543-3a01-f475e8b59ca9"); // sukalp
-//    UUID BULB_SERVICE_UUID = UUID.fromString("dffb0d6d-2abc-8234-c92e-fec37fd2fa90"); // chester
-    UUID BULB_SERVICE_UUID = UUID.fromString("df8186aa-69dc-b3fa-769e-b854b276b922"); // dev
+    UUID BULB_SERVICE_UUID = UUID.fromString("df8186aa-69dc-b3fa-769e-b854b276b922");
     //    UUID BULB_SERVICE_UUID = UUID.fromString("df12e166-2f80-b799-40dc-6ed8a52ede1f"); //MOTO
     UUID BULB_SWITCH_CHAR_UUID = UUID.fromString("FB959362-F26E-43A9-927C-7E17D8FB2D8D");
     UUID BULB_TEMP_CHAR_UUID = UUID.fromString("0CED9345-B31F-457D-A6A2-B3DB9B03E39A");
@@ -71,6 +68,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 
     Button bulbON, bulbOFF, beepON, connect;
+    ProgressBar progressBar;
 
     BluetoothLeScannerCompat scanner = BluetoothLeScannerCompat.getScanner();
 
@@ -87,8 +85,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     Handler bleHandler;
     Queue<Runnable> bleReqQueue;
+    BluetoothGattDescriptor temp_descriptor;
     boolean bleQueueRunning = false;
-    int noOfTries = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,18 +98,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tempTextView = findViewById(R.id.tempTextView);
         bulbON = findViewById(R.id.bulbON);
         bulbOFF = findViewById(R.id.bulbOFF);
-        beepON = findViewById(R.id.BeepON);
+        beepON = findViewById(R.id.beepON);
         connect = findViewById(R.id.connect);
+        progressBar = findViewById(R.id.progressBar);
+//        toggleConnectBtn(Button.INVISIBLE);
+        uiElementsEnable(Button.INVISIBLE);
         bluetoothManager = (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
         bluetoothAdapter = bluetoothManager.getAdapter();
 
         bleReqQueue=new LinkedList<>();
-
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//            bleRquestQueue = bleHandler.getLooper().getQueue();
-//        }else{
-//            bleRquestQueue = Looper.myQueue();
-//        }
 
         //Arrays.asList(scanFilter), settings,
         scanner.startScan(Arrays.asList(scanFilter), settings, mScanCallback);
@@ -131,21 +126,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     Runnable discoverServicesRunnable;
-    BluetoothGatt mGatt, workingGatt;
+    BluetoothGatt mGatt;
     BluetoothDevice myDevice;
-    BluetoothGattCharacteristic switch_characteristic, beep_characteristic;
+    BluetoothGattCharacteristic bulbSwitchCharacterstic, beep_characteristic, temp_characteristic;
     // read write characterstics runnables
     Runnable readSwitch= new Runnable() {
         @Override
         public void run() {
-            mGatt.readCharacteristic(switch_characteristic);
+            mGatt.readCharacteristic(bulbSwitchCharacterstic);
         }
     };
 
     Runnable writeSwitch= new Runnable() {
         @Override
         public void run() {
-            mGatt.writeCharacteristic(switch_characteristic);
+            mGatt.writeCharacteristic(bulbSwitchCharacterstic);
+            Log.d(TAG, "run: "+ Arrays.toString(bulbSwitchCharacterstic.getValue()));
         }
     };
     Runnable readBeep = new Runnable() {
@@ -193,6 +189,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                             }
                         };
                         bleHandler.postDelayed(discoverServicesRunnable, delay);
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                toggleConnectBtn(Button.INVISIBLE);
+                            }
+                        });
                     } else if (bondstate == BOND_BONDING) {
                         // Bonding process in progress, let it complete
                         Log.i(TAG, "waiting for bonding to complete");
@@ -201,9 +203,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             } else {
                 // An error happened...figure out what happened!
                 if (newState == BluetoothProfile.STATE_DISCONNECTED) {
-                    Log.d(TAG, "onConnectionStateChange: ");
+                    Log.d(TAG, "onConnectionStateChange to disconnected");
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            toggleConnectBtn(Button.VISIBLE);
+                        }
+                    });
                 }
-                toggleConnectBtn(true);
                 gatt.close();
             }
         }
@@ -217,16 +224,22 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             Iterator<BluetoothGattService> it = services.iterator();
             while (it.hasNext()){
-                BluetoothGattService at = it.next();
-                Log.i(TAG, String.format(Locale.ENGLISH, "onServicesDiscovered: for %s service with name: %s",at.describeContents(), at.getUuid()));
+                BluetoothGattService bluetoothGattService = it.next();
+                Iterator<BluetoothGattCharacteristic> at = bluetoothGattService.getCharacteristics().iterator();
+                Log.d(TAG, "onServicesDiscovered: service: "+bluetoothGattService.getUuid());
+                while (at.hasNext()){
+                    BluetoothGattCharacteristic bluetoothGattCharacteristic = at.next();
+                    Log.d(TAG, "onServicesDiscovered: characterstic: "+bluetoothGattCharacteristic.getUuid());
+                }
+
             }
             // Get the TEMP characteristic
-            final BluetoothGattCharacteristic temp_characteristic = gatt
+            temp_characteristic = gatt
                     .getService(BULB_SERVICE_UUID)
                     .getCharacteristic(BULB_TEMP_CHAR_UUID);
             BULB_TEMP_DESCRIPTOR_UUID = UUID.fromString(String.valueOf(temp_characteristic.getDescriptors().get(0).getUuid()));
 
-            switch_characteristic = gatt
+            bulbSwitchCharacterstic = gatt
                     .getService(BULB_SERVICE_UUID)
                     .getCharacteristic(BULB_SWITCH_CHAR_UUID);
 
@@ -234,11 +247,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     .getService(BULB_SERVICE_UUID)
                     .getCharacteristic(BULB_BEEP_CHAR_UUID);
 
-            workingGatt = gatt;
-
-            BluetoothGattDescriptor temp_descriptor =
+            temp_descriptor =
                     temp_characteristic.getDescriptor(BULB_TEMP_DESCRIPTOR_UUID);
-            temp_descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
 
             // setting up notifications
 //            gatt.setCharacteristicNotification(temp_characteristic, true);
@@ -247,11 +257,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //            gatt.setCharacteristicNotification(temp_characteristic, true);
 
             // adding command to the queue
-            synchronized (bleReqQueue){
-                bleReqQueue.add(readSwitch);
-                bleReqQueue.add(readBeep);
-                executeNextBleRequest();
-            }
+            bleReqQueue.add(readSwitch);
+            bleReqQueue.add(readBeep);
+            executeNextBleRequest();
 
 
 //            BluetoothGattDescriptor temp_descriptor =
@@ -261,15 +269,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
 //            gatt.writeDescriptor(temp_descriptor); //START NOTIFICATION
 
-//            gatt.readCharacteristic(switch_characteristic); //READ BULB STATUS
+//            gatt.readCharacteristic(bulbSwitchCharacterstic); //READ BULB STATUS
 
 //            gatt.readCharacteristic(beep_characteristic); //READ BEEP STATUS
 
-//            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(0).array()); //WRITE BULB OFF
-//            gatt.writeCharacteristic(switch_characteristic);
+//            bulbSwitchCharacterstic.setValue(ByteBuffer.allocate(4).putInt(0).array()); //WRITE BULB OFF
+//            gatt.writeCharacteristic(bulbSwitchCharacterstic);
 
-//            switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(1).array()); //WRITE BULB ON
-//            gatt.writeCharacteristic(switch_characteristic);
+//            bulbSwitchCharacterstic.setValue(ByteBuffer.allocate(4).putInt(1).array()); //WRITE BULB ON
+//            gatt.writeCharacteristic(bulbSwitchCharacterstic);
 //            Log.i(TAG, "onServicesDiscovered: sent bulb on");
 
 //            beep_characteristic.setValue("Beeping".getBytes()); //WRITE SOUND ON
@@ -292,10 +300,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                                       int status) {
             if (BULB_TEMP_DESCRIPTOR_UUID.equals(descriptor.getUuid())) {
                 Log.d(TAG, "onDescriptorWrite: ");
-                BluetoothGattCharacteristic characteristic = gatt
+                final BluetoothGattCharacteristic characteristic = gatt
                         .getService(BULB_SERVICE_UUID)
                         .getCharacteristic(BULB_TEMP_CHAR_UUID);
-                gatt.readCharacteristic(characteristic);
+                bleReqQueue.add(new Runnable() {
+                    @Override
+                    public void run() {
+                        mGatt.readCharacteristic(characteristic);
+                    }
+                });
+                executeNextBleRequest();
             }
         }
 
@@ -310,12 +324,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         private void readCharacteristics(BluetoothGattCharacteristic
                                                  characteristic) {
             if (BULB_TEMP_CHAR_UUID.equals(characteristic.getUuid())) {
-                Log.d(TAG, "readCharacteristics: Updating Temp");
                 final byte[] data = characteristic.getValue();
                 // data manipulation
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        Log.d(TAG, "readCharacteristics: Updating Temp");
                         updateTemp(data);
                     }
                 });
@@ -340,7 +354,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         private void writeCharacteristics(BluetoothGattCharacteristic characteristic) {
             if (BULB_SWITCH_CHAR_UUID.equals(characteristic.getUuid())) {
-                Log.d(TAG, "writeCharacteristics: WRITE SWITCH VALUE "+ ByteBuffer.wrap(characteristic.getValue()).getInt());
+                Log.d(TAG, "writeCharacteristics: BULB UPDATE");
             } else if (BULB_BEEP_CHAR_UUID.equals(characteristic.getUuid())) {
                 Log.d(TAG, "writeCharacteristics: BEEP UPDATE");
             }
@@ -349,38 +363,46 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic
                 characteristic) {
-//            readCharacteristics(characteristic);
+            readCharacteristics(characteristic);
 //            completedBleCommand();
         }
 
 
     };
 
-    private void toggleBulb(int bulbState){
-        Log.d(TAG, "toggleBulb: BulbState:"+bulbState);
-        switch_characteristic.setValue(ByteBuffer.allocate(4).putInt(bulbState).array()); //WRITE BULB OFF
-        bleReqQueue.add(writeSwitch);
-        // execute next command
-        executeNextBleRequest();
-        uiElementsEnable(true);
+    private void toggleBulb(String bulbState){
+        synchronized (bleReqQueue){
+            bulbSwitchCharacterstic.setValue(bulbState); //WRITE BULB OFF
+            bleReqQueue.add(writeSwitch);
+            // execute next command
+            executeNextBleRequest();
+        }
     }
 
     private void toggleBeep(String beepState){
         beep_characteristic.setValue(beepState.getBytes()); //WRITE SOUND ON
         bleReqQueue.add(writeBeep);
         executeNextBleRequest();
-        uiElementsEnable(true);
     }
 
-    private void uiElementsEnable(boolean enabled){
+    private void uiElementsEnable(int enabled){
         // set ui elements enable or disable
-        bulbON.setEnabled(enabled);
-        bulbOFF.setEnabled(enabled);
-        beepON.setEnabled(enabled);
+        Log.d(TAG, "uiElementsEnable: "+enabled);
+        bulbON.setVisibility(enabled);
+        bulbOFF.setVisibility(enabled);
+        beepON.setVisibility(enabled);
+        Log.d(TAG, "uiElementsEnable: "+enabled);
     }
 
-    private void toggleConnectBtn(boolean enable){
-//        connect.setEnabled(enable);
+    private void toggleConnectBtn(int enabled){
+        connect.setVisibility(enabled);
+        if (enabled==Button.VISIBLE){
+//            progressBar.setVisibility(ProgressBar.GONE);
+            uiElementsEnable(Button.INVISIBLE);
+        } else{
+//            progressBar.setVisibility(ProgressBar.VISIBLE);
+            uiElementsEnable(Button.VISIBLE);
+        }
     }
 
     void executeNextBleRequest(){
@@ -398,18 +420,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
 
         if (bleReqQueue.size()<=0){
+            // here we can enable notifications
+            temp_descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            mGatt.setCharacteristicNotification(temp_characteristic, true);
             Log.d(TAG, "executeNextBleRequest: no element found in queue.");
             return;
         }
 
-        Log.i(TAG, "executeNextBleRequest: executing next request, size:"+bleReqQueue.size());
+//        Log.i(TAG, "executeNextBleRequest: executing next request, size:"+bleReqQueue.size());
 
         if (bleReqQueue.size()>0){
-            Log.d(TAG, "executeNextBleRequest: executing current queue task");
-            // run the command in queue
-            bleHandler.post(bleReqQueue.peek());
-            bleQueueRunning = true;
-            noOfTries = 0;
+            // here we can disable notification
+            synchronized (bleReqQueue){
+                temp_descriptor.setValue(BluetoothGattDescriptor.DISABLE_NOTIFICATION_VALUE);
+                mGatt.setCharacteristicNotification(temp_characteristic, true);
+//                Log.d(TAG, "executeNextBleRequest: executing current queue task");
+                // run the command in queue
+                bleHandler.post(bleReqQueue.peek());
+                bleQueueRunning = true;
+            }
         }
 
 
@@ -423,6 +452,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+
     private final ScanCallback mScanCallback = new ScanCallback() {
         @RequiresApi(api = Build.VERSION_CODES.M)
         @Override
@@ -433,15 +463,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 //                ScanResult result = results.get(0);
                 BluetoothDevice device = result.getDevice();
                 final String deviceAddress = device.getAddress();
-                textView.setText(result.toString());
-
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        textView.setText("Found the device nearby, Ready to connect on your command...");
+                        toggleConnectBtn(Button.VISIBLE);
+                    }
+                });
                 connect.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.d(TAG, "scanForBluetoothDevices: stopped scanning");
                         myDevice = bluetoothAdapter.getRemoteDevice(deviceAddress);
                         mGatt = myDevice.connectGatt(getApplicationContext(), false, mGattCallback, BluetoothDevice.TRANSPORT_LE);
-                        toggleConnectBtn(false);
                     }
                 });
 
@@ -474,24 +508,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        uiElementsEnable(false);
         switch (v.getId()){
             case R.id.bulbON:{
-                toggleBulb(1);
+                toggleBulb(String.valueOf(0x00000001));
                 Log.d(TAG, "onClick: bulb is on");
                 break;
             }
             case R.id.bulbOFF:{
-                toggleBulb(0);
+                toggleBulb(String.valueOf(0x00000000));
                 Log.d(TAG, "onClick: bulb is off");
                 break;
             }
-            case R.id.BeepON:{
+            case R.id.beepON:{
                 toggleBeep("Beeping");
-                break;
-            }
-            default:{
-                uiElementsEnable(true);
                 break;
             }
         }
