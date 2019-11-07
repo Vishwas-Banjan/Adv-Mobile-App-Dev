@@ -7,97 +7,138 @@
     android:background="@color/colorAccent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/TestTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="50dp"
-        android:layout_marginRight="50dp"
-        android:text="Scanning.."
-        android:textColor="@color/textColor"
-        app:layout_constraintBottom_toTopOf="@+id/bulbON"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/tempTextView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textAlignment="center"
-        android:gravity="center"
-        android:textColor="@color/textColor"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:textSize="42sp"
-        android:text="Temperature: 0 F"
-        app:layout_constraintBottom_toTopOf="@+id/TestTextView"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <Button
-        android:id="@+id/bulbON"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/bulbON"
-        android:text="Bulb ON"
-        android:textColor="@color/textColor"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/bulbOFF"
-        app:layout_constraintStart_toEndOf="@+id/bulbOFF"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TestTextView" />
-
-    <Button
-        android:id="@+id/bulbOFF"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/bulbOFF"
-        android:text="Bulb OFF"
-        android:textColor="@color/textColor"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/bulbON"
-        app:layout_constraintTop_toBottomOf="@+id/TestTextView" />
-
-    <Button
-        android:id="@+id/beepON"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Beep ON"
-        android:textColor="@color/textColor"
-        android:background="@color/beepON"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bulbON" />
-
-
-    <Button
-        android:id="@+id/connect"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:background="@drawable/button_figure"
-        android:text="Connect"
-        android:visibility="invisible"
-        android:textColor="@color/textColor"
-        android:textSize="30sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/TestTextView" />
-
     <ProgressBar
         android:id="@+id/progressBar"
-        android:visibility="gone"
         style="?android:attr/progressBarStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.65" />
+
+    <TextView
+        android:id="@+id/TestTextView"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="32dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginRight="32dp"
+        android:gravity="center_horizontal|center_vertical"
+        android:text="Scanning.."
+        android:textColor="@color/textColor"
+        app:layout_constraintHorizontal_bias="0.497"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tempTextView" />
+
+    <TextView
+        android:id="@+id/tempTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="64dp"
+        android:gravity="center"
+        android:text="Temperature: 0 F"
+        android:textAlignment="center"
+        android:textColor="@color/textColor"
+        android:textSize="42sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/bulbOFF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="32dp"
+        android:background="@color/bulbOFF"
+        android:text="Bulb OFF"
+        android:textColor="@color/textColor"
+        app:cornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TestTextView" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/connect"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:background="@drawable/button_figure"
+        android:text="Connect"
+        android:textColor="@color/textColor"
+        android:textSize="30sp"
+        android:visibility="invisible"
+        app:cornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TestTextView" />
+
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/beepON"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/beepON"
+        android:text="Beep ON"
+        android:textColor="@color/textColor"
+
+        app:cornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/bulbON" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/beepOFF"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/beepON"
+        android:text="Beep OFF"
+        android:textColor="@color/textColor"
+
+        app:cornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/beepON" />
+
+    <com.google.android.material.button.MaterialButton
+
+        android:id="@+id/bulbON"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:background="@color/bulbON"
+        android:text="Bulb ON"
+        android:textColor="@color/textColor"
+        app:cornerRadius="50dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/bulbOFF"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TestTextView" />
+
+    <TextView
+        android:id="@+id/labelBulbStatus"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:layout_marginTop="32dp"
+        android:text="Bulb Status:"
+        android:visibility="invisible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/TestTextView" />
+
+    <TextView
+        android:id="@+id/bulbStatusTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="32dp"
+        android:visibility="invisible"
+        app:layout_constraintStart_toEndOf="@+id/labelBulbStatus"
+        app:layout_constraintTop_toTopOf="@+id/labelBulbStatus" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
